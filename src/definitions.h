@@ -1,6 +1,8 @@
 #ifndef definitions_h
 #define definitions_h
 
+#include <Arduino.h>
+
 /*
   Constants and other global stuff that you should probably never need to touch.
 */
@@ -20,7 +22,7 @@ enum class MOWER_STATES {
 enum class BATTERY_TYPE {
                           LEAD_ACID,
                           NIMH,       // nickel–metal hydride battery
-                          LIPO        // lithium polymer battery
+                          LIION       // lithium-ion/lithium polymer battery
                         };
 
 const int16_t BFW_INSIDE_SIGNAL = 0b10000101;

@@ -2,7 +2,6 @@
 #define settings_h
 
 #include <Arduino.h>
-#include <AsyncMqttClient.h>
 #include <definitions.h>
 
 
@@ -40,7 +39,7 @@ const uint32_t BWF_SENSE_TIMEOUT = 3 * 60 * 1000;
   Battery settings
 */
 const uint8_t BATTERY_SENSOR_PIN = A0;    // pin to sensor that monitor the voltage of the battery.
-const BATTERY_TYPE battery_type = BATTERY_TYPE::LIPO; // Important! Set to the correct type of battery you use (see BATTERY_TYPE in definitions.h).
+const BATTERY_TYPE battery_type = BATTERY_TYPE::LIION; // Important! Set to the correct type of battery you use (see BATTERY_TYPE in definitions.h).
 const uint16_t BATTERY_FULLY_CHARGED = 1560;
 const uint16_t BATTERY_EMPTY = 1400;
 

@@ -3,22 +3,15 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
-#include <AsyncMqttClient.h>
-#include <settings.h>
+#include "settings.h"
+#include "mqtt/mqtt.h"
 
 /*
  * Application to control a LIAM robot mower using a NodeMCU/ESP-12E (or similar ESP8266) microcontroller.
  */
-
-void onMqttConnect(bool sessionPresent);
-void onMqttDisconnect(AsyncMqttClientDisconnectReason reason);
-void onMqttPublish(uint16_t packetId);
-void publish_message(char* msg);
 void setup_WiFi();
 void setup_OTA();
-void setup_MQTT();
-
-AsyncMqttClient mqttClient;
+MQTT_Client mqtt;
 
 void setup() {
   Serial.begin(115200);
@@ -26,7 +19,7 @@ void setup() {
 
   setup_WiFi();
   setup_OTA();
-  setup_MQTT();
+  mqtt = new MQTT_Client();
 }
 
 void setup_WiFi() {
@@ -58,12 +51,12 @@ void setup_OTA() {
 
     // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
     Serial.println("Start updating " + type);
-    publish_message("START UPDATING FIRMWARE");
+    mqtt.publish_message("START UPDATING FIRMWARE");
   });
 
   ArduinoOTA.onEnd([]() {
     Serial.println("\nEnd");
-    publish_message("DONE UPDATING FIRMWARE");
+    mqtt.publish_message("DONE UPDATING FIRMWARE");
   });
 
   ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
@@ -85,47 +78,7 @@ void setup_OTA() {
   Serial.println(WiFi.localIP());
 }
 
-void setup_MQTT() {
-  mqttClient.onConnect(onMqttConnect);
-  mqttClient.onDisconnect(onMqttDisconnect);
-  mqttClient.onPublish(onMqttPublish);
-  mqttClient.setServer(MQTT_SERVER, MQTT_PORT);
-  //mqttClient.setCredentials("MQTT_USERNAME", "MQTT_PASSWORD");
-  mqttClient.setKeepAlive(15); // seconds
-  mqttClient.setClientId(APP_NAME);
-  mqttClient.setWill(MQTT_TOPIC, 2, true, "DISCONNECTED");
-  Serial.println("Connecting to MQTT broker...");
-  mqttClient.connect();
-}
-
 void loop() {
   ArduinoOTA.handle();
 
-}
-
-void onMqttConnect(bool sessionPresent) {
-  mqttClient.publish(MQTT_TOPIC, 1, true, "CONNECTED");
-  Serial.println("Connected to the MQTT broker.");
-  Serial.print("Session present: ");
-  Serial.println(sessionPresent);
-}
-
-void publish_message(char* msg) {
-  if (mqttClient.connected()) {
-    uint16_t packetIdPub1 = mqttClient.publish(MQTT_TOPIC, 1, true, msg);
-    Serial.println(packetIdPub1);
-  }
-}
-
-void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
-  Serial.print("Disconnected from the MQTT broker! reason: ");
-  Serial.println(static_cast<uint8_t>(reason));
-  Serial.println("Reconnecting to MQTT...");
-  mqttClient.connect();
-}
-
-void onMqttPublish(uint16_t packetId) {
-  Serial.println("MQTT Publish acknowledged");
-  Serial.print("  packetId: ");
-  Serial.println(packetId);
 }

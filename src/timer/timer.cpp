@@ -1,4 +1,5 @@
-#include <timer.h>
+#include <Arduino.h>
+#include "timer.h"
 // https://www.baldengineer.com/arduino-how-do-you-reset-millis.html
 
 Timer::Timer() {
@@ -20,7 +21,7 @@ unsigned long Timer::MillisSinceLast() {
   return diffMillis;
 }
 
-bool Timer::HasTimePassed(unsigned long time) {
+bool Timer::HasAmountTimePassed(unsigned long time) {
   // How much time has passed, accounting for rollover with subtraction!
   return (unsigned long)(millis() - previousMillis) >= time;
 }

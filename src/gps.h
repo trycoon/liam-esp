@@ -1,4 +1,10 @@
 // http://arduiniana.org/libraries/tinygpsplus/
+
+/*
+Serial uses UART0, which is mapped to pins GPIO1 (TX) and GPIO3 (RX).
+Serial may be remapped to GPIO15 (TX) and GPIO13 (RX) by calling Serial.swap() after Serial.begin. Calling swap again maps UART0 back to GPIO1 and GPIO3.
+*/
+
 /*
 #include <TinyGPS++.h>
 static const uint32_t GPSBaud = 9600;

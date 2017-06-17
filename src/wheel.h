@@ -6,8 +6,8 @@
 class Wheel {
   public:
     Wheel(uint8_t motor_pin);
-    ~Wheel(void);
-    void Init(void);
+    ~Wheel();
+    void Init();
     void Forward(bool smooth);
     void Forward(uint32_t time, bool smooth);
     void Backward(bool smooth);
