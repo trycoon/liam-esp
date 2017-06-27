@@ -1,3 +1,15 @@
+#ifndef _gps_h
+#define _gps_h
+
+#include <Arduino.h>
+
+class GPS {
+  public:
+    GPS();
+
+};
+
+#endif
 // http://arduiniana.org/libraries/tinygpsplus/
 
 /*

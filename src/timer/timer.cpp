@@ -6,12 +6,12 @@ Timer::Timer() {
   previousMillis = 0;
 }
 
-unsigned long Timer::GetMillis() {
+unsigned long Timer::getMillis() {
   previousMillis = millis();
   return previousMillis;
 }
 
-unsigned long Timer::MillisSinceLast() {
+unsigned long Timer::millisSinceLast() {
   // Get snapshot of time
   unsigned long currentMillis = millis();
   // How much time has passed, accounting for rollover with subtraction!
@@ -21,7 +21,7 @@ unsigned long Timer::MillisSinceLast() {
   return diffMillis;
 }
 
-bool Timer::HasAmountTimePassed(unsigned long time) {
+bool Timer::hasAmountTimePassed(unsigned long time) {
   // How much time has passed, accounting for rollover with subtraction!
   return (unsigned long)(millis() - previousMillis) >= time;
 }

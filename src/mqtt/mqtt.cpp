@@ -1,10 +1,11 @@
+#include <string>
 #include "mqtt.h"
 #include "settings.h"
 
 MQTT_Client::MQTT_Client() {
-  mqttClient.onConnect(onMqttConnect);
-  mqttClient.onDisconnect(onMqttDisconnect);
-  mqttClient.onPublish(onMqttPublish);
+  mqttClient.onConnect([this](bool sessionPresent) { onMqttConnect(sessionPresent); });
+  mqttClient.onDisconnect([this](AsyncMqttClientDisconnectReason reason) { onMqttDisconnect(reason); });
+  mqttClient.onPublish([this](uint16_t packetId) { onMqttPublish(packetId); });
   mqttClient.setServer(MQTT_SERVER, MQTT_PORT);
   //mqttClient.setCredentials("MQTT_USERNAME", "MQTT_PASSWORD");
   mqttClient.setKeepAlive(15); // seconds
@@ -24,9 +25,9 @@ void MQTT_Client::onMqttConnect(bool sessionPresent) {
   Serial.println(sessionPresent);
 }
 
-void MQTT_Client::publish_message(char* msg) {
+void MQTT_Client::publish_message(std::string msg) {
   if (mqttClient.connected()) {
-    uint16_t packetIdPub1 = mqttClient.publish(MQTT_TOPIC, 1, true, msg);
+    uint16_t packetIdPub1 = mqttClient.publish(MQTT_TOPIC, 1, true, msg.c_str());
     Serial.println(packetIdPub1);
   }
 }
