@@ -8,11 +8,20 @@
 #include "bwf.h"
 #include "battery.h"
 #include "gps.h"
+#include "state_controller.h"
 
-class Controller {
+class Controller : public StateController {
   public:
-    Controller(MQTT_Client* mqttClient, Wheel* leftWheel, Wheel* rightWheel, Cutter* cutter, BWF* bwf, Battery* battery, GPS* gps);
+    Controller(MQTT_Client& mqttClient, Wheel& leftWheel, Wheel& rightWheel, Cutter& cutter, BWF& bwf, Battery& battery, GPS& gps);
 
+  private:
+    MQTT_Client& mqttClient;
+    Wheel& leftWheel;
+    Wheel& rightWheel;
+    Cutter& cutter;
+    BWF& bwf;
+    Battery& battery;
+    GPS& gps;
 };
 
 #endif

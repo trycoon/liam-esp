@@ -1,8 +1,8 @@
 #include <Arduino.h>
 #include "wheel.h"
 
-Wheel::Wheel(uint8_t motor_pin) {
-  pinMode(motor_pin, OUTPUT);
+Wheel::Wheel() {
+  //pinMode(motor_pin, OUTPUT);
   speed = 0;
 }
 

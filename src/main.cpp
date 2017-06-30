@@ -5,17 +5,30 @@
 #include "settings.h"
 #include "mqtt/mqtt.h"
 #include "ota/ota.h"
+#include "controller.h"
+#include "wheel.h"
+#include "cutter.h"
+#include "bwf.h"
+#include "battery.h"
+#include "gps.h"
 
 /*
  * Application to control a LIAM robot mower using a NodeMCU/ESP-12E (or similar ESP8266) microcontroller.
  */
 MQTT_Client mqtt;
 OTA ota(mqtt);
+Wheel leftWheel;
+Wheel rightWheel;
+Cutter cutter;
+BWF bwf;
+Battery battery;
+GPS gps;
+Controller controller(mqtt, leftWheel, rightWheel, cutter, bwf, battery, gps);
 
 void setup_WiFi() {
-  WiFi.hostname(APP_NAME);
+  WiFi.hostname(Definitions::APP_NAME);
   WiFi.mode(WIFI_STA);
-  WiFi.begin(SSID, WIFI_PASSWORD);
+  WiFi.begin(Settings::SSID, Settings::WIFI_PASSWORD);
   while (WiFi.waitForConnectResult() != WL_CONNECTED) {
     Serial.println("Connection Failed! Rebooting...");
     delay(5000);
@@ -25,7 +38,7 @@ void setup_WiFi() {
 
 void setup() {
   Serial.begin(115200);
-  Serial.println(APP_NAME);
+  Serial.println(Definitions::APP_NAME);
 
   setup_WiFi();
   mqtt.connect();

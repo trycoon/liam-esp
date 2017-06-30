@@ -8,10 +8,10 @@ OTA::OTA(MQTT_Client& mqttClient) : mqtt(mqttClient) {
   // Port defaults to 8266
   ArduinoOTA.setPort(8266);
 
-  ArduinoOTA.setHostname(APP_NAME);
+  ArduinoOTA.setHostname(Definitions::APP_NAME);
 
   // authentication string
-  ArduinoOTA.setPassword(OTA_PASSWORD);
+  ArduinoOTA.setPassword(Settings::OTA_PASSWORD);
 
   ArduinoOTA.onStart([this]() {
     String type;

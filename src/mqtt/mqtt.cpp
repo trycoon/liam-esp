@@ -6,11 +6,11 @@ MQTT_Client::MQTT_Client() {
   mqttClient.onConnect([this](bool sessionPresent) { onMqttConnect(sessionPresent); });
   mqttClient.onDisconnect([this](AsyncMqttClientDisconnectReason reason) { onMqttDisconnect(reason); });
   mqttClient.onPublish([this](uint16_t packetId) { onMqttPublish(packetId); });
-  mqttClient.setServer(MQTT_SERVER, MQTT_PORT);
+  mqttClient.setServer(Settings::MQTT_SERVER, Settings::MQTT_PORT);
   //mqttClient.setCredentials("MQTT_USERNAME", "MQTT_PASSWORD");
   mqttClient.setKeepAlive(15); // seconds
-  mqttClient.setClientId(APP_NAME);
-  mqttClient.setWill(MQTT_TOPIC, 2, true, "DISCONNECTED");
+  mqttClient.setClientId(Definitions::APP_NAME);
+  mqttClient.setWill(Settings::MQTT_TOPIC, 2, true, "DISCONNECTED");
 }
 
 void MQTT_Client::connect() {
@@ -19,7 +19,7 @@ void MQTT_Client::connect() {
 }
 
 void MQTT_Client::onMqttConnect(bool sessionPresent) {
-  mqttClient.publish(MQTT_TOPIC, 1, true, "CONNECTED");
+  mqttClient.publish(Settings::MQTT_TOPIC, 1, true, "CONNECTED");
   Serial.println("Connected to the MQTT broker.");
   Serial.print("Session present: ");
   Serial.println(sessionPresent);
@@ -27,7 +27,7 @@ void MQTT_Client::onMqttConnect(bool sessionPresent) {
 
 void MQTT_Client::publish_message(std::string msg) {
   if (mqttClient.connected()) {
-    uint16_t packetIdPub1 = mqttClient.publish(MQTT_TOPIC, 1, true, msg.c_str());
+    uint16_t packetIdPub1 = mqttClient.publish(Settings::MQTT_TOPIC, 1, true, msg.c_str());
     Serial.println(packetIdPub1);
   }
 }

@@ -8,7 +8,10 @@ class StateController {
     /**
     * Set new running state.
     */
-    virtual void setState(MOWER_STATES newState);
+    virtual void setState(Definitions::MOWER_STATES newState);
+
+  protected:
+    Definitions::MOWER_STATES currentState;
 };
 
 #endif

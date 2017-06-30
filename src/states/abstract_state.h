@@ -16,7 +16,7 @@ class AbstractState {
     * Should be called upon when this state has been selected as the current state.
     * @param lastState the previous running state.
     */
-    virtual void selected(MOWER_STATES lastState);
+    virtual void selected(Definitions::MOWER_STATES lastState);
 
     /**
     * This method will be executed on each turn in the event loop when this state is currently selected.

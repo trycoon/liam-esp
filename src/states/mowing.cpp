@@ -5,7 +5,7 @@ class Mowing : public AbstractState {
 
   }
 
-  void selected(MOWER_STATES lastState) {
+  void selected(Definitions::MOWER_STATES lastState) {
 
   }
 
