@@ -17,8 +17,8 @@
  */
 MQTT_Client mqtt;
 OTA ota(mqtt);
-Wheel leftWheel;
-Wheel rightWheel;
+Wheel leftWheel(Settings::LEFT_WHEEL_MOTOR_PIN, Settings::LEFT_WHEEL_MOTOR_DIRECTION_PIN, Settings::LEFT_WHEEL_MOTOR_INVERED);
+Wheel rightWheel(Settings::RIGHT_WHEEL_MOTOR_PIN, Settings::RIGHT_WHEEL_MOTOR_DIRECTION_PIN, Settings::RIGHT_WHEEL_MOTOR_INVERED);
 Cutter cutter;
 BWF bwf;
 Battery battery;
@@ -38,7 +38,9 @@ void setup_WiFi() {
 
 void setup() {
   Serial.begin(115200);
-  Serial.println(Definitions::APP_NAME);
+  Serial.print(Definitions::APP_NAME);
+  Serial.print(" v");
+  Serial.println(Definitions::APP_VERSION);
 
   setup_WiFi();
   mqtt.connect();
@@ -46,7 +48,7 @@ void setup() {
 
 void loop() {
   ota.handle();
-
+  controller.run();
   // ESP.getCycleCount() // "returns the cpu instruction cycle count since start as an unsigned 32-bit."
   // ESP.getFreeHeap() // "returns the free heap size."
 }

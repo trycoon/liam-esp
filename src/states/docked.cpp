@@ -1,15 +1,14 @@
-#include "abstract_state.h"
+#include "docked.h"
+#include "state_controller.h"
 
-class Docked : public AbstractState {
-  Docked(StateController& stateController) : AbstractState(stateController) {
+Docked::Docked(StateController& stateController) : AbstractState(stateController) {
 
-  }
+}
 
-  void selected(Definitions::MOWER_STATES lastState) {
+void Docked::selected(Definitions::MOWER_STATES lastState) {
 
-  }
+}
 
-  void run() {
+void Docked::run() {
 
-  }
-};
+}

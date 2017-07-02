@@ -7,14 +7,30 @@
   Constants and other global stuff that you should probably never need to touch.
 */
 
-class Definitions {
-  public:
-    static const char* APP_NAME;
-    static const char* APP_VERSION;
-    enum class MOWER_STATES;
-    enum class BATTERY_TYPE;
-    static const int16_t BFW_INSIDE_SIGNAL;
-    static const int16_t BFW_OUTSIDE_SIGNAL;
+namespace Definitions {
+    extern const char* const APP_NAME;
+    extern const char* const APP_VERSION;
+
+    enum class MOWER_STATES {
+                              DOCKED,     // mower is docked in its charging station and is fully charged
+                              LAUNCHING,  // mower is leaving its charging station to head out for mowing
+                              MOWING,     // mower is currently mowing
+                              DOCKING,    // mower has stopped mowing and is heading back to its charging station (battery may be running low)
+                              CHARGING,   // mower is docked in its charging station and is currently charging
+                              STUCK,      // mower is stuck somewhere and have shutdown (it may be stuck in a hole, the cutter may be stuck, or some other hardware issues...)
+                              FLIPPED,    // mower is flipped upside down or tiled too much, stopp mowing and wait to be unflipped.
+                              PAUSED,     // mower is paused from it's normal operation, when unpaused it should pursue last state.
+                              DEMO        // mower is in demo/test mode.
+                            };
+
+    enum class BATTERY_TYPE {
+                              LEAD_ACID,
+                              NIMH,       // nickel–metal hydride battery
+                              LIION       // lithium-ion/lithium polymer (LiPo) battery
+                            };
+
+    extern const int16_t BFW_INSIDE_SIGNAL;
+    extern const int16_t BFW_OUTSIDE_SIGNAL;
 };
 
 #endif

@@ -13,7 +13,11 @@ Controller::Controller(MQTT_Client& mqttClient,
                          cutter(cutter),
                          bwf(bwf),
                          battery(battery),
-                         gps(gps)/*,
-                         currentState(MOWER_STATES.DOCKED)*/{
+                         gps(gps),
+                         stateController(Definitions::MOWER_STATES::DOCKED) {
+
+}
+
+void Controller::run() {
 
 }

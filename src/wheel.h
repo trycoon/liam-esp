@@ -5,7 +5,7 @@
 
 class Wheel {
   public:
-    Wheel();
+    Wheel(uint8_t motor_pin, uint8_t motor_dir_pin, bool wheel_invert);
     ~Wheel();
     void init();
     void forward(bool smooth);
@@ -16,6 +16,9 @@ class Wheel {
 
   private:
     uint16_t speed;
+    uint8_t motor_pin;
+    uint8_t motor_dir_pin;
+    bool wheel_invert;
 };
 
 #endif

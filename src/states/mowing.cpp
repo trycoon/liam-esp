@@ -1,6 +1,10 @@
 #include "abstract_state.h"
 
+/**
+* State the mower enters when it is mowing.
+*/
 class Mowing : public AbstractState {
+
   Mowing(StateController& stateController) : AbstractState(stateController) {
 
   }
