@@ -1,17 +1,14 @@
-#include "abstract_state.h"
+#include "charging.h"
+#include "state_controller.h"
 
-/**
-* State the mower enters when it has successfully docked with the charging station and have begun charging the batteries.
-*/
-class Charging : public AbstractState {
+Charging::Charging(Definitions::MOWER_STATES myState, StateController& stateController, Resources& resources) : AbstractState(myState, stateController, resources) {
 
-  Charging(StateController& stateController) : AbstractState(stateController) {}
+}
 
-  void selected(Definitions::MOWER_STATES lastState) {
+void Charging::selected(Definitions::MOWER_STATES lastState) {
 
-  }
+}
 
-  void run() {
+void Charging::run() {
 
-  }
-};
+}

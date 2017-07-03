@@ -1,20 +1,14 @@
-#include "abstract_state.h"
+#include "docking.h"
+#include "state_controller.h"
 
-/**
-* State the mower enters when it is heading home to dock with the charging station.
-* It could be low on batteries, or it's seeking shelter from the rain, or maybe it's just done mowing.
-*/
-class Docking : public AbstractState {
+Docking::Docking(Definitions::MOWER_STATES myState, StateController& stateController, Resources& resources) : AbstractState(myState, stateController, resources) {
 
-  Docking(StateController& stateController) : AbstractState(stateController) {
+}
 
-  }
+void Docking::selected(Definitions::MOWER_STATES lastState) {
 
-  void selected(Definitions::MOWER_STATES lastState) {
+}
 
-  }
+void Docking::run() {
 
-  void run() {
-
-  }
-};
+}

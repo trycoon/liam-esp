@@ -11,7 +11,7 @@ class MQTT_Client {
   public:
     MQTT_Client();
     void connect();
-    void publish_message(std::string msg);
+    void publish_message(std::string msg, std::string subtopic = "");
 
   private:
     AsyncMqttClient mqttClient;

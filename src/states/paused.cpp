@@ -1,19 +1,14 @@
-#include "abstract_state.h"
+#include "paused.h"
+#include "state_controller.h"
 
-/**
-* State the mower enters when it is paused by a user (by some clicked button or central command). When unpaused it resume last running state.
-*/
-class Paused : public AbstractState {
+Paused::Paused(Definitions::MOWER_STATES myState, StateController& stateController, Resources& resources) : AbstractState(myState, stateController, resources) {
 
-  Paused(StateController& stateController) : AbstractState(stateController) {
+}
 
-  }
+void Paused::selected(Definitions::MOWER_STATES lastState) {
 
-  void selected(Definitions::MOWER_STATES lastState) {
+}
 
-  }
+void Paused::run() {
 
-  void run() {
-
-  }
-};
+}

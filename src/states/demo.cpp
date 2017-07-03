@@ -1,20 +1,14 @@
-#include "abstract_state.h"
+#include "demo.h"
+#include "state_controller.h"
 
-/**
-* State the mower enters when it is commanded to run the demo program.
-* Usually this mean testing the wheel motors, the cutter motor, and stuff that shows the mowing is working properly.
-*/
-class Demo : public AbstractState {
+Demo::Demo(Definitions::MOWER_STATES myState, StateController& stateController, Resources& resources) : AbstractState(myState, stateController, resources) {
 
-  Demo(StateController& stateController) : AbstractState(stateController) {
+}
 
-  }
+void Demo::selected(Definitions::MOWER_STATES lastState) {
 
-  void selected(Definitions::MOWER_STATES lastState) {
+}
 
-  }
+void Demo::run() {
 
-  void run() {
-
-  }
-};
+}

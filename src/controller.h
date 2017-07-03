@@ -8,6 +8,7 @@
 #include "battery.h"
 #include "gps.h"
 #include "definitions.h"
+#include "resources.h"
 #include "state_controller.h"
 
 /**
@@ -15,17 +16,11 @@
 */
 class Controller {
   public:
-    Controller(MQTT_Client& mqttClient, Wheel& leftWheel, Wheel& rightWheel, Cutter& cutter, BWF& bwf, Battery& battery, GPS& gps);
+    Controller(Resources& resources);
     void run();
 
   private:
-    MQTT_Client& mqttClient;
-    Wheel& leftWheel;
-    Wheel& rightWheel;
-    Cutter& cutter;
-    BWF& bwf;
-    Battery& battery;
-    GPS& gps;
+    Resources& resources;
     StateController stateController;
 };
 

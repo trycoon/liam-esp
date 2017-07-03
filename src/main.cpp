@@ -3,6 +3,7 @@
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 #include "settings.h"
+#include "resources.h"
 #include "mqtt/mqtt.h"
 #include "ota/ota.h"
 #include "controller.h"
@@ -23,7 +24,8 @@ Cutter cutter;
 BWF bwf;
 Battery battery;
 GPS gps;
-Controller controller(mqtt, leftWheel, rightWheel, cutter, bwf, battery, gps);
+Resources resources(mqtt, leftWheel, rightWheel, cutter, bwf, battery, gps);
+Controller controller(resources);
 
 void setup_WiFi() {
   WiFi.hostname(Definitions::APP_NAME);

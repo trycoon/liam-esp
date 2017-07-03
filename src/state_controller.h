@@ -2,12 +2,14 @@
 #define _statecontroller_h
 
 #include <unordered_map>
+#include <vector>  // NOTE: needed to fix the following error: "Arduino.h:253:18: error: expected unqualified-id before '(' token".
 #include "definitions.h"
+#include "resources.h"
 #include "states/abstract_state.h"
 
 class StateController {
   public:
-    StateController(Definitions::MOWER_STATES initialState);
+    StateController(Definitions::MOWER_STATES initialState, Resources& resources);
 
     /**
     * Set new running state.
@@ -15,13 +17,13 @@ class StateController {
     void setState(Definitions::MOWER_STATES newState);
 
     /**
-    * Get running state.
+    * Get running state instance.
     */
-    AbstractState* getState();
+    AbstractState* getStateInstance();
 
   private:
-    Definitions::MOWER_STATES currentState;
     AbstractState* currentStateInstance;
+    Resources& resources;
     // https://stackoverflow.com/questions/18837857/cant-use-enum-class-as-unordered-map-key
     struct EnumClassHash {
         template <typename T>

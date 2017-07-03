@@ -1,6 +1,7 @@
 #ifndef _settings_h
 #define _settings_h
 
+#include <string>
 #include <Arduino.h>
 #include "definitions.h"
 
@@ -38,7 +39,7 @@ namespace Settings {
   extern const char* const OTA_PASSWORD;
   extern const char* const MQTT_SERVER;
   extern const uint16_t MQTT_PORT;
-  extern const char* const MQTT_TOPIC;
+  extern const std::string MQTT_TOPIC;
 };
 
 #endif

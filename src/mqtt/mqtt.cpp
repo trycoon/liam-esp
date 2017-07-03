@@ -10,7 +10,7 @@ MQTT_Client::MQTT_Client() {
   //mqttClient.setCredentials("MQTT_USERNAME", "MQTT_PASSWORD");
   mqttClient.setKeepAlive(15); // seconds
   mqttClient.setClientId(Definitions::APP_NAME);
-  mqttClient.setWill(Settings::MQTT_TOPIC, 2, true, "DISCONNECTED");
+  mqttClient.setWill(Settings::MQTT_TOPIC.c_str(), 2, true, "DISCONNECTED");
 }
 
 void MQTT_Client::connect() {
@@ -19,15 +19,27 @@ void MQTT_Client::connect() {
 }
 
 void MQTT_Client::onMqttConnect(bool sessionPresent) {
-  mqttClient.publish(Settings::MQTT_TOPIC, 1, true, "CONNECTED");
+  mqttClient.publish(Settings::MQTT_TOPIC.c_str(), 1, true, "CONNECTED");
   Serial.println("Connected to the MQTT broker.");
   Serial.print("Session present: ");
   Serial.println(sessionPresent);
 }
 
-void MQTT_Client::publish_message(std::string msg) {
+void MQTT_Client::publish_message(std::string msg, std::string subtopic) {
   if (mqttClient.connected()) {
-    uint16_t packetIdPub1 = mqttClient.publish(Settings::MQTT_TOPIC, 1, true, msg.c_str());
+
+    std::string topic = Settings::MQTT_TOPIC;
+
+    if (subtopic.length() > 0) {
+      // make sure subtopics always begins with an slash ("/")
+      if (subtopic.find("/") > 0) {
+        subtopic = "/" + subtopic;
+      }
+
+      topic = topic + subtopic;
+    }
+
+    uint16_t packetIdPub1 = mqttClient.publish(topic.c_str(), 1, true, msg.c_str());
     Serial.println(packetIdPub1);
   }
 }

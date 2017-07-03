@@ -1,19 +1,14 @@
-#include "abstract_state.h"
+#include "mowing.h"
+#include "state_controller.h"
 
-/**
-* State the mower enters when it is mowing.
-*/
-class Mowing : public AbstractState {
+Mowing::Mowing(Definitions::MOWER_STATES myState, StateController& stateController, Resources& resources) : AbstractState(myState, stateController, resources) {
 
-  Mowing(StateController& stateController) : AbstractState(stateController) {
+}
 
-  }
+void Mowing::selected(Definitions::MOWER_STATES lastState) {
 
-  void selected(Definitions::MOWER_STATES lastState) {
+}
 
-  }
+void Mowing::run() {
 
-  void run() {
-
-  }
-};
+}

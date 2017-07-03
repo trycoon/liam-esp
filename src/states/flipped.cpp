@@ -1,20 +1,14 @@
-#include "abstract_state.h"
+#include "flipped.h"
+#include "state_controller.h"
 
-/**
-* State the mower enters when it is flipped upside down or tilted too much.
-* This is a state that should not occur under normal conditions.
-*/
-class Flipped : public AbstractState {
+Flipped::Flipped(Definitions::MOWER_STATES myState, StateController& stateController, Resources& resources) : AbstractState(myState, stateController, resources) {
 
-  Flipped(StateController& stateController) : AbstractState(stateController) {
+}
 
-  }
+void Flipped::selected(Definitions::MOWER_STATES lastState) {
 
-  void selected(Definitions::MOWER_STATES lastState) {
+}
 
-  }
+void Flipped::run() {
 
-  void run() {
-
-  }
-};
+}

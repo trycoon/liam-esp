@@ -1,7 +1,7 @@
 #include "docked.h"
 #include "state_controller.h"
 
-Docked::Docked(StateController& stateController) : AbstractState(stateController) {
+Docked::Docked(Definitions::MOWER_STATES myState, StateController& stateController, Resources& resources) : AbstractState(myState, stateController, resources) {
 
 }
 

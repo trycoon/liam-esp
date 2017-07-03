@@ -2,13 +2,14 @@
 #define _docked_h
 
 #include "abstract_state.h"
+#include "resources.h"
 
 /**
 * State the mower enters when it has successfully docked with the charging station.
 */
 class Docked : public AbstractState {
   public:
-    Docked(StateController& stateController);
+    Docked(Definitions::MOWER_STATES myState, StateController& stateController, Resources& resources);
     void selected(Definitions::MOWER_STATES lastState);
     void run();
 };

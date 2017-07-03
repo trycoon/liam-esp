@@ -3,6 +3,8 @@
 #include "settings.h"
 #include "ota.h"
 
+// TODO: Replace with webbased OTA? https://github.com/esp8266/Arduino/tree/master/doc/ota_updates
+
 OTA::OTA(MQTT_Client& mqttClient) : mqtt(mqttClient) {
 
   // Port defaults to 8266

@@ -82,15 +82,15 @@ namespace Settings {
     /*
       WiFi settings
     */
-     const char* const SSID = "<your WiFi SSID";
-     const char* const WIFI_PASSWORD = "<your WiFi password>";
-     const char* const OTA_PASSWORD = "<a OTA password>";
+     const char* const SSID = "Stargate";
+     const char* const WIFI_PASSWORD = "OEVkynQ!!";
+     const char* const OTA_PASSWORD = "R35x55H";
 
     /*
       MQTT settings (https://en.wikipedia.org/wiki/MQTT)
     */
-     const char* const MQTT_SERVER = "<your MQTT servers IP-address>";
+     const char* const MQTT_SERVER = "192.168.10.110";
      const uint16_t MQTT_PORT = 1883;
-     const char* const MQTT_TOPIC = "home/liam-esp";
+     const std::string MQTT_TOPIC = "home/liam-esp";
 
 }

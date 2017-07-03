@@ -2,6 +2,7 @@
 #define _abstract_state_h
 
 #include "definitions.h"
+#include "resources.h"
 class StateController;
 
 /**
@@ -12,7 +13,14 @@ class AbstractState {
     /**
     * Constructor with a reference to be able to communicate back to the state controller.
     */
-    AbstractState(StateController& stateController) : stateController(stateController) {}
+    AbstractState(Definitions::MOWER_STATES myState, StateController& stateController, Resources& resources) : myState(myState), stateController(stateController), resources(resources) {}
+
+    /**
+    * Get the state the class repressent.
+    */
+    Definitions::MOWER_STATES getState() {
+      return myState;
+    }
 
     /**
     * Should be called upon when this state has been selected as the current state.
@@ -26,7 +34,9 @@ class AbstractState {
     virtual void run() = 0;
 
   protected:
+    Definitions::MOWER_STATES myState;
     StateController& stateController;
+    Resources& resources;
 };
 
 #endif

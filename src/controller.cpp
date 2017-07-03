@@ -1,23 +1,11 @@
 #include "controller.h"
 
-Controller::Controller(MQTT_Client& mqttClient,
-                       Wheel& leftWheel,
-                       Wheel& rightWheel,
-                       Cutter& cutter,
-                       BWF& bwf,
-                       Battery& battery,
-                       GPS& gps)
-                       : mqttClient(mqttClient),
-                         leftWheel(leftWheel),
-                         rightWheel(rightWheel),
-                         cutter(cutter),
-                         bwf(bwf),
-                         battery(battery),
-                         gps(gps),
-                         stateController(Definitions::MOWER_STATES::DOCKED) {
+Controller::Controller(Resources& resources) :
+            resources(resources),
+            stateController(Definitions::MOWER_STATES::DOCKED, resources) {  // When started we assume we are docked!
 
 }
 
 void Controller::run() {
-
+  stateController.getStateInstance()->run();
 }

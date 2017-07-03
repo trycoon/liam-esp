@@ -1,19 +1,14 @@
-#include "abstract_state.h"
+#include "launching.h"
+#include "state_controller.h"
 
-/**
-* State the mower enters when it is heading out from the charging station to begin mowing.
-*/
-class Launching : public AbstractState {
+Launching::Launching(Definitions::MOWER_STATES myState, StateController& stateController, Resources& resources) : AbstractState(myState, stateController, resources) {
 
-  Launching(StateController& stateController) : AbstractState(stateController) {
+}
 
-  }
+void Launching::selected(Definitions::MOWER_STATES lastState) {
 
-  void selected(Definitions::MOWER_STATES lastState) {
+}
 
-  }
+void Launching::run() {
 
-  void run() {
-
-  }
-};
+}
