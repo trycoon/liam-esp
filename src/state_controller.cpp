@@ -23,17 +23,10 @@ StateController::StateController(Definitions::MOWER_STATES initialState, Resourc
   setState(initialState);
 }
 
-// https://stackoverflow.com/questions/11421432/how-can-i-output-the-value-of-an-enum-class-in-c11
-template <typename Enumeration>
-auto as_integer(Enumeration const value)
-    -> typename std::underlying_type<Enumeration>::type
-{
-    return static_cast<typename std::underlying_type<Enumeration>::type>(value);
-}
-
 void StateController::setState(Definitions::MOWER_STATES newState) {
   currentStateInstance = stateLookup[newState];
-  //resources.mqtt.publish_message(as_integer(newState), "/state");
+  // TODO: log state change.
+  //resources.mqtt.publish_message("state-name", "/state");
 }
 
 AbstractState* StateController::getStateInstance() {

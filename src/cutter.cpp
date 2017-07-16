@@ -11,7 +11,23 @@ PWM frequency is 1kHz by default. Call analogWriteFreq(new_frequency) to change 
 */
 #include "cutter.h"
 
-Cutter::Cutter() {
+Cutter::Cutter(IO_Analog& io_analog) : io_analog(io_analog) {
   //map - map values between 0-100
   // constrain - constrain value bwteen to values, e.g. 0-100
+}
+
+Cutter::~Cutter() {
+  stop();
+}
+
+void Cutter::setSpeed(uint8_t speed) {
+
+}
+
+void Cutter::stop() {
+
+}
+
+uint16_t Cutter::getLoad() {
+  return 45;
 }

@@ -10,5 +10,7 @@ void Docked::selected(Definitions::MOWER_STATES lastState) {
 }
 
 void Docked::run() {
-
+  // TODO: if battery level too low, enter "charging"-state.
+  // TODO: if battery level OK, enter "mowing"-state.
+  stateController.setState(Definitions::MOWER_STATES::MOWING);
 }

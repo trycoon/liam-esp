@@ -23,12 +23,6 @@ namespace Definitions {
                               DEMO        // mower is in demo/test mode.
                             };
 
-    enum class BATTERY_TYPE {
-                              LEAD_ACID,
-                              NIMH,       // nickel–metal hydride battery
-                              LIION       // lithium-ion/lithium polymer (LiPo) battery
-                            };
-
     extern const int16_t BFW_INSIDE_SIGNAL;
     extern const int16_t BFW_OUTSIDE_SIGNAL;
 };

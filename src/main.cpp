@@ -4,6 +4,9 @@
 #include <WiFiUdp.h>
 #include "settings.h"
 #include "resources.h"
+#include "io_analog.h"
+#include "io_digital.h"
+#include "io_accelerometer.h"
 #include "mqtt/mqtt.h"
 #include "ota/ota.h"
 #include "controller.h"
@@ -16,16 +19,19 @@
 /*
  * Application to control a LIAM robot mower using a NodeMCU/ESP-12E (or similar ESP8266) microcontroller.
  */
+IO_Analog io_analog;
+IO_Digital io_digital;
+IO_Accelerometer io_accelerometer;
 MQTT_Client mqtt;
 OTA ota(mqtt);
 Wheel leftWheel(Settings::LEFT_WHEEL_MOTOR_PIN, Settings::LEFT_WHEEL_MOTOR_DIRECTION_PIN, Settings::LEFT_WHEEL_MOTOR_INVERED);
 Wheel rightWheel(Settings::RIGHT_WHEEL_MOTOR_PIN, Settings::RIGHT_WHEEL_MOTOR_DIRECTION_PIN, Settings::RIGHT_WHEEL_MOTOR_INVERED);
-Cutter cutter;
+Cutter cutter(io_analog);
 BWF bwf;
-Battery battery;
+Battery battery(io_analog);
 GPS gps;
 Resources resources(mqtt, leftWheel, rightWheel, cutter, bwf, battery, gps);
-Controller controller(resources);
+Controller controller(resources, io_accelerometer);
 
 void setup_WiFi() {
   WiFi.hostname(Definitions::APP_NAME);
@@ -53,4 +59,5 @@ void loop() {
   controller.run();
   // ESP.getCycleCount() // "returns the cpu instruction cycle count since start as an unsigned 32-bit."
   // ESP.getFreeHeap() // "returns the free heap size."
+  yield();
 }

@@ -12,10 +12,6 @@ Wheel::~Wheel() {
   digitalWrite(motor_pin, 0);
 }
 
-void Wheel::init() {
-
-}
-
 void Wheel::forward(bool smooth) {
 
 }

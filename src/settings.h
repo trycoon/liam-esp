@@ -6,8 +6,8 @@
 #include "definitions.h"
 
 namespace Settings {
-  extern const uint8_t DEMUX_PIN1;
-  extern const uint8_t DEMUX_PIN2;
+  extern const uint8_t SDA_PIN;
+  extern const uint8_t SCL_PIN;
   extern const uint8_t LEFT_WHEEL_MOTOR_PIN;
   extern const uint8_t LEFT_WHEEL_MOTOR_DIRECTION_PIN;
   extern const uint8_t LEFT_WHEEL_MOTOR_SPEED;
@@ -26,7 +26,6 @@ namespace Settings {
   extern const uint8_t RIGHT_BWF_PIN;
   extern const uint32_t BWF_SENSE_TIMEOUT;
   extern const uint8_t BATTERY_SENSOR_DEMUX_ADDRESS;
-  extern const Definitions::BATTERY_TYPE battery_type;
   extern const uint16_t BATTERY_FULLY_CHARGED;
   extern const uint16_t BATTERY_EMPTY;
   extern const uint8_t TILT_SENSOR_DEMUX_ADDRESS;

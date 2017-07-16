@@ -1,12 +1,13 @@
 #include <Arduino.h>
 #include "timer.h"
-// https://www.baldengineer.com/arduino-how-do-you-reset-millis.html
+
+// The reason why this class have no reset or clear method: https://www.baldengineer.com/arduino-how-do-you-reset-millis.html
 
 Timer::Timer() {
   previousMillis = 0;
 }
 
-unsigned long Timer::getMillis() {
+unsigned long Timer::startTimer() {
   previousMillis = millis();
   return previousMillis;
 }

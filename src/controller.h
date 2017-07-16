@@ -9,6 +9,7 @@
 #include "gps.h"
 #include "definitions.h"
 #include "resources.h"
+#include "io_accelerometer.h"
 #include "state_controller.h"
 
 /**
@@ -16,11 +17,12 @@
 */
 class Controller {
   public:
-    Controller(Resources& resources);
+    Controller(Resources& resources, IO_Accelerometer& io_accelerometer);
     void run();
 
   private:
     Resources& resources;
+    IO_Accelerometer& io_accelerometer;
     StateController stateController;
 };
 

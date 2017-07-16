@@ -2,10 +2,10 @@
 
 namespace Settings {
     /*
-      4051 demultiplexer address pins
+      I2C pins
     */
-     const uint8_t DEMUX_PIN1 = 10; // "SD3"
-     const uint8_t DEMUX_PIN2 = 9;  // "SD2"
+     const uint8_t SDA_PIN = D7;
+     const uint8_t SCL_PIN = D8;
 
     /*
       Wheel motor settings
@@ -46,18 +46,16 @@ namespace Settings {
     */
      const uint8_t BATTERY_SENSOR_DEMUX_ADDRESS = 1;    // Address on 4051 demultiplexer for measuring battery voltage.
 
-     const Definitions::BATTERY_TYPE battery_type = Definitions::BATTERY_TYPE::LIION; // Important! Set to the correct type of battery you use (see BATTERY_TYPE in definitions.cpp).
+     // Lithium-ion / LiPo  http://batteryuniversity.com/learn/article/types_of_lithium_ion
      const uint16_t BATTERY_FULLY_CHARGED = 1560;       // Battery-voltage multiplied with 10 to avoid decimal values. e.g. 15,60 volts -> 1560.
      const uint16_t BATTERY_EMPTY = 1400;               // Battery-voltage multiplied with 10 to avoid decimal values. e.g. 14,00 volts -> 1400.
 
-    // Nickel–metal hydride example. http://www.solarnavigator.net/battery_charging.htm
-    // const Definitions::BATTERY_TYPE battery_type = Definitions::BATTERY_TYPE.NIMH; // Important! Set to the correct type of battery you use (see BATTERY_TYPE in definitions.cpp).
+    // Nickel–metal hydride / NiMH example. http://batteryuniversity.com/learn/article/charging_nickel_metal_hydride
     // const uint16_t BATTERY_FULLY_CHARGED = 1450;
     // const uint16_t BATTERY_EMPTY = 1150;
 
 
     // Lead-acid example. http://www.solarnavigator.net/battery_charging.htm
-    // const Definitions::BATTERY_TYPE battery_type = Definitions::BATTERY_TYPE.LEAD_ACID; // Important! Set to the correct type of battery you use (see BATTERY_TYPE in definitions.cpp).
     // const uint16_t BATTERY_FULLY_CHARGED = 1330;
     // const uint16_t BATTERY_EMPTY = 1190;
 
@@ -76,8 +74,8 @@ namespace Settings {
       GPS (Global Positioning System)
       Tested with GY-NEO6MV2 (https://www.openimpulse.com/blog/wp-content/uploads/wpsc/downloadables/GY-NEO6MV2-GPS-Module-Datasheet.pdf)
     */
-     const uint8_t GPS_RX_PIN = D7;
-     const uint8_t GPS_TX_PIN = D8;
+     const uint8_t GPS_RX_PIN = 3;  // GPIO3 (RXD0)
+     const uint8_t GPS_TX_PIN = 1;  // GPIO1 (TDX0)
 
     /*
       WiFi settings

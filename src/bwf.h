@@ -11,7 +11,8 @@
 class BWF {
   public:
     BWF();
-
+    bool isLeftInsideFence();
+    bool isRightInsideFence();
 };
 
 #endif
