@@ -10,7 +10,7 @@ Battery::Battery(IO_Analog& io_analog) : io_analog(io_analog) {
   // https://www.spiria.com/en/blog/iot-m2m-embedded-solutions/measuring-small-currents-adc
 
   // http://henrysbench.capnfatz.com/henrys-bench/arduino-voltage-measurements/arduino-ads1115-differential-voltmeter-tutorial/
-
+  //Serial.printf("Battery: ", io_analog.getChannelVoltage(Settings::BATTERY_SENSOR_CHANNEL));
 }
 
 //https://github.com/Toshik/TickerScheduler

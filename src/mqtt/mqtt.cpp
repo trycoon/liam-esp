@@ -1,4 +1,3 @@
-#include <string>
 #include "mqtt.h"
 #include "settings.h"
 
@@ -23,36 +22,58 @@ void MQTT_Client::onMqttConnect(bool sessionPresent) {
   Serial.println("Connected to the MQTT broker.");
   Serial.print("Session present: ");
   Serial.println(sessionPresent);
+  // TODO: anropa denna med en timer eftersom vi inte skall köra tunga saker i callbacks.
+  // https://github.com/marvinroger/async-mqtt-client/blob/master/examples/FullyFeatured/FullyFeatured.ino
+  flushQueue();  // Flush any messages waiting in queue now that we are connected to broker.
 }
 
-void MQTT_Client::publish_message(std::string msg, std::string subtopic) {
+void MQTT_Client::flushQueue() {
   if (mqttClient.connected()) {
+    while(!msgQueue.empty()) {
+      MQTT_Message message = msgQueue.front();  // oldest message in queue.
 
-    std::string topic = Settings::MQTT_TOPIC;
+      uint16_t packetIdPub1 = mqttClient.publish(message.topic.c_str(), 1, true, message.message.c_str());
+      // if packet id is greater than 0 then we have successfully sent package.
+      if (packetIdPub1 > 0) {
+        Serial.print("Publish MQTT-message: id="); Serial.print(packetIdPub1);
+        Serial.print(", topic=\""); Serial.print(message.topic.c_str());
+        Serial.print("\", message=\""); Serial.print(message.message.c_str());
+        Serial.println("\"");
 
-    if (subtopic.length() > 0) {
-      // make sure subtopics always begins with an slash ("/")
-      if (subtopic.find("/") > 0) {
-        subtopic = "/" + subtopic;
+        msgQueue.pop();
       }
+    }
+  }
+}
 
-      topic = topic + subtopic;
+void MQTT_Client::publish_message(std::string message, std::string subtopic) {
+  std::string topic = Settings::MQTT_TOPIC;
+
+  if (subtopic.length() > 0) {
+    // make sure subtopics always begins with an slash ("/")
+    if (subtopic.find("/") > 0) {
+      subtopic = "/" + subtopic;
     }
 
-    uint16_t packetIdPub1 = mqttClient.publish(topic.c_str(), 1, true, msg.c_str());
-    Serial.println(packetIdPub1);
+    topic = topic + subtopic;
   }
+
+  // removes the oldest message in queue if we reach the maximum allowed size of the message queue. This is to prevent us from leaking memory in case we fail to connect to a MQTT-broker.
+  if (msgQueue.size() >= Settings::MQTT_QUEUE_LENGTH) {
+    msgQueue.pop();
+  }
+
+  msgQueue.push({ message, topic });
+  flushQueue();
 }
 
 void MQTT_Client::onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
   Serial.print("Disconnected from the MQTT broker! reason: ");
   Serial.println(static_cast<uint8_t>(reason));
-  Serial.println("Reconnecting to MQTT...");
   mqttClient.connect();
 }
 
 void MQTT_Client::onMqttPublish(uint16_t packetId) {
-  Serial.println("MQTT Publish acknowledged");
-  Serial.print("  packetId: ");
+  Serial.print("MQTT Publish acknowledged, packet id: ");
   Serial.println(packetId);
 }

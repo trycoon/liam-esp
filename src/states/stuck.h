@@ -12,6 +12,9 @@
 class Stuck : public AbstractState {
   public:
     Stuck(Definitions::MOWER_STATES myState, StateController& stateController, Resources& resources);
+    const char* const getStateName() {
+      return "STUCK";
+    }
     void selected(Definitions::MOWER_STATES lastState);
     void run();
 };

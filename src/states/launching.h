@@ -10,6 +10,9 @@
 class Launching : public AbstractState {
   public:
     Launching(Definitions::MOWER_STATES myState, StateController& stateController, Resources& resources);
+    const char* const getStateName() {
+      return "LAUNCHING";
+    }
     void selected(Definitions::MOWER_STATES lastState);
     void run();
 };

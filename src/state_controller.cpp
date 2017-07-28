@@ -25,8 +25,9 @@ StateController::StateController(Definitions::MOWER_STATES initialState, Resourc
 
 void StateController::setState(Definitions::MOWER_STATES newState) {
   currentStateInstance = stateLookup[newState];
-  // TODO: log state change.
-  //resources.mqtt.publish_message("state-name", "/state");
+
+  Serial.print("New state: "); Serial.println(currentStateInstance->getStateName());
+  resources.mqtt.publish_message(currentStateInstance->getStateName(), "/state");
 }
 
 AbstractState* StateController::getStateInstance() {

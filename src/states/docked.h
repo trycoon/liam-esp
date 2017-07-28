@@ -10,6 +10,9 @@
 class Docked : public AbstractState {
   public:
     Docked(Definitions::MOWER_STATES myState, StateController& stateController, Resources& resources);
+    const char* const getStateName() {
+      return "DOCKED";
+    }
     void selected(Definitions::MOWER_STATES lastState);
     void run();
 };

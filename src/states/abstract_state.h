@@ -23,6 +23,11 @@ class AbstractState {
     }
 
     /**
+    * Textual representation of the state, e.g. "MOWING".
+    */
+    virtual const char* const getStateName();
+
+    /**
     * Should be called upon when this state has been selected as the current state.
     * @param lastState the previous running state.
     */

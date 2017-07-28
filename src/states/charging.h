@@ -10,6 +10,9 @@
 class Charging : public AbstractState {
   public:
     Charging(Definitions::MOWER_STATES myState, StateController& stateController, Resources& resources);
+    const char* const getStateName() {
+      return "CHARGING";
+    }
     void selected(Definitions::MOWER_STATES lastState);
     void run();
 };

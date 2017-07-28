@@ -11,6 +11,9 @@
 class Flipped : public AbstractState {
   public:
     Flipped(Definitions::MOWER_STATES myState, StateController& stateController, Resources& resources);
+    const char* const getStateName() {
+      return "FLIPPED";
+    }
     void selected(Definitions::MOWER_STATES lastState);
     void run();
 };

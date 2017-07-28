@@ -11,6 +11,9 @@
 class Demo : public AbstractState {
   public:
     Demo(Definitions::MOWER_STATES myState, StateController& stateController, Resources& resources);
+    const char* const getStateName() {
+      return "DEMO";
+    }
     void selected(Definitions::MOWER_STATES lastState);
     void run();
 };

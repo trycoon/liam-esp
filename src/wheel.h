@@ -7,14 +7,12 @@ class Wheel {
   public:
     Wheel(uint8_t motor_pin, uint8_t motor_dir_pin, bool wheel_invert);
     ~Wheel();
-    void forward(bool smooth);
-    void forward(uint32_t time, bool smooth);
-    void backward(bool smooth);
-    void backward(uint32_t time, bool smooth);
-    void stop(bool smooth);
+    void speed(int16_t speed);
+    int16_t getSpeed();
+    void stop();
 
   private:
-    uint16_t speed;
+    int16_t target_speed;
     uint8_t motor_pin;
     uint8_t motor_dir_pin;
     bool wheel_invert;

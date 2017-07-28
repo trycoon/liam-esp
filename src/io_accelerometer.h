@@ -9,11 +9,11 @@ class IO_Accelerometer {
     IO_Accelerometer();
     bool isAvailable();
     bool isFlipped();
-    //acceleration_t getAcceleration();
+    sensors_vec_t getOrientation();
 
   private:
     Adafruit_ADXL345_Unified accel;
-    bool isAvailable;
+    bool available = false;
 };
 
 #endif

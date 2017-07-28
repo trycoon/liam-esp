@@ -10,6 +10,9 @@
 class Mowing : public AbstractState {
   public:
     Mowing(Definitions::MOWER_STATES myState, StateController& stateController, Resources& resources);
+    const char* const getStateName() {
+      return "MOWING";
+    }
     void selected(Definitions::MOWER_STATES lastState);
     void run();
 };

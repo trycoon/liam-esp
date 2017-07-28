@@ -11,6 +11,9 @@
 class Docking : public AbstractState {
   public:
     Docking(Definitions::MOWER_STATES myState, StateController& stateController, Resources& resources);
+    const char* const getStateName() {
+      return "DOCKING";
+    }
     void selected(Definitions::MOWER_STATES lastState);
     void run();
 };

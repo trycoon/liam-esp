@@ -10,6 +10,9 @@
 class Paused : public AbstractState {
   public:
     Paused(Definitions::MOWER_STATES myState, StateController& stateController, Resources& resources);
+    const char* const getStateName() {
+      return "PAUSED";
+    }
     void selected(Definitions::MOWER_STATES lastState);
     void run();
 };

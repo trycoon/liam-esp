@@ -2,21 +2,47 @@
 
 namespace Settings {
     /*
+      WiFi settings
+    */
+    const char* const SSID = "<your WiFi SSID>";
+    const char* const WIFI_PASSWORD = "<your WiFi password>";
+    const char* const OTA_PASSWORD = "<a OTA password>";
+
+    /*
+      MQTT settings (https://en.wikipedia.org/wiki/MQTT)
+    */
+    const char* const MQTT_SERVER = "<your MQTT servers IP-address>";
+    const uint16_t MQTT_PORT = 1883;
+    const std::string MQTT_TOPIC = "home/liam-esp";
+    // Max number of messages awaiting to be sent to broker. Higher value consumes more RAM-memory but let us be disconnected from WiFi for a longer period.
+    const uint16_t MQTT_QUEUE_LENGTH = 500;
+
+    /*
       I2C pins
     */
-     const uint8_t SDA_PIN = D7;
-     const uint8_t SCL_PIN = D8;
+    const uint8_t SDA_PIN = D2; // could be any free and suitable pin. We use default D2 here.
+    const uint8_t SCL_PIN = D1; // could be any free and suitable pin. We use default D1 here.
+
+    /*
+      A/D converter I2C address
+    */
+    const uint8_t IO_ANALOG_ADDRESS = 0x48;
+
+    /*
+      Accelerometer I2C address
+    */
+    const uint8_t IO_ACCELEROMETER_ADDRESS = 0x53; // set to "0" if not available.
 
     /*
       Wheel motor settings
     */
-     const uint8_t LEFT_WHEEL_MOTOR_PIN = D1;
-     const uint8_t LEFT_WHEEL_MOTOR_DIRECTION_PIN = D0;
+     const uint8_t LEFT_WHEEL_MOTOR_PIN = D0;
+     const uint8_t LEFT_WHEEL_MOTOR_DIRECTION_PIN = D3;
      const uint8_t LEFT_WHEEL_MOTOR_SPEED = 100;  // 0-100 (%), used to compensate for drifting motors, lower this value if mower drift to the right.
      const bool LEFT_WHEEL_MOTOR_INVERED = false; // Set to "true" if left wheel runs backward when mower should be running forward.
 
-     const uint8_t RIGHT_WHEEL_MOTOR_PIN = D2;
-     const uint8_t RIGHT_WHEEL_MOTOR_DIRECTION_PIN = D3;
+     const uint8_t RIGHT_WHEEL_MOTOR_PIN = D7;
+     const uint8_t RIGHT_WHEEL_MOTOR_DIRECTION_PIN = D4;
      const uint8_t RIGHT_WHEEL_MOTOR_SPEED = 100;  // 0-100 (%), used to compensate for drifting motors, lower this value if mower drift to the left.
      const bool RIGHT_WHEEL_MOTOR_INVERED = false; // Set to "true" if right wheel runs backward when mower should be running forward.
 
@@ -27,9 +53,9 @@ namespace Settings {
     /*
       Cutter settings
     */
-     const uint8_t CUTTER_MOTOR_PIN = D4;
-     const uint8_t CUTTER_LOAD_DEMUX_ADDRESS = 2;  // Address on 4051 demultiplexer for measuring cutter motor load, set to 0 if not used.
-     const uint8_t CUTTER_MAX_SPEED = 100; // 0-100 (%), lower this value if cutter spinning too fast.
+     const uint8_t CUTTER_MOTOR_PIN = D8;
+     const uint8_t CUTTER_LOAD_CHANNEL = 0;  // Channel on ADC for measuring cutter motor load.
+     const uint8_t CUTTER_MAX_SPEED = 100;   // 0-100 (%), lower this value if cutter spinning too fast.
 
     /*
       Border Wire Fence settings
@@ -44,7 +70,7 @@ namespace Settings {
     /*
       Battery settings
     */
-     const uint8_t BATTERY_SENSOR_DEMUX_ADDRESS = 1;    // Address on 4051 demultiplexer for measuring battery voltage.
+     const uint8_t BATTERY_SENSOR_CHANNEL = 1;    // Channel on ADC for measuring battery voltage.
 
      // Lithium-ion / LiPo  http://batteryuniversity.com/learn/article/types_of_lithium_ion
      const uint16_t BATTERY_FULLY_CHARGED = 1560;       // Battery-voltage multiplied with 10 to avoid decimal values. e.g. 15,60 volts -> 1560.
@@ -62,33 +88,17 @@ namespace Settings {
     /*
       Tilt sensor
     */
-     const uint8_t TILT_SENSOR_DEMUX_ADDRESS = 3;    // Address on 4051 demultiplexer for measuring inclination (tilting) of mower.
-     const uint8_t TILT_ANGLE_MAX = 60;    // Max angle (degrees) the mower is allowed to tilt, going above this value will stop mower and enter STUCK-state. This is a safety setting!
+     const uint8_t TILT_ANGLE_MAX = 60;    // Max angle (degrees) the mower is allowed to tilt, going above this value will stop mower and enter FLIPPED-state. This is a safety setting!
 
     /*
       Bumper sensor
     */
-     const uint8_t BUMPER_SENSOR_DEMUX_ADDRESS = 4;  // Address on 4051 demultiplexer for detecting obstacles (bumper), set to 0 if not used.
+     const uint8_t BUMPER_SENSOR_PIN = 4;  // Pin on digital port expander for detecting obstacles (bumper), set to 0 if not used.
 
     /*
       GPS (Global Positioning System)
       Tested with GY-NEO6MV2 (https://www.openimpulse.com/blog/wp-content/uploads/wpsc/downloadables/GY-NEO6MV2-GPS-Module-Datasheet.pdf)
     */
-     const uint8_t GPS_RX_PIN = 3;  // GPIO3 (RXD0)
-     const uint8_t GPS_TX_PIN = 1;  // GPIO1 (TDX0)
-
-    /*
-      WiFi settings
-    */
-     const char* const SSID = "Stargate";
-     const char* const WIFI_PASSWORD = "OEVkynQ!!";
-     const char* const OTA_PASSWORD = "R35x55H";
-
-    /*
-      MQTT settings (https://en.wikipedia.org/wiki/MQTT)
-    */
-     const char* const MQTT_SERVER = "192.168.10.110";
-     const uint16_t MQTT_PORT = 1883;
-     const std::string MQTT_TOPIC = "home/liam-esp";
-
+     const uint8_t GPS_RX_PIN = 3;  // D9 GPIO3 (RXD0)
+     const uint8_t GPS_TX_PIN = 1;  // D10 GPIO1 (TDX0)
 }

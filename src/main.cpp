@@ -17,7 +17,7 @@
 #include "gps.h"
 
 /*
- * Application to control a LIAM robot mower using a NodeMCU/ESP-12E (or similar ESP8266) microcontroller.
+ * Software to control a LIAM robot mower using a NodeMCU/ESP-12E (or similar ESP8266) microcontroller.
  */
 IO_Analog io_analog;
 IO_Digital io_digital;
@@ -33,12 +33,50 @@ GPS gps;
 Resources resources(mqtt, leftWheel, rightWheel, cutter, bwf, battery, gps);
 Controller controller(resources, io_accelerometer);
 
+void scan_I2C() {
+  Wire.begin(Settings::SDA_PIN, Settings::SCL_PIN);
+  byte error, address;
+  int devices = 0;
+
+  Serial.println("Scanning for I2C devices...");
+
+  for (address = 1; address < 127; address++ ) {
+
+    Wire.beginTransmission(address);
+    error = Wire.endTransmission();
+
+    if (error == 0) {
+      Serial.print("I2C device found at address 0x");
+      if (address < 16) {
+        Serial.print("0");
+      }
+
+      Serial.println(address, HEX);
+      devices++;
+
+    } else if (error == 4) {
+      Serial.print("Unknown error at address 0x");
+      if (address < 16) {
+        Serial.print("0");
+      }
+
+      Serial.println(address, HEX);
+    }
+  }
+
+  if (devices == 0) {
+    Serial.println("No I2C devices found");
+  } else {
+    Serial.println("scanning done.");
+  }
+}
+
 void setup_WiFi() {
   WiFi.hostname(Definitions::APP_NAME);
   WiFi.mode(WIFI_STA);
   WiFi.begin(Settings::SSID, Settings::WIFI_PASSWORD);
   while (WiFi.waitForConnectResult() != WL_CONNECTED) {
-    Serial.println("Connection Failed! Rebooting...");
+    Serial.println("WiFi connection failed! Rebooting...");
     delay(5000);
     ESP.restart();
   }
@@ -50,6 +88,7 @@ void setup() {
   Serial.print(" v");
   Serial.println(Definitions::APP_VERSION);
 
+  scan_I2C();
   setup_WiFi();
   mqtt.connect();
 }
