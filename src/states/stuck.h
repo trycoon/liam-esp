@@ -16,7 +16,7 @@ class Stuck : public AbstractState {
       return "STUCK";
     }
     void selected(Definitions::MOWER_STATES lastState);
-    void run();
+    void process();
 };
 
 #endif

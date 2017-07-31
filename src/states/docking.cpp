@@ -9,6 +9,6 @@ void Docking::selected(Definitions::MOWER_STATES lastState) {
 
 }
 
-void Docking::run() {
+void Docking::process() {
 
 }

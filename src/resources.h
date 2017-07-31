@@ -1,8 +1,8 @@
 #ifndef resources_h
 #define resources_h
 
-#include "mqtt/mqtt.h"
-#include "wheel.h"
+#include "wifi/wifi.h"
+#include "wheel_controller.h"
 #include "cutter.h"
 #include "bwf.h"
 #include "battery.h"
@@ -14,24 +14,21 @@
 */
 class Resources {
   public:
-    Resources(MQTT_Client& mqtt,
-                           Wheel& leftWheel,
-                           Wheel& rightWheel,
+    Resources(WiFi_Client& mqtt,
+                           WheelController& wheelController,
                            Cutter& cutter,
                            BWF& bwf,
                            Battery& battery,
                            GPS& gps)
                            : mqtt(mqtt),
-                             leftWheel(leftWheel),
-                             rightWheel(rightWheel),
+                             wheelController(wheelController),
                              cutter(cutter),
                              bwf(bwf),
                              battery(battery),
                              gps(gps) { }
 
-    MQTT_Client& mqtt;
-    Wheel& leftWheel;
-    Wheel& rightWheel;
+    WiFi_Client& mqtt;
+    WheelController& wheelController;
     Cutter& cutter;
     BWF& bwf;
     Battery& battery;

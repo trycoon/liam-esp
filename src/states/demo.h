@@ -15,7 +15,7 @@ class Demo : public AbstractState {
       return "DEMO";
     }
     void selected(Definitions::MOWER_STATES lastState);
-    void run();
+    void process();
 };
 
 #endif

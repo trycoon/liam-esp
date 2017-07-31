@@ -5,7 +5,7 @@
 
 // TODO: Replace with webbased OTA? https://github.com/esp8266/Arduino/tree/master/doc/ota_updates
 
-OTA::OTA(MQTT_Client& mqttClient) : mqtt(mqttClient) {
+OTA::OTA(WiFi_Client& wifiClient) : wifi(wifiClient) {
 
   // Port defaults to 8266
   ArduinoOTA.setPort(8266);
@@ -24,12 +24,12 @@ OTA::OTA(MQTT_Client& mqttClient) : mqtt(mqttClient) {
 
     // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
     Serial.println("Start updating " + type);
-    mqtt.publish_message("START UPDATING FIRMWARE");
+    wifi.publish_message("START UPDATING FIRMWARE");
   });
 
   ArduinoOTA.onEnd([this]() {
     Serial.println("\nEnd");
-    mqtt.publish_message("DONE UPDATING FIRMWARE");
+    wifi.publish_message("DONE UPDATING FIRMWARE");
   });
 
   ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {

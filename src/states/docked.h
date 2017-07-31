@@ -14,7 +14,7 @@ class Docked : public AbstractState {
       return "DOCKED";
     }
     void selected(Definitions::MOWER_STATES lastState);
-    void run();
+    void process();
 };
 
 #endif

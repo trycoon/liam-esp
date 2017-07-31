@@ -7,14 +7,15 @@
 #include "io_analog.h"
 #include "io_digital.h"
 #include "io_accelerometer.h"
-#include "mqtt/mqtt.h"
+#include "wifi/wifi.h"
 #include "ota/ota.h"
-#include "controller.h"
+#include "wheel_controller.h"
 #include "wheel.h"
 #include "cutter.h"
 #include "bwf.h"
 #include "battery.h"
 #include "gps.h"
+#include "state_controller.h"
 
 /*
  * Software to control a LIAM robot mower using a NodeMCU/ESP-12E (or similar ESP8266) microcontroller.
@@ -22,16 +23,18 @@
 IO_Analog io_analog;
 IO_Digital io_digital;
 IO_Accelerometer io_accelerometer;
-MQTT_Client mqtt;
-OTA ota(mqtt);
-Wheel leftWheel(Settings::LEFT_WHEEL_MOTOR_PIN, Settings::LEFT_WHEEL_MOTOR_DIRECTION_PIN, Settings::LEFT_WHEEL_MOTOR_INVERED);
-Wheel rightWheel(Settings::RIGHT_WHEEL_MOTOR_PIN, Settings::RIGHT_WHEEL_MOTOR_DIRECTION_PIN, Settings::RIGHT_WHEEL_MOTOR_INVERED);
+WiFi_Client wifi;
+OTA ota(wifi);
+Wheel leftWheel(Settings::LEFT_WHEEL_MOTOR_PIN, Settings::LEFT_WHEEL_MOTOR_DIRECTION_PIN, Settings::LEFT_WHEEL_MOTOR_INVERTED, Settings::LEFT_WHEEL_MOTOR_SPEED);
+Wheel rightWheel(Settings::RIGHT_WHEEL_MOTOR_PIN, Settings::RIGHT_WHEEL_MOTOR_DIRECTION_PIN, Settings::RIGHT_WHEEL_MOTOR_INVERTED, Settings::RIGHT_WHEEL_MOTOR_SPEED);
 Cutter cutter(io_analog);
 BWF bwf;
 Battery battery(io_analog);
 GPS gps;
-Resources resources(mqtt, leftWheel, rightWheel, cutter, bwf, battery, gps);
-Controller controller(resources, io_accelerometer);
+WheelController wheelController(leftWheel, rightWheel);
+Resources resources(wifi, wheelController, cutter, bwf, battery, gps);
+StateController stateController(Definitions::MOWER_STATES::DOCKED, resources);  // initialize state controller, assume we are DOCKED to begin with.
+
 
 void scan_I2C() {
   Wire.begin(Settings::SDA_PIN, Settings::SCL_PIN);
@@ -71,17 +74,6 @@ void scan_I2C() {
   }
 }
 
-void setup_WiFi() {
-  WiFi.hostname(Definitions::APP_NAME);
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(Settings::SSID, Settings::WIFI_PASSWORD);
-  while (WiFi.waitForConnectResult() != WL_CONNECTED) {
-    Serial.println("WiFi connection failed! Rebooting...");
-    delay(5000);
-    ESP.restart();
-  }
-}
-
 void setup() {
   Serial.begin(115200);
   Serial.print(Definitions::APP_NAME);
@@ -89,13 +81,20 @@ void setup() {
   Serial.println(Definitions::APP_VERSION);
 
   scan_I2C();
-  setup_WiFi();
-  mqtt.connect();
+  wifi.connect();
 }
 
 void loop() {
   ota.handle();
-  controller.run();
+
+  // always check if we are flipped.
+  if (io_accelerometer.isFlipped() && stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::FLIPPED) {
+    stateController.setState(Definitions::MOWER_STATES::FLIPPED);
+  }
+
+  stateController.getStateInstance()->process();
+  wheelController.process();
+
   // ESP.getCycleCount() // "returns the cpu instruction cycle count since start as an unsigned 32-bit."
   // ESP.getFreeHeap() // "returns the free heap size."
   yield();

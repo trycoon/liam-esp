@@ -1,6 +1,7 @@
 #ifndef _cutter_h
 #define _cutter_h
 
+#include <Ticker.h>
 #include <Arduino.h>
 #include "io_analog.h"
 
@@ -11,12 +12,13 @@ class Cutter {
   public:
     Cutter(IO_Analog& io_analog);
     ~Cutter();
-    void setSpeed(uint8_t speed);
-    void stop();
+    void start();
+    void stop(bool brake);
     uint16_t getLoad();
-    
+
   private:
     IO_Analog& io_analog;
+    Ticker brakeTimer;
 };
 
 #endif

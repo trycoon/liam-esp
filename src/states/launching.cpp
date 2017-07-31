@@ -9,6 +9,6 @@ void Launching::selected(Definitions::MOWER_STATES lastState) {
 
 }
 
-void Launching::run() {
+void Launching::process() {
 
 }

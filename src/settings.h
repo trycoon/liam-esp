@@ -13,11 +13,11 @@ namespace Settings {
   extern const uint8_t LEFT_WHEEL_MOTOR_PIN;
   extern const uint8_t LEFT_WHEEL_MOTOR_DIRECTION_PIN;
   extern const uint8_t LEFT_WHEEL_MOTOR_SPEED;
-  extern const bool LEFT_WHEEL_MOTOR_INVERED;
+  extern const bool LEFT_WHEEL_MOTOR_INVERTED;
   extern const uint8_t RIGHT_WHEEL_MOTOR_PIN;
   extern const uint8_t RIGHT_WHEEL_MOTOR_DIRECTION_PIN;
   extern const uint8_t RIGHT_WHEEL_MOTOR_SPEED;
-  extern const bool RIGHT_WHEEL_MOTOR_INVERED;
+  extern const bool RIGHT_WHEEL_MOTOR_INVERTED;
   extern const uint8_t WHEEL_MOTOR_MIN_SPEED;
   extern const uint8_t WHEEL_MOTOR_TURN_SPEED;
   extern const bool WHEEL_MOTOR_DECREASE_SPEED_AT_CUTTER_LOAD;

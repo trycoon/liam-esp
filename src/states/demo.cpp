@@ -9,6 +9,6 @@ void Demo::selected(Definitions::MOWER_STATES lastState) {
 
 }
 
-void Demo::run() {
+void Demo::process() {
 
 }

@@ -14,7 +14,7 @@ class Paused : public AbstractState {
       return "PAUSED";
     }
     void selected(Definitions::MOWER_STATES lastState);
-    void run();
+    void process();
 };
 
 #endif

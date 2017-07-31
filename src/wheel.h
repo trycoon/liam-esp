@@ -5,14 +5,14 @@
 
 class Wheel {
   public:
-    Wheel(uint8_t motor_pin, uint8_t motor_dir_pin, bool wheel_invert);
+    Wheel(uint8_t motor_pin, uint8_t motor_dir_pin, bool wheel_invert, uint8_t wheel_max_speed);
     ~Wheel();
-    void speed(int16_t speed);
-    int16_t getSpeed();
-    void stop();
+    void setSpeed(int8_t speed);
+    int8_t getSpeed();
 
   private:
-    int16_t target_speed;
+    int8_t current_speed;
+    uint8_t max_speed;
     uint8_t motor_pin;
     uint8_t motor_dir_pin;
     bool wheel_invert;

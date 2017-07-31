@@ -15,7 +15,7 @@ class Flipped : public AbstractState {
       return "FLIPPED";
     }
     void selected(Definitions::MOWER_STATES lastState);
-    void run();
+    void process();
 };
 
 #endif

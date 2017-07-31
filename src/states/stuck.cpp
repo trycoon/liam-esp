@@ -9,6 +9,6 @@ void Stuck::selected(Definitions::MOWER_STATES lastState) {
 
 }
 
-void Stuck::run() {
+void Stuck::process() {
 
 }

@@ -9,6 +9,6 @@ void Charging::selected(Definitions::MOWER_STATES lastState) {
 
 }
 
-void Charging::run() {
+void Charging::process() {
 
 }

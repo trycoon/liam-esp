@@ -36,7 +36,7 @@ class AbstractState {
     /**
     * This method will be executed on each turn in the event loop when this state is currently selected.
     */
-    virtual void run() = 0;
+    virtual void process() = 0;
 
   protected:
     Definitions::MOWER_STATES myState;

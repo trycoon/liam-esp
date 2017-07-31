@@ -9,6 +9,6 @@ void Paused::selected(Definitions::MOWER_STATES lastState) {
 
 }
 
-void Paused::run() {
+void Paused::process() {
 
 }

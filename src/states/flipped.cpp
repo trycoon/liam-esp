@@ -9,6 +9,6 @@ void Flipped::selected(Definitions::MOWER_STATES lastState) {
 
 }
 
-void Flipped::run() {
+void Flipped::process() {
 
 }
