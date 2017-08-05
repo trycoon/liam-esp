@@ -5,3 +5,4 @@
 platformio.ini
 src/secrets.cpp
 src/secrets.h
+.vscode/c_cpp_properties.json
