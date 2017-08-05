@@ -1,8 +1,6 @@
 #include <Arduino.h>
 #include "timer.h"
 
-// The reason why this class have no reset or clear method: https://www.baldengineer.com/arduino-how-do-you-reset-millis.html
-
 Timer::Timer() {
   previousMillis = 0;
 }
@@ -12,7 +10,7 @@ unsigned long Timer::startTimer() {
   return previousMillis;
 }
 
-unsigned long Timer::millisSinceLast() {
+unsigned long Timer::millisSinceLastCheck() {
   // Get snapshot of time
   unsigned long currentMillis = millis();
   // How much time has passed, accounting for rollover with subtraction!
@@ -23,6 +21,13 @@ unsigned long Timer::millisSinceLast() {
 }
 
 bool Timer::hasAmountTimePassed(unsigned long time) {
+  // Get snapshot of time
+  unsigned long currentMillis = millis();
   // How much time has passed, accounting for rollover with subtraction!
-  return (unsigned long)(millis() - previousMillis) >= time;
+  if ((unsigned long)(millis() - previousMillis) >= time) {
+    previousMillis = currentMillis; // reset timer so that we can call upon this method once more without running startTimer() first.
+    return true;
+  } else {
+    return false;
+  }
 }

@@ -3,25 +3,32 @@
 
 #include<string>
 #include <Arduino.h>
+#include <Ticker.h>
 #include "io_analog.h"
+#include "timer/timer.h"
 
 class Battery {
   public:
     Battery(IO_Analog& io_analog);
-    std::string getChargerVoltage();
-    std::string getBatteryVoltage();
+    float getChargerVoltage();
+    float getBatteryVoltage();
     bool isCharging();
     bool needRecharge();
     bool isFullyCharged();
-    std::string lastBatteryRunTime();
-    std::string lastBatteryChargeTime();
+    unsigned long lastBatteryChargePeriod();
 
   private:
     IO_Analog& io_analog;
-    uint16_t chargerVoltage;
-    uint16_t batteryVoltage;
-    uint32_t lastBatteryChargeTimestamp;
-    uint32_t lastBatteryChargeElapseTimestamp;
+    float chargerVoltage;
+    float batteryVoltage;
+    bool _isCharging;
+    bool _needRecharge;
+    bool _isFullyCharged;
+    unsigned long _lastBatteryChargePeriod;
+    unsigned long _lastBatteryStartChargeTimestamp;
+    Ticker pollTimer;
+    Timer chargeTimer;
+    void updateReadings();
 };
 
 #endif

@@ -35,11 +35,11 @@ WiFi_Client::WiFi_Client() {
 }
 
 bool WiFi_Client::isMQTT_enabled() {
-    if (strcmp(Settings::MQTT_SERVER, "") || strcmp(Settings::MQTT_SERVER, "<your MQTT servers IP-address>")) {
-      return false;
-    } else {
-      return true;
-    }
+  if (strcmp(Settings::MQTT_SERVER, "") || strcmp(Settings::MQTT_SERVER, "<your MQTT servers IP-address>")) {
+    return false;
+  } else {
+    return true;
+  }
 }
 
 void WiFi_Client::connect() {

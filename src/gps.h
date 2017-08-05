@@ -2,11 +2,16 @@
 #define _gps_h
 
 #include <Arduino.h>
+#include <TinyGPS++.h>
 
 class GPS {
   public:
     GPS();
+    bool isAvailable();
+    void getPosition();
 
+  private:
+    TinyGPSPlus gps;
 };
 
 #endif

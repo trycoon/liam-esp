@@ -4,6 +4,7 @@
 #include "abstract_state.h"
 #include "resources.h"
 
+
 /**
 * State the mower enters when it is mowing.
 */
@@ -15,6 +16,9 @@ class Mowing : public AbstractState {
     }
     void selected(Definitions::MOWER_STATES lastState);
     void process();
+
+  private:
+    unsigned long startTime;
 };
 
 #endif

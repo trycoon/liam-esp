@@ -5,51 +5,58 @@
 #include "settings.h"
 
 Battery::Battery(IO_Analog& io_analog) : io_analog(io_analog) {
-  // http://arduinotronics.blogspot.se/2015/05/reading-current-shunt-with-arduino.html
-  // https://learn.adafruit.com/adafruit-4-channel-adc-breakouts
-  // https://www.spiria.com/en/blog/iot-m2m-embedded-solutions/measuring-small-currents-adc
-
-  // http://henrysbench.capnfatz.com/henrys-bench/arduino-voltage-measurements/arduino-ads1115-differential-voltmeter-tutorial/
-  //Serial.printf("Battery: ", io_analog.getChannelVoltage(Settings::BATTERY_SENSOR_CHANNEL));
+  // Set initial state.
+  updateReadings();
+  // update readings every 100 ms.
+  pollTimer.attach_ms<Battery*>(100, [](Battery* instance) {
+    instance->updateReadings();
+  }, this);
 }
 
-//https://github.com/Toshik/TickerScheduler
-//https://github.com/Makuna/Task
+void Battery::updateReadings() {
+  float battery = io_analog.getChannelVoltage(Settings::BATTERY_SENSOR_CHANNEL);
+  batteryVoltage = battery / Settings::BATTERY_RESISTOR_DIVISOR;
 
-std::string Battery::getChargerVoltage() {
-  std::ostringstream out;
-  out << std::fixed << std::setprecision(2) << chargerVoltage;
-  return out.str();
+  // TODO: only sample charger when we are in states DOCKING and DOCKED.
+  float charger = io_analog.getChannelVoltage(Settings::CHARGER_SENSOR_CHANNEL);
+  chargerVoltage = charger / Settings::CHARGER_RESISTOR_DIVISOR;
+
+  // if we detect more than 10 volts on charge pins then assume we are charging.
+  if (_isCharging == false && chargerVoltage >= 10.0) {
+    _isCharging = true;
+    chargeTimer.startTimer();
+  } else if (_isCharging == true && chargerVoltage < 10.0) {
+    _isCharging = false;
+    _lastBatteryChargePeriod = chargeTimer.millisSinceLastCheck();
+  }
+
+  _needRecharge = batteryVoltage <= Settings::BATTERY_EMPTY;
+  _isFullyCharged = batteryVoltage >= Settings::BATTERY_FULLY_CHARGED;
 }
 
-std::string Battery::getBatteryVoltage() {
-  std::ostringstream out;
-  out << std::fixed << std::setprecision(2) << batteryVoltage;
+float Battery::getChargerVoltage() {
+  return chargerVoltage;
+}
 
-  return out.str();
+float Battery::getBatteryVoltage() {
+  return batteryVoltage;
 }
 
 bool Battery::isCharging() {
-  return false;
+  return _isCharging;
 }
 
 bool Battery::needRecharge() {
-  return batteryVoltage < Settings::BATTERY_EMPTY;
+  return _needRecharge;
 }
 
 bool Battery::isFullyCharged() {
-  return batteryVoltage > Settings::BATTERY_FULLY_CHARGED;
+  return _isFullyCharged;
 }
 
-std::string Battery::lastBatteryRunTime() {
-  return "1:10:10";
-}
-
-std::string Battery::lastBatteryChargeTime() {
-  std::time_t t = lastBatteryChargeTimestamp;
-  char mbstr[100];
-  // http://en.cppreference.com/w/cpp/chrono/c/strftime
-  std::strftime(mbstr, sizeof(mbstr), "%A %c", std::localtime(&t));
-
-  return std::string(mbstr);
+/**
+* The time that has elapsed between we started charging until we have finished charging, in milliseconds.
+*/
+unsigned long Battery::lastBatteryChargePeriod() {
+  return _lastBatteryChargePeriod;
 }

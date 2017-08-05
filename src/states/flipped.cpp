@@ -6,9 +6,14 @@ Flipped::Flipped(Definitions::MOWER_STATES myState, StateController& stateContro
 }
 
 void Flipped::selected(Definitions::MOWER_STATES lastState) {
-
+  resources.cutter.stop(true);
+  resources.wheelController.stop(false);
 }
 
 void Flipped::process() {
-
+/*
+  // pause 4 seconds
+  if (!resources.io_accelerometer.isFlipped()) {
+    stateController.setState(lastState);
+  }*/
 }

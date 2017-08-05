@@ -27,7 +27,7 @@ WiFi_Client wifi;
 OTA ota(wifi);
 Wheel leftWheel(Settings::LEFT_WHEEL_MOTOR_PIN, Settings::LEFT_WHEEL_MOTOR_DIRECTION_PIN, Settings::LEFT_WHEEL_MOTOR_INVERTED, Settings::LEFT_WHEEL_MOTOR_SPEED);
 Wheel rightWheel(Settings::RIGHT_WHEEL_MOTOR_PIN, Settings::RIGHT_WHEEL_MOTOR_DIRECTION_PIN, Settings::RIGHT_WHEEL_MOTOR_INVERTED, Settings::RIGHT_WHEEL_MOTOR_SPEED);
-Cutter cutter(io_analog);
+Cutter cutter(io_analog, io_digital);
 BWF bwf;
 Battery battery(io_analog);
 GPS gps;
@@ -94,8 +94,12 @@ void loop() {
 
   stateController.getStateInstance()->process();
   wheelController.process();
-
   // ESP.getCycleCount() // "returns the cpu instruction cycle count since start as an unsigned 32-bit."
   // ESP.getFreeHeap() // "returns the free heap size."
   yield();
+
+//TODO: remove
+  if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MOWING) {
+    stateController.setState(Definitions::MOWER_STATES::MOWING);
+  }
 }

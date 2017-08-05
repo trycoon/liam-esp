@@ -5,7 +5,7 @@ class Timer {
   public:
     Timer();
     unsigned long startTimer();
-    unsigned long millisSinceLast();
+    unsigned long millisSinceLastCheck();
     bool hasAmountTimePassed(unsigned long time);
 
   private:
