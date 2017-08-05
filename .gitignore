@@ -3,3 +3,5 @@
 .clang_complete
 .gcc-flags.json
 platformio.ini
+src/secrets.cpp
+src/secrets.h

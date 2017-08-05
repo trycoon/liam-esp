@@ -1,19 +1,10 @@
 #include "settings.h"
 
-namespace Settings {
-    /*
-      WiFi settings
-    */
-    const char* const SSID = "<your WiFi SSID>";
-    const char* const WIFI_PASSWORD = "<your WiFi password>";
-    const char* const OTA_PASSWORD = "<a OTA password>";
+/*
+* Global settings and pin-assignments.
+*/
 
-    /*
-      MQTT settings (https://en.wikipedia.org/wiki/MQTT)
-    */
-    const char* const MQTT_SERVER = "<your MQTT servers IP-address>"; // leave this as it is or set it to an empty string if MQTT should not be used.
-    const uint16_t MQTT_PORT = 1883;
-    const std::string MQTT_TOPIC = "home/liam-esp";
+namespace Settings {
     // Max number of messages awaiting to be sent to broker. Higher value consumes more RAM-memory but let us be disconnected from WiFi for a longer period.
     const uint16_t MQTT_QUEUE_LENGTH = 500;
 

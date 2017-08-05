@@ -1,4 +1,5 @@
 #include "wifi.h"
+#include "definitions.h"
 #include "settings.h"
 
 WiFi_Client::WiFi_Client() {

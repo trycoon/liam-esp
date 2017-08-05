@@ -1,5 +1,6 @@
 #include <vector> // NOTE: needed to fix the following error: "Arduino.h:253:18: error: expected unqualified-id before '(' token".
 #include <ArduinoOTA.h>
+#include "definitions.h"
 #include "settings.h"
 #include "ota.h"
 

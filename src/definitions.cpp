@@ -1,7 +1,7 @@
 #include "definitions.h"
 
 /*
-  Constants and other global stuff that you should probably never need to touch.
+* Constants and other global stuff that you should probably never need to touch.
 */
 
 namespace Definitions

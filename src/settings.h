@@ -3,7 +3,7 @@
 
 #include <string>
 #include <Arduino.h>
-#include "definitions.h"
+#include "secrets.h"
 
 namespace Settings {
   extern const uint8_t SDA_PIN;
@@ -38,13 +38,7 @@ namespace Settings {
   extern const uint8_t BUMPER_SENSOR_PIN;
   extern const uint8_t GPS_RX_PIN;
   extern const uint8_t GPS_TX_PIN;
-  extern const char* const SSID;
-  extern const char* const WIFI_PASSWORD;
-  extern const char* const OTA_PASSWORD;
-  extern const char* const MQTT_SERVER;
-  extern const uint16_t MQTT_PORT;
   extern const uint16_t MQTT_QUEUE_LENGTH;
-  extern const std::string MQTT_TOPIC;
 };
 
 #endif
