@@ -8,7 +8,7 @@ namespace Settings {
     /*
     * WiFi settings
     */
-    const char* const SSID = "Stargate";
+    const char* const SSID = "<your WiFi SSID>";
     const char* const WIFI_PASSWORD = "<your WiFi password>";
     const char* const OTA_PASSWORD = "<a OTA password>";
 
