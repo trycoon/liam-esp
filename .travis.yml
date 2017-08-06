@@ -28,8 +28,24 @@
      directories:
          - "~/.platformio"
 
+# update Makefile if target boards added
+ env:
+     #- PLATFORMIO_BOARD=uno
+     - PLATFORMIO_BOARD=nodemcuv2
+
  install:
      - pip install -U platformio
+     #- platformio lib install 44
 
  script:
      - platformio run
+     #- platformio ci --lib="." --board=nodemcuv2
+
+ notifications:
+    email: false
+
+    slack:
+      rooms:
+        secure: <enter secure hash-key for slack-channel here>
+      on_failure: always
+      on_success: change
