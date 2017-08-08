@@ -1,5 +1,5 @@
-#ifndef _flipped_h
-#define _flipped_h
+#ifndef _state_flipped_h
+#define _state_flipped_h
 
 #include "abstract_state.h"
 #include "resources.h"

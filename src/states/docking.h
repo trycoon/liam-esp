@@ -1,5 +1,5 @@
-#ifndef _docking_h
-#define _docking_h
+#ifndef _state_docking_h
+#define _state_docking_h
 
 #include "abstract_state.h"
 #include "resources.h"

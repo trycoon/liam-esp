@@ -1,13 +1,13 @@
 #ifndef _battery_h
 #define _battery_h
 
-#include<string>
+#include <string>
 #include <Arduino.h>
-#include <Ticker.h>
 #include "io_analog.h"
-#include "timer/timer.h"
+#include "scheduler/scheduler.h"
+#include "processable.h"
 
-class Battery {
+class Battery : public Processable {
   public:
     Battery(IO_Analog& io_analog);
     float getChargerVoltage();
@@ -16,6 +16,7 @@ class Battery {
     bool needRecharge();
     bool isFullyCharged();
     unsigned long lastBatteryChargePeriod();
+    void process();
 
   private:
     IO_Analog& io_analog;
@@ -26,8 +27,8 @@ class Battery {
     bool _isFullyCharged;
     unsigned long _lastBatteryChargePeriod;
     unsigned long _lastBatteryStartChargeTimestamp;
-    Ticker pollTimer;
-    Timer chargeTimer;
+    Scheduler pollTimer;
+    uint32_t chargeStartTime;
     void updateReadings();
 };
 

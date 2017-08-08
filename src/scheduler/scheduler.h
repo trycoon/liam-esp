@@ -6,23 +6,25 @@
 
 struct scheduled_fn_t
 {
-    unsigned int id;
-    unsigned long currentMillis;
-    unsigned long delay;
+    bool repeat;
+    uint16_t id;
+    uint16_t delay;
+    uint32_t startMillis;
     std::function<void(void)> func;
 };
 
 class Scheduler {
   public:
-    Scheduler(bool inSeries);
+    Scheduler(bool inSeries = false);
     ~Scheduler();
-    unsigned int schedule(std::function<void(void)> fn, uint32_t time);
-    //void unschedule(unsigned int);
+    uint16_t schedule(std::function<void(void)> fn, uint32_t time, bool repeat = false);
+    void unschedule(uint16_t id);
+    void clear();
     void process();
 
   private:
-    std::list<scheduled_fn_t*> scheduled_fn_list;    
-    unsigned int task_counter;
+    std::list<scheduled_fn_t> scheduled_fn_list;
+    uint16_t task_counter;
     bool in_series;
 };
 

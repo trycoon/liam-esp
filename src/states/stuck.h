@@ -1,5 +1,5 @@
-#ifndef _stuck_h
-#define _stuck_h
+#ifndef _state_stuck_h
+#define _state_stuck_h
 
 #include "abstract_state.h"
 #include "resources.h"

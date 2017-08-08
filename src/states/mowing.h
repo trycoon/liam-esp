@@ -1,5 +1,5 @@
-#ifndef _mowing_h
-#define _mowing_h
+#ifndef _state_mowing_h
+#define _state_mowing_h
 
 #include "abstract_state.h"
 #include "resources.h"
@@ -16,9 +16,6 @@ class Mowing : public AbstractState {
     }
     void selected(Definitions::MOWER_STATES lastState);
     void process();
-
-  private:
-    unsigned long startTime;
 };
 
 #endif

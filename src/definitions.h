@@ -20,7 +20,7 @@ namespace Definitions {
                               STUCK,      // mower is stuck somewhere and have shutdown (it may be stuck in a hole, the cutter may be stuck, or some other hardware issues...)
                               FLIPPED,    // mower is flipped upside down or tiled too much, stopp mowing and wait to be unflipped.
                               PAUSED,     // mower is paused from it's normal operation, when unpaused it should pursue last state.
-                              DEMO        // mower is in demo/test mode.
+                              TEST        // mower is in test mode.
                             };
 
     extern const int16_t BFW_INSIDE_SIGNAL;

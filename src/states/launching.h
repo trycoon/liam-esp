@@ -1,5 +1,5 @@
-#ifndef _launching_h
-#define _launching_h
+#ifndef _state_launching_h
+#define _state_launching_h
 
 #include "abstract_state.h"
 #include "resources.h"

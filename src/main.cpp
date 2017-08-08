@@ -2,6 +2,7 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
+#include "definitions.h"
 #include "settings.h"
 #include "resources.h"
 #include "io_analog.h"
@@ -20,6 +21,11 @@
 /*
  * Software to control a LIAM robot mower using a NodeMCU/ESP-12E (or similar ESP8266) microcontroller.
  */
+
+extern "C" {
+  #include "user_interface.h" // needed for system_update_cpu_freq()
+}
+
 IO_Analog io_analog;
 IO_Digital io_digital;
 IO_Accelerometer io_accelerometer;
@@ -75,6 +81,9 @@ void scan_I2C() {
 }
 
 void setup() {
+  system_update_cpu_freq(80);   // Run CPU at 80 MHz, default.
+  //system_update_cpu_freq(160);  // Run CPU at 160 MHz, untested.
+
   Serial.begin(115200);
   Serial.print(Definitions::APP_NAME);
   Serial.print(" v");
@@ -92,14 +101,24 @@ void loop() {
     stateController.setState(Definitions::MOWER_STATES::FLIPPED);
   }
 
+  yield();
   stateController.getStateInstance()->process();
+  yield();
   wheelController.process();
+  yield();
+  battery.process();
+  yield();
+  cutter.process();
+
   // ESP.getCycleCount() // "returns the cpu instruction cycle count since start as an unsigned 32-bit."
+  /*
+    ESP.getCycleCount() counts the instruction cycles since start, in an internal unsigned 32-bit variable, liable to overflow every 28 seconds or so. A one microsecond period will give 160 instruction cycles. Now to measure the software overhead required by your software, you need to only count the instruction cycles your routine counts for a 1 microsecond delay and subtract 160 from that count, to give you the software overhead in acquiring the count. For 1 microsecond delay, I got a count of 213. Which worked out to 213-160 = 53 counts (53 x 6.25 = 331.25 nanoseconds) software overhead to acquire the count. Subtracting 53 from every count gives me a count accurate to within a few tens of picoseconds, for periods from 30 microseconds to about 500 microseconds.
+  */
   // ESP.getFreeHeap() // "returns the free heap size."
   yield();
 
 //TODO: remove
-  if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MOWING) {
-    stateController.setState(Definitions::MOWER_STATES::MOWING);
+  if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::TEST) {
+    stateController.setState(Definitions::MOWER_STATES::TEST);
   }
 }

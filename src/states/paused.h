@@ -1,5 +1,5 @@
-#ifndef _paused_h
-#define _paused_h
+#ifndef _state_paused_h
+#define _state_paused_h
 
 #include "abstract_state.h"
 #include "resources.h"

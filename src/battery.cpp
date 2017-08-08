@@ -1,6 +1,3 @@
-#include <iomanip>
-#include <sstream>
-#include <ctime>
 #include "battery.h"
 #include "settings.h"
 
@@ -8,9 +5,9 @@ Battery::Battery(IO_Analog& io_analog) : io_analog(io_analog) {
   // Set initial state.
   updateReadings();
   // update readings every 100 ms.
-  pollTimer.attach_ms<Battery*>(100, [](Battery* instance) {
-    instance->updateReadings();
-  }, this);
+  pollTimer.schedule([this]() {
+    updateReadings();
+  }, 100, true);
 }
 
 void Battery::updateReadings() {
@@ -24,10 +21,10 @@ void Battery::updateReadings() {
   // if we detect more than 10 volts on charge pins then assume we are charging.
   if (_isCharging == false && chargerVoltage >= 10.0) {
     _isCharging = true;
-    chargeTimer.startTimer();
+    chargeStartTime = millis();
   } else if (_isCharging == true && chargerVoltage < 10.0) {
     _isCharging = false;
-    _lastBatteryChargePeriod = chargeTimer.millisSinceLastCheck();
+    _lastBatteryChargePeriod = millis() - chargeStartTime;
   }
 
   _needRecharge = batteryVoltage <= Settings::BATTERY_EMPTY;
@@ -52,6 +49,10 @@ bool Battery::needRecharge() {
 
 bool Battery::isFullyCharged() {
   return _isFullyCharged;
+}
+
+void Battery::process() {
+  pollTimer.process();
 }
 
 /**

@@ -19,12 +19,12 @@ void WheelController::backward(bool smooth) {
   rightWheel.setSpeed(-100);
 }
 
-void WheelController::turnLeft(bool smooth, uint16_t milliseconds) {
+void WheelController::turnLeft(bool smooth, uint16_t milliseconds, std::function<void(void)> fn) {
   leftWheel.setSpeed(-Settings::WHEEL_MOTOR_TURN_SPEED);
   rightWheel.setSpeed(Settings::WHEEL_MOTOR_TURN_SPEED);
 }
 
-void WheelController::turnRight(bool smooth, uint16_t milliseconds) {
+void WheelController::turnRight(bool smooth, uint16_t milliseconds, std::function<void(void)> fn) {
   leftWheel.setSpeed(Settings::WHEEL_MOTOR_TURN_SPEED);
   rightWheel.setSpeed(-Settings::WHEEL_MOTOR_TURN_SPEED);
 }
@@ -35,5 +35,5 @@ void WheelController::stop(bool smooth) {
 }
 
 void WheelController::process() {
-
+  // TODO: handle smooth-running.
 }

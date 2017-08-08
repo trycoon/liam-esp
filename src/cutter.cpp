@@ -8,13 +8,12 @@ Cutter::Cutter(IO_Analog& io_analog, IO_Digital& io_digital) : io_analog(io_anal
 
 Cutter::~Cutter() {
   stop(true);
-  senseLoadTimer.detach();
 }
 
 void Cutter::start() {
-  senseLoadTimer.attach_ms<Cutter*>(100, [](Cutter* instance) {
-    instance->senseLoad();
-  }, this);
+  senseLoadTimerId = senseLoadTimer.schedule([this]() {
+    senseLoad();
+  }, 100, true);
 
   cutting = true;
 
@@ -33,7 +32,7 @@ void Cutter::stop(bool brake) {
     io_digital.digitalWrite(Settings::CUTTER_BRAKE_PIN, true);
   }
 
-  senseLoadTimer.detach();
+  senseLoadTimer.unschedule(senseLoadTimerId);
 }
 
 void Cutter::senseLoad() {
@@ -43,4 +42,8 @@ void Cutter::senseLoad() {
 
 uint8_t Cutter::getLoad() {
   return load;
+}
+
+void Cutter::process() {
+  senseLoadTimer.process();
 }

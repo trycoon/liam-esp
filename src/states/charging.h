@@ -1,5 +1,5 @@
-#ifndef _charging_h
-#define _charging_h
+#ifndef _state_charging_h
+#define _state_charging_h
 
 #include "abstract_state.h"
 #include "resources.h"
