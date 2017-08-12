@@ -1,7 +1,7 @@
 #ifndef _ota_h
 #define _ota_h
 
-#include "../wifi/wifi.h"
+#include "../wifi.h"
 
 class OTA {
   public:

@@ -8,10 +8,6 @@
 */
 Scheduler::Scheduler(bool inSeries) : in_series(inSeries) { }
 
-Scheduler::~Scheduler() {
-  scheduled_fn_list.clear();
-}
-
 /**
 * Schedule a function to execute after the specified delay.
 * The function will be executed only once, unless the repeat-flag has been set.
@@ -58,6 +54,13 @@ void Scheduler::unschedule(uint16_t id) {
         }),
     scheduled_fn_list.end()
   );
+}
+
+/**
+* Returns whether no functions has been scheduled.
+*/
+bool Scheduler::isEmpty() {
+  return scheduled_fn_list.empty();
 }
 
 /**

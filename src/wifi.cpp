@@ -1,8 +1,10 @@
 #include "wifi.h"
 #include "definitions.h"
 #include "settings.h"
+#include <ESP8266mDNS.h>
 
-WiFi_Client::WiFi_Client() {
+
+WiFi_Client::WiFi_Client() : web_server(80) {
   WiFi.hostname(Definitions::APP_NAME);
   WiFi.mode(WIFI_STA);
 
@@ -13,6 +15,8 @@ WiFi_Client::WiFi_Client() {
   wifiDisconnectHandler = WiFi.onStationModeDisconnected([this](const WiFiEventStationModeDisconnected& event) {
     onWifiDisconnect(event);
   });
+
+  setupWebServer();
 
   if (isMQTT_enabled()) {
     mqttClient.onConnect([this](bool sessionPresent) {
@@ -35,6 +39,22 @@ WiFi_Client::WiFi_Client() {
   }
 }
 
+void WiFi_Client::setupWebServer() {
+
+    // mount SPIFFS filesystem, the files stored in the "data"-directory in the root of this project. Contains the static webpage files.
+    if (!SPIFFS.begin()) {
+      Serial.println("Failed to mount SPIFFS filesystem! Rebooting.");
+      delay(2000);
+      ESP.restart();
+    }
+
+    web_server
+    .serveStatic("/", SPIFFS, "/")
+    .setDefaultFile("index.html")
+    .setCacheControl("max-age=2592000"); // 30 days.
+    //.setAuthentication("user", "pass");
+}
+
 bool WiFi_Client::isMQTT_enabled() {
   if (strcmp(Settings::MQTT_SERVER, "") || strcmp(Settings::MQTT_SERVER, "<your MQTT servers IP-address>")) {
     return false;
@@ -50,6 +70,12 @@ void WiFi_Client::connect() {
 
 void WiFi_Client::onWifiConnect(const WiFiEventStationModeGotIP& event) {
   Serial.print("Connected to Wi-Fi using IP-address: "); Serial.println(event.ip);
+
+  // Annonce us on Wi-Fi network using mDNS.
+  MDNS.begin(Definitions::APP_NAME);
+  MDNS.addService("http","tcp",80);
+  // Start web server.
+  web_server.begin();
 
   if (isMQTT_enabled()) {
     connectToMqtt();
@@ -141,4 +167,8 @@ void WiFi_Client::publish_message(std::string message, std::string subtopic) {
 void WiFi_Client::onMqttPublish(uint16_t packetId) {
   Serial.print("MQTT Publish acknowledged, packet id: ");
   Serial.println(packetId);
+}
+
+AsyncWebServer& WiFi_Client::getWebServer() {
+  return web_server;
 }

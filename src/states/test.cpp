@@ -6,7 +6,6 @@ Test::Test(Definitions::MOWER_STATES myState, StateController& stateController, 
 }
 
 void Test::selected(Definitions::MOWER_STATES lastState) {
-  Serial.println("state selected");
   // clear previous scheduled sequence.
   testSequence.clear();
 
@@ -50,9 +49,11 @@ void Test::selected(Definitions::MOWER_STATES lastState) {
     resources.wheelController.stop();
   }, 10000);
 
-  testSequence.schedule([this]() {
+  testSequence.schedule([this, lastState]() {
     Serial.println("cutter stop");
     resources.cutter.stop(true);
+
+    stateController.setState(lastState);
   }, 2000);
 }
 

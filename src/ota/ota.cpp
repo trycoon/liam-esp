@@ -49,9 +49,7 @@ OTA::OTA(WiFi_Client& wifiClient) : wifi(wifiClient) {
 
 void OTA::start() {
   ArduinoOTA.begin();
-  Serial.println("OTA Ready");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
+  Serial.println("OTA available.");
 }
 
 void OTA::handle() {

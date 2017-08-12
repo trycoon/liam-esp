@@ -1,7 +1,7 @@
 #ifndef resources_h
 #define resources_h
 
-#include "wifi/wifi.h"
+#include "wifi.h"
 #include "wheel_controller.h"
 #include "cutter.h"
 #include "bwf.h"

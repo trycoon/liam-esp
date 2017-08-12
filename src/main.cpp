@@ -8,7 +8,7 @@
 #include "io_analog.h"
 #include "io_digital.h"
 #include "io_accelerometer.h"
-#include "wifi/wifi.h"
+#include "wifi.h"
 #include "ota/ota.h"
 #include "wheel_controller.h"
 #include "wheel.h"
@@ -16,7 +16,9 @@
 #include "bwf.h"
 #include "battery.h"
 #include "gps.h"
+#include "metrics.h"
 #include "state_controller.h"
+#include "api.h"
 
 /*
  * Software to control a LIAM robot mower using a NodeMCU/ESP-12E (or similar ESP8266) microcontroller.
@@ -40,6 +42,8 @@ GPS gps;
 WheelController wheelController(leftWheel, rightWheel);
 Resources resources(wifi, wheelController, cutter, bwf, battery, gps);
 StateController stateController(Definitions::MOWER_STATES::DOCKED, resources);  // initialize state controller, assume we are DOCKED to begin with.
+Metrics metrics(battery, cutter, gps);
+Api api(stateController, battery, cutter, gps, io_accelerometer, metrics);
 
 
 void scan_I2C() {
@@ -91,6 +95,8 @@ void setup() {
 
   scan_I2C();
   wifi.connect();
+  ota.start();
+  api.setupApi(wifi.getWebServer());
 }
 
 void loop() {
@@ -109,16 +115,8 @@ void loop() {
   battery.process();
   yield();
   cutter.process();
-
-  // ESP.getCycleCount() // "returns the cpu instruction cycle count since start as an unsigned 32-bit."
-  /*
-    ESP.getCycleCount() counts the instruction cycles since start, in an internal unsigned 32-bit variable, liable to overflow every 28 seconds or so. A one microsecond period will give 160 instruction cycles. Now to measure the software overhead required by your software, you need to only count the instruction cycles your routine counts for a 1 microsecond delay and subtract 160 from that count, to give you the software overhead in acquiring the count. For 1 microsecond delay, I got a count of 213. Which worked out to 213-160 = 53 counts (53 x 6.25 = 331.25 nanoseconds) software overhead to acquire the count. Subtracting 53 from every count gives me a count accurate to within a few tens of picoseconds, for periods from 30 microseconds to about 500 microseconds.
-  */
-  // ESP.getFreeHeap() // "returns the free heap size."
   yield();
+  metrics.process();
 
-//TODO: remove
-  if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::TEST) {
-    stateController.setState(Definitions::MOWER_STATES::TEST);
-  }
+  yield();
 }

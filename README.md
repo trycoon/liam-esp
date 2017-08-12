@@ -11,13 +11,21 @@ ESP8266 port of Liam Arduino lawn mower
 ## Features
 using plattform.io
 
-TODO: Use https://github.com/tzapu/WiFiManager
-
+TODO: implement first-time portal https://github.com/tzapu/WiFiManager
+TODO: check if we could use a PID-library to tune BWF readings when docking. https://github.com/br3ttb/Arduino-PID-Library
+TODO: uptime and time keeping: https://github.com/vitotai/BrewManiacEsp8266/blob/master/BrewManiacEx/TimeKeeper.cpp
+TODO: see this for inspiration: https://bitbucket.org/xoseperez/espurna/src/e6e9f9d6d4bd16005446e08b98d47c6cd254ad16?at=master
 
 ## Build software
 
 
 ## Upload software
+
+platformio run -t upload
+
+[SPIFFS](http://docs.platformio.org/en/latest/platforms/espressif8266.html#platform-espressif-uploadfs)
+platformio run -t buildfs
+platformio run -t uploadfs --upload-port 192.168.10.101
 
 
 ## License & Author

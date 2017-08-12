@@ -1,7 +1,7 @@
 #include "bwf.h"
 
 BWF::BWF() {
-
+  
 }
 
 bool BWF::isLeftInsideFence() {

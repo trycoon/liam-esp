@@ -21,17 +21,22 @@ bool IO_Accelerometer::isAvailable() {
   return available;
 }
 
-sensors_vec_t IO_Accelerometer::getOrientation() {
+orientation IO_Accelerometer::getOrientation() {
   if (available == false) {
-    sensors_event_t event;
+    orientation empty;
 
-    return event.acceleration;
+    return empty;
 
   } else {
     sensors_event_t event;
     accel.getEvent(&event);
 
-    return event.acceleration;
+    orientation result;
+    result.pitch = event.acceleration.pitch;
+    result.roll = event.acceleration.roll;
+    result.heading = event.acceleration.heading;
+
+    return result;
   }
 }
 
