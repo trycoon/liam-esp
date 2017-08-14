@@ -43,7 +43,7 @@ WheelController wheelController(leftWheel, rightWheel);
 Resources resources(wifi, wheelController, cutter, bwf, battery, gps);
 StateController stateController(Definitions::MOWER_STATES::DOCKED, resources);  // initialize state controller, assume we are DOCKED to begin with.
 Metrics metrics(battery, cutter, gps);
-Api api(stateController, battery, cutter, gps, io_accelerometer, metrics);
+Api api(stateController, wheelController, battery, cutter, gps, io_accelerometer, metrics);
 
 
 void scan_I2C() {

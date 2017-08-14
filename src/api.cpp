@@ -4,8 +4,9 @@
 #include "io_accelerometer.h"
 
 
-Api::Api(StateController& stateController, Battery& battery, Cutter& cutter, GPS& gps, IO_Accelerometer& tilt, Metrics& metrics) :
+Api::Api(StateController& stateController, WheelController& wheelController, Battery& battery, Cutter& cutter, GPS& gps, IO_Accelerometer& tilt, Metrics& metrics) :
   stateController(stateController),
+  wheelController(wheelController),
   battery(battery),
   cutter(cutter),
   gps(gps),
@@ -130,6 +131,41 @@ void Api::setupApi(AsyncWebServer& web_server) {
     request->send(response);
   });
 
+  // respond to GET requests on URL /api/v1/manual
+  web_server.on("/api/v1/manual", HTTP_GET, [](AsyncWebServerRequest *request) {
+    AsyncResponseStream *response = request->beginResponseStream("application/json");
+    DynamicJsonBuffer jsonBuffer;
+    JsonObject& root = jsonBuffer.createObject();
+    JsonObject& links = root.createNestedObject("_links");
+
+    JsonObject& self = links.createNestedObject("self");
+    self["href"] = "/api/v1/manual";
+
+    JsonObject& forward = links.createNestedObject("forward");
+    forward["href"] = "/api/v1/manual/forward";
+
+    JsonObject& backward = links.createNestedObject("backward");
+    backward["href"] = "/api/v1/manual/backward";
+
+    JsonObject& left = links.createNestedObject("left");
+    left["href"] = "/api/v1/manual/left";
+
+    JsonObject& right = links.createNestedObject("right");
+    right["href"] = "/api/v1/manual/right";
+
+    JsonObject& stop = links.createNestedObject("stop");
+    stop["href"] = "/api/v1/manual/stop";
+
+    JsonObject& cutter_on = links.createNestedObject("cutter_on");
+    cutter_on["href"] = "/api/v1/manual/cutter_on";
+
+    JsonObject& cutter_off = links.createNestedObject("cutter_off");
+    cutter_off["href"] = "/api/v1/manual/cutter_off";
+
+    root.printTo(*response);
+    request->send(response);
+  });
+
   // respond to GET requests on URL /api/v1/status
   web_server.on("/api/v1/status", HTTP_GET, [this](AsyncWebServerRequest *request) {
     AsyncResponseStream *response = request->beginResponseStream("application/json");
@@ -173,6 +209,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
     root["freeSketchSpace"] = ESP.getFreeSketchSpace();
     root["sketchSize"] = ESP.getSketchSize();
     root["resetReason"] = ESP.getResetReason();
+    root["wifiSignal"] = WiFi.RSSI();
 
     root.printTo(*response);
     request->send(response);
@@ -194,6 +231,9 @@ void Api::setupApi(AsyncWebServer& web_server) {
     JsonObject& login = links.createNestedObject("login");
     login["href"] = "/api/v1/login";
 
+    JsonObject& manual = links.createNestedObject("manual");
+    login["href"] = "/api/v1/manual";
+
     JsonObject& status = links.createNestedObject("status");
     status["href"] = "/api/v1/status";
 
@@ -211,39 +251,127 @@ void Api::setupApi(AsyncWebServer& web_server) {
   // PUT, POST request.
   web_server.onRequestBody([this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
 
-    // respond to PUT requests on URL /api/v1/state, change state of mower. e.g. {"state": "TEST"}
-    if (request->url() == "/api/v1/state" && request->method() == HTTP_PUT) {
-      DynamicJsonBuffer jsonBuffer;
-      JsonObject& root = jsonBuffer.parseObject((const char*)data);
-      if (root.success()) {
-        if (root.containsKey("state")) {
-          String state = root["state"].asString();
+    if (request->method() == HTTP_PUT) {
+      // respond to PUT requests on URL /api/v1/state, change state of mower. e.g. {"state": "TEST"}
+      if (request->url() == "/api/v1/state") {
+        DynamicJsonBuffer jsonBuffer;
+        JsonObject& root = jsonBuffer.parseObject((const char*)data);
+        if (root.success()) {
+          if (root.containsKey("state")) {
+            String state = root["state"].asString();
 
-          if (state == "LAUNCHING") {
-            stateController.setState(Definitions::MOWER_STATES::LAUNCHING);
-            request->send(200);
-          } else if (state == "MOWING") {
-            stateController.setState(Definitions::MOWER_STATES::MOWING);
-            request->send(200);
-          } else if (state == "DOCKING") {
-            stateController.setState(Definitions::MOWER_STATES::DOCKING);
-            request->send(200);
-          } else if (state == "PAUSED") {
-            stateController.setState(Definitions::MOWER_STATES::PAUSED);
-            request->send(200);
-          } else if (state == "TEST") {
-            stateController.setState(Definitions::MOWER_STATES::TEST);
-            request->send(200);
-          } else {
-            request->send(422, "text/plain", "unknown state: " + state);
+            if (state == "LAUNCHING") {
+              stateController.setState(Definitions::MOWER_STATES::LAUNCHING);
+              request->send(200);
+            } else if (state == "MOWING") {
+              stateController.setState(Definitions::MOWER_STATES::MOWING);
+              request->send(200);
+            } else if (state == "DOCKING") {
+              stateController.setState(Definitions::MOWER_STATES::DOCKING);
+              request->send(200);
+            } else if (state == "PAUSED") {
+              stateController.setState(Definitions::MOWER_STATES::PAUSED);
+              request->send(200);
+            } else if (state == "TEST") {
+              stateController.setState(Definitions::MOWER_STATES::TEST);
+              request->send(200);
+            } else {
+              request->send(422, "text/plain", "unknown state: " + state);
+            }
           }
         }
+
+        request->send(400, "text/plain", "Bad Request");
+
+        return;
       }
 
-      request->send(400, "text/plain", "Bad Request");
-    } else {
-      request->send(404, "text/plain", "Not found");
+      // respond to PUT requests on URL /api/v1/manual/forward, drive mower forward.
+      if (request->url() == "/api/v1/manual/forward") {
+        if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
+          stateController.setState(Definitions::MOWER_STATES::MANUAL);
+        }
+
+        wheelController.forward(true);
+        request->send(200);
+
+        return;
+      }
+
+      // respond to PUT requests on URL /api/v1/manual/backward, drive mower backward.
+      if (request->url() == "/api/v1/manual/backward") {
+        if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
+          stateController.setState(Definitions::MOWER_STATES::MANUAL);
+        }
+
+        wheelController.backward(true);
+        request->send(200);
+
+        return;
+      }
+
+      // respond to PUT requests on URL /api/v1/manual/left, turn mower left.
+      if (request->url() == "/api/v1/manual/left") {
+        if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
+          stateController.setState(Definitions::MOWER_STATES::MANUAL);
+        }
+
+        wheelController.turnLeft(true);
+        request->send(200);
+
+        return;
+      }
+
+      // respond to PUT requests on URL /api/v1/manual/right, turn mower right.
+      if (request->url() == "/api/v1/manual/right") {
+        if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
+          stateController.setState(Definitions::MOWER_STATES::MANUAL);
+        }
+
+        wheelController.turnRight(true);
+        request->send(200);
+
+        return;
+      }
+
+      // respond to PUT requests on URL /api/v1/manual/stop, stop mower movement.
+      if (request->url() == "/api/v1/manual/stop") {
+        if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
+          stateController.setState(Definitions::MOWER_STATES::MANUAL);
+        }
+
+        wheelController.stop(true);
+        request->send(200);
+
+        return;
+      }
+
+      // respond to PUT requests on URL /api/v1/manual/cutter_on, start mower cutter.
+      if (request->url() == "/api/v1/manual/cutter_on") {
+        if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
+          stateController.setState(Definitions::MOWER_STATES::MANUAL);
+        }
+
+        cutter.start();
+        request->send(200);
+
+        return;
+      }
+
+      // respond to PUT requests on URL /api/v1/manual/cutter_off, stop mower cutter.
+      if (request->url() == "/api/v1/manual/cutter_off") {
+        if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
+          stateController.setState(Definitions::MOWER_STATES::MANUAL);
+        }
+
+        cutter.stop(true);
+        request->send(200);
+
+        return;
+      }
     }
+
+    request->send(404, "text/plain", "Not found");
   });
 }
 /*

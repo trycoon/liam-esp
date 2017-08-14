@@ -6,7 +6,7 @@ Docked::Docked(Definitions::MOWER_STATES myState, StateController& stateControll
 }
 
 void Docked::selected(Definitions::MOWER_STATES lastState) {
-  //stateController.setState(Definitions::MOWER_STATES::MOWING);
+
 }
 
 void Docked::process() {
