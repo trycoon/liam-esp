@@ -234,10 +234,6 @@ only screen and (max-width: 767px) {
 .theme-light input[type=range]:focus::-webkit-slider-runnable-track {
     background: #545454
 }
-.theme-light .apple-tv-remote button {
-    border-color: #555;
-    color: #555
-}
 * {
     box-sizing: border-box;
     -webkit-user-select: none;
@@ -285,7 +281,7 @@ body {
 .nav-left-item.active {
     opacity: 1
 }
-.nav-left-item .material-icons {
+.nav-left-item .fa {
     display: block;
     margin: 0 auto 5px auto
 }
@@ -303,7 +299,6 @@ body {
     table-layout: fixed;
     padding: 10px;
     overflow: hidden;
-    cursor: pointer;
     background: #1a2126;
     transition: opacity 0.3s ease, background 0.3s
 }
@@ -352,18 +347,18 @@ input[type=range]::-webkit-slider-thumb {
 input[type=range]:focus::-webkit-slider-runnable-track {
     background: #f1f1f1
 }
-.material-icons.md-18 {
+.icons.md-18 {
     font-size: 18px
 }
-.material-icons.md-24 {
+.fa.md-24 {
     font-size: 24px
 }
-.material-icons.md-36 {
+.fa.md-36 {
     font-size: 36px
 }
-.material-icons.md-48 {
+.fa.md-48 {
     font-size: 48px
 }
-.material-icons.md-64 {
+.fa.md-64 {
     font-size: 64px
 }

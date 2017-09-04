@@ -1,0 +1,26 @@
+.state-control .state {
+  font-size: 20px;
+  line-height: 1.3;
+  margin-bottom: 10px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: center
+  animation: colorFade 3s infinite
+  @keyframes colorFade {
+      0% {fill: #477090}
+      50% {fill: #073050}
+      100% {fill: #477090}
+  }
+}
+.state-control .buttons {
+  margin-bottom: 10px;
+}
+.state-control .button {
+  display: inline-block;
+  padding: 5px 7px;
+  cursor: pointer;
+}
+
+.state-control {
+  opacity': 0.4
+}

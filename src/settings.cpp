@@ -6,7 +6,7 @@
 
 namespace Settings {
     // Max number of messages awaiting to be sent to broker. Higher value consumes more RAM-memory but let us be disconnected from WiFi for a longer period.
-    const uint16_t MQTT_QUEUE_LENGTH = 500;
+    const uint16_t MQTT_QUEUE_LENGTH = 50;
 
     /*
       I2C pins

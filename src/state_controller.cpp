@@ -10,6 +10,7 @@
 #include "states/paused.h"
 #include "states/test.h"
 
+
 StateController::StateController(Definitions::MOWER_STATES initialState, Resources& resources) : resources(resources) {
   stateLookup[Definitions::MOWER_STATES::DOCKED] = new Docked(Definitions::MOWER_STATES::DOCKED, *this, resources);
   stateLookup[Definitions::MOWER_STATES::LAUNCHING] = new Launching(Definitions::MOWER_STATES::LAUNCHING, *this, resources);

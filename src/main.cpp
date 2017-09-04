@@ -94,9 +94,9 @@ void setup() {
   Serial.println(Definitions::APP_VERSION);
 
   scan_I2C();
+  api.setupApi(wifi.getWebServer());
   wifi.connect();
   ota.start();
-  api.setupApi(wifi.getWebServer());
 }
 
 void loop() {

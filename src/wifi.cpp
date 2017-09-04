@@ -53,6 +53,8 @@ void WiFi_Client::setupWebServer() {
     .setDefaultFile("index.html")
     .setCacheControl("max-age=2592000"); // 30 days.
     //.setAuthentication("user", "pass");
+
+    Serial.println("web_server initialized");
 }
 
 bool WiFi_Client::isMQTT_enabled() {
@@ -69,7 +71,16 @@ void WiFi_Client::connect() {
 }
 
 void WiFi_Client::onWifiConnect(const WiFiEventStationModeGotIP& event) {
-  Serial.print("Connected to Wi-Fi using IP-address: "); Serial.println(event.ip);
+  Serial.print("Connected to Wi-Fi using IP-address: ");
+  Serial.print(event.ip);
+  Serial.print(", MAC-address: ");
+  uint8_t MAC_array[6];
+  char MAC_char[18];
+  WiFi.macAddress(MAC_array);
+  for (int i = 0; i < sizeof(MAC_array); ++i){
+    sprintf(MAC_char,"%s%02x:", MAC_char, MAC_array[i]);
+  }
+  Serial.println(MAC_char);
 
   // Annonce us on Wi-Fi network using mDNS.
   MDNS.begin(Definitions::APP_NAME);
@@ -90,7 +101,6 @@ void WiFi_Client::onWifiDisconnect(const WiFiEventStationModeDisconnected& event
   wifiReconnectTimer.once<WiFi_Client*>(2, [](WiFi_Client* instance) {
     instance->connect();
   }, this);
-  //wifiReconnectTimer.once(2, []() { Serial.print("");});
 }
 
 void WiFi_Client::connectToMqtt() {

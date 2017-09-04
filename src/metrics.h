@@ -54,7 +54,7 @@ class Metrics : Processable {
     void process();
 
   private:
-    const uint16_t MAX_SAMPLES = 500;   // How much history reading are we going to keep? set too high will consume excessive memory and we may get out-of-memory errors.
+    const uint16_t MAX_SAMPLES = 50;   // How much history reading are we going to keep? set too high will consume excessive memory and we may get out-of-memory related errors.
     Battery& battery;
     Cutter& cutter;
     GPS& gps;

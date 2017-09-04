@@ -21,7 +21,7 @@ TODO: uptime and time keeping: https://github.com/vitotai/BrewManiacEsp8266/blob
 
 TODO: Multithreading on ESP32, processable.h-interface and let each class use this one instead: https://github.com/copercini/esp32-iot-examples/blob/master/multiloop/multiloop.ino, if not working then look at this: https://www.arduino.cc/en/Reference/Scheduler or this (works even in Arduino-mode): http://www.freertos.org/a00125.html
 
-TODO: save and load settings from Preference:
+TODO: save and load settings from Preference, save statechanges in state_controller so we can continue after reboot:
 https://github.com/espressif/arduino-esp32/blob/master/libraries/Preferences/examples/StartCounter/StartCounter.ino
 
 TODO: see this for inspiration: https://bitbucket.org/xoseperez/espurna/src/e6e9f9d6d4bd16005446e08b98d47c6cd254ad16?at=master
@@ -35,7 +35,7 @@ platformio run -t upload
 
 [SPIFFS](http://docs.platformio.org/en/latest/platforms/espressif8266.html#platform-espressif-uploadfs)
 platformio run -t buildfs
-platformio run -t uploadfs --upload-port 192.168.10.101
+platformio run -t uploadfs --upload-port 192.168.10.73
 
 
 ## License & Author

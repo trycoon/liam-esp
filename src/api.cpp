@@ -209,6 +209,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
     root["freeSketchSpace"] = ESP.getFreeSketchSpace();
     root["sketchSize"] = ESP.getSketchSize();
     root["resetReason"] = ESP.getResetReason();
+    root["resetInfo"] = ESP.getResetInfo();
     root["wifiSignal"] = WiFi.RSSI();
 
     root.printTo(*response);
@@ -232,7 +233,13 @@ void Api::setupApi(AsyncWebServer& web_server) {
     login["href"] = "/api/v1/login";
 
     JsonObject& manual = links.createNestedObject("manual");
-    login["href"] = "/api/v1/manual";
+    manual["href"] = "/api/v1/manual";
+
+    JsonObject& reboot = links.createNestedObject("reboot");
+    reboot["href"] = "/api/v1/reboot";
+
+    JsonObject& state = links.createNestedObject("state");
+    state["href"] = "/api/v1/state";
 
     JsonObject& status = links.createNestedObject("status");
     status["href"] = "/api/v1/status";
@@ -256,6 +263,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
       if (request->url() == "/api/v1/state") {
         DynamicJsonBuffer jsonBuffer;
         JsonObject& root = jsonBuffer.parseObject((const char*)data);
+
         if (root.success()) {
           if (root.containsKey("state")) {
             String state = root["state"].asString();
@@ -278,10 +286,12 @@ void Api::setupApi(AsyncWebServer& web_server) {
             } else {
               request->send(422, "text/plain", "unknown state: " + state);
             }
+          } else {
+            request->send(400, "text/plain", "Bad Request");
           }
+        } else {
+          request->send(400, "text/plain", "Bad Request");
         }
-
-        request->send(400, "text/plain", "Bad Request");
 
         return;
       }
@@ -369,8 +379,19 @@ void Api::setupApi(AsyncWebServer& web_server) {
 
         return;
       }
+
+      // respond to PUT requests on URL /api/v1/reboot, restart mower.
+      if (request->url() == "/api/v1/reboot") {
+        Serial.println("Rebooting by API request");
+        request->send(200);
+        delay(1000);
+        ESP.restart();
+
+        return;
+      }
     }
 
+    Serial.printf("Resource not found: http://%s%s\n", request->host().c_str(), request->url().c_str());
     request->send(404, "text/plain", "Not found");
   });
 }

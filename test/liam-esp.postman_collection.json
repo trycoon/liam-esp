@@ -1,0 +1,434 @@
+{
+	"variables": [],
+	"info": {
+		"name": "liam-esp",
+		"_postman_id": "2264e09c-a818-c108-49ec-ef0b0efee3e4",
+		"description": "REST-API for Liam-ESP robot mower",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "manual",
+			"description": "",
+			"item": [
+				{
+					"name": "forward",
+					"request": {
+						"url": "http://{{ip}}/api/v1/manual/forward",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "backward",
+					"request": {
+						"url": "http://{{ip}}/api/v1/manual/backward",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "left",
+					"request": {
+						"url": "http://{{ip}}/api/v1/manual/left",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "right",
+					"request": {
+						"url": "http://{{ip}}/api/v1/manual/right",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "stop",
+					"request": {
+						"url": "http://{{ip}}/api/v1/manual/stop",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "cutter on",
+					"request": {
+						"url": "http://{{ip}}/api/v1/manual/cutter_on",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "cutter off",
+					"request": {
+						"url": "http://{{ip}}/api/v1/manual/cutter_off",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "history",
+			"description": "",
+			"item": [
+				{
+					"name": "battery",
+					"request": {
+						"url": "http://{{ip}}/api/v1/history/battery",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "cutter load",
+					"request": {
+						"url": "http://{{ip}}/api/v1/history/cutter_load",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "position",
+					"request": {
+						"url": "http://{{ip}}/api/v1/history/position",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "memory",
+					"request": {
+						"url": "http://{{ip}}/api/v1/history/memory",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "state",
+			"description": "",
+			"item": [
+				{
+					"name": "docking",
+					"request": {
+						"url": "http://{{ip}}/api/v1/state",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"state\": \"DOCKING\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "launching",
+					"request": {
+						"url": "http://{{ip}}/api/v1/state",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"state\": \"LAUNCHING\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "mowing",
+					"request": {
+						"url": "http://{{ip}}/api/v1/state",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"state\": \"MOWING\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "paused",
+					"request": {
+						"url": "http://{{ip}}/api/v1/state",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"state\": \"PAUSED\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "test",
+					"request": {
+						"url": "http://{{ip}}/api/v1/state",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"state\": \"TEST\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "login",
+			"request": {
+				"url": "http://{{ip}}/api/v1/login",
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Authorization",
+						"value": "Basic YWRtaW46b2Fzcw==",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "status",
+			"request": {
+				"url": "http://{{ip}}/api/v1/status",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "system",
+			"request": {
+				"url": "http://{{ip}}/api/v1/system",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "reboot",
+			"request": {
+				"url": "http://{{ip}}/api/v1/reboot",
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{}"
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

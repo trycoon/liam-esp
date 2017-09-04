@@ -24,4 +24,4 @@ liam.rest =
     getStatus: getStatus,
     getSystem: getSystem
   }
-});
+})();
