@@ -1,13 +1,34 @@
 <link rel='stylesheet' href='sections/start.css' />
 <div class="box state-control">
-  <div class="heading js-heading">Läge</div>
-  <div class="state js-state"></div>
-  <div class="buttons">
-    <span class="js-launching button">Påbörja klippning</span>
-    <span class="js-mowing button">Fortsätt klippa</span>
-    <span class="js-docking button">Ladda klippare</span>
-    <span class="js-paused button">Pausa klippning</span>
-    <span class="js-test button">Testprogram</span>
+  <div class="box-content">
+    <h1 class="heading">Status</h1>
+    <div class="state pulsate js-state">...</div>
+    <div class="buttons">
+      <span class="js-autodriveselector button">Automatisk</span>
+      <span class="js-manualdriveselector button">Manuell</span>
+    </div>
+    <section class="js-autodrive">
+      <div class="buttons">
+        <span class="js-launching button">Starta klippning</span>
+        <span class="js-docking button">Avbryt klippning</span>
+        <span class="js-paused button">Pausa klippning</span>
+        <span class="js-mowing button">Fortsätt klippa</span>
+        <span class="js-test button">Testprogram</span>
+      </div>
+    </section>
+    <section class="js-manualdrive">
+      <div class="joystick">
+      </div>
+      <div class="buttons">
+        <span class="js-startmower button">Starta klippare</span>
+        <span class="js-stopmower button">Stoppa klippare</span>
+      </div>
+    </section>
+  </div>
+</div>
+<div class="box batterystatus-control">
+  <div class="box-content">
+    <span class="batterystatus"></span>
   </div>
 </div>
 <script async src="sections/start.js"></script>

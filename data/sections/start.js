@@ -1,54 +1,195 @@
 liam.sections = liam.sections || {};
 liam.sections.start =
 (function() {
-  let statusPoller,
-      el = $('js-section-start');
+  'use strict';
 
-  el.find('.js-launching').on('click', function() {
+  let statusPoller,
+      currentStatus = {},
+      sec = $('.js-section-start');
+
+  function setLaunchMowerState() {
     liam.rest.selectState("LAUNCHING")
-    .done(function() {
-      alert('LAUNCHING');
-    }).error(function() {
+    .fail(function() {
       alert('error');
     });
-  });
-  el.find('.js-mowing').on('click', function() {
+  }
+
+  function setMowingState() {
     liam.rest.selectState("MOWING")
-    .done(function() {
-      alert('MOWING');
-    }).error(function() {
+    .fail(function() {
       alert('error');
     });
-  });
-  el.find('.js-docking').on('click', function() {
+  }
+
+  function setDockingState() {
     liam.rest.selectState("DOCKING")
-    .done(function() {
-      alert('DOCKING');
-    }).error(function() {
+    .fail(function() {
       alert('error');
     });
-  });
-  el.find('.js-paused').on('click', function() {
+  }
+
+  function setPausedState() {
     liam.rest.selectState("PAUSED")
-    .done(function() {
-      alert('PAUSED');
-    }).error(function() {
+    .fail(function() {
       alert('error');
     });
-  });
-  el.find('.js-test').on('click', function() {
+  }
+
+  function setTestState() {
     liam.rest.selectState("TEST")
-    .done(function() {
-      alert('TEST');
-    }).error(function() {
+    .fail(function() {
       alert('error');
     });
-  });
+  }
+
+  function startMowerMotor() {
+    liam.rest.manual("cutter_on")
+    .fail(function() {
+      alert('error');
+    });
+  }
+
+  function stopMowerMotor() {
+    liam.rest.manual("cutter_off")
+    .fail(function() {
+      alert('error');
+    });
+  }
+
+  function selectAutomaticDrive() {
+    $('.js-autodrive').show();
+    $('.js-manualdrive').hide();
+    $('.js-autodriveselector').hide();
+    $('.js-manualdriveselector').show();
+
+    toggleStateButtons();
+  }
+
+  function selectManualDrive() {
+    $('.js-autodrive').hide();
+    $('.js-manualdrive').show();
+    $('.js-autodriveselector').show();
+    $('.js-manualdriveselector').hide();
+  }
+
+  function toggleStateButtons() {
+    $('.js-launching').show();
+    $('.js-docking').show();
+    $('.js-paused').show();
+    $('.js-mowing').show();
+
+    if (currentStatus.state) {
+      switch (currentStatus.state) {
+        case 'DOCKED': {
+          $('.js-launching').show();
+          $('.js-docking').hide();
+          $('.js-paused').hide();
+          $('.js-mowing').hide();
+          break;
+        }
+        case 'LAUNCHING': {
+          $('.js-launching').hide();
+          $('.js-docking').show();
+          $('.js-paused').show();
+          $('.js-mowing').show();
+          break;
+        }
+        case 'MOWING': {
+          $('.js-launching').hide();
+          $('.js-docking').show();
+          $('.js-paused').show();
+          $('.js-mowing').hide();
+          break;
+        }
+        case 'DOCKING': {
+          $('.js-launching').show();
+          $('.js-docking').hide();
+          $('.js-paused').show();
+          $('.js-mowing').show();
+          break;
+        }
+        case 'CHARGING': {
+          $('.js-launching').show();
+          $('.js-docking').hide();
+          $('.js-paused').hide();
+          $('.js-mowing').hide();
+          break;
+        }
+        case 'STUCK': {
+          $('.js-launching').hide();
+          $('.js-docking').show();
+          $('.js-paused').hide();
+          $('.js-mowing').show();
+          break;
+        }
+        case 'FLIPPED': {
+          $('.js-launching').hide();
+          $('.js-docking').show();
+          $('.js-paused').hide();
+          $('.js-mowing').show();
+          break;
+        }
+        case 'PAUSED': {
+          $('.js-launching').hide();
+          $('.js-docking').show();
+          $('.js-paused').hide();
+          $('.js-mowing').show();
+          break;
+        }
+        case 'TEST': {
+          $('.js-launching').hide();
+          $('.js-docking').show();
+          $('.js-paused').show();
+          $('.js-mowing').show();
+          break;
+        }
+      }
+    }
+  }
+
+  function setup() {
+    selectAutomaticDrive();
+
+    sec.find('.js-autodriveselector').on('click', function() {
+      selectAutomaticDrive();
+    });
+    sec.find('.js-manualdriveselector').on('click', function() {
+      selectManualDrive();
+    });
+    sec.find('.js-launching').on('click', function() {
+      setLaunchMowerState();
+    });
+    sec.find('.js-mowing').on('click', function() {
+      setMowingState();
+    });
+    sec.find('.js-docking').on('click', function() {
+      setDockingState();
+    });
+    sec.find('.js-paused').on('click', function() {
+      setPausedState();
+    });
+    sec.find('.js-test').on('click', function() {
+      setTestState();
+    });
+    sec.find('.js-startmower').on('click', function() {
+      startMowerMotor();
+    });
+    sec.find('.js-stopmower').on('click', function() {
+      stopMowerMotor();
+    });
+
+  }
 
   function selected() {
+    liam.rest.getStatus().done(data => {
+      updateStatus(data);
+      toggleStateButtons();
+    });
+
     statusPoller = setInterval(() => {
       liam.rest.getStatus().done(data => {
         updateStatus(data);
+        toggleStateButtons();
       });
     }, 2000);
   }
@@ -58,21 +199,27 @@ liam.sections.start =
   }
 
   function updateStatus(data) {
-    el.find('.js-state').text(data.state);
+    currentStatus = data;
 
+    let text;
+    switch (data.state) {
+      case 'DOCKED': text = 'Parkerad'; break;
+      case 'LAUNCHING': text = 'Påbörjar klippning'; break;
+      case 'MOWING': text = 'Klipper'; break;
+      case 'DOCKING': text = 'Avslutar klippning'; break;
+      case 'CHARGING': text = 'Laddar'; break;
+      case 'STUCK': text = 'Fastnat'; break;
+      case 'FLIPPED': text = 'Uppochned vänd'; break;
+      case 'MANUAL': text = 'Manuell körning'; break;
+      case 'PAUSED': text = 'Pausad'; break;
+      case 'TEST': text = 'Testkörning'; break;
+      default: text = '';
+    }
+
+    sec.find('.js-state').text(text);
   }
-/*
 
-  function getDom() {
-
-
-    this.$el.css({
-      'opacity': 0.4
-    });
-
-    return this.$el;
-  }
-*/
+  setup();
 
   return {
     selected: selected,

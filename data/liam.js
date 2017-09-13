@@ -1,7 +1,7 @@
 window.liam = (function() {
-
+  'use strict';
+  
   let loadedSections = {},
-      sectionGridsters = {},
       currentActiveSection;
 
   function init() {
@@ -67,28 +67,6 @@ window.liam = (function() {
           maxCols = 2;
         }
       }
-
-      sectionGridsters[sectionName] = sectionEl.gridster({
-        namespace: '.js-section-' + sectionName,
-        widget_selector: '.box',
-        max_cols: maxCols,
-        widget_margins: margins,
-        widget_base_dimensions: baseDimensions,
-        show_element: function($el, callback) {
-          $el.show();
-          if (callback) {
-            callback();
-          } 
-        },
-        hide_element: function($el, callback) {
-          $el.hide();
-          if (callback) {
-            callback();
-          } 
-        },
-        shift_widgets_up: false,
-        shift_larger_widgets_down: false,
-      }).data('gridster').disable(); // Disable drag-and-drop
     });
     // Hide all sections first, showSection() will show the appropriate one.
     $('.section').hide();

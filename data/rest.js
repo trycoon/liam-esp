@@ -1,13 +1,18 @@
 liam.rest =
 (function() {
+  'use strict';
 
   function selectState(state) {
     return $.ajax({
       url: '/api/v1/state',
-      method: "PUT",
-      data: {
+      method: 'PUT',
+      headers: {
+        'content-type': 'application/json',
+        'cache-control': 'no-cache'
+      },
+      data: JSON.stringify({
         state: state
-      }
+      })
     });
   }
 
@@ -19,9 +24,22 @@ liam.rest =
     return $.getJSON('/api/v1/system', params);
   }
 
+  function manual(command) {
+    return $.ajax({
+      url: `/api/v1/manual/${command}`,
+      method: 'PUT',
+      headers: {
+        'content-type': 'application/json',
+        'cache-control': 'no-cache'
+      },
+      data: "{}"
+    });
+  }
+
   return {
     selectState: selectState,
     getStatus: getStatus,
-    getSystem: getSystem
+    getSystem: getSystem,
+    manual: manual
   }
 })();
