@@ -24,7 +24,7 @@ liam.rest =
     return $.getJSON('/api/v1/system', params);
   }
 
-  function manual(command) {
+  function manual(command, params) {
     return $.ajax({
       url: `/api/v1/manual/${command}`,
       method: 'PUT',
@@ -32,7 +32,7 @@ liam.rest =
         'content-type': 'application/json',
         'cache-control': 'no-cache'
       },
-      data: "{}"
+      data: params || '{}'
     });
   }
 

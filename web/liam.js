@@ -1,6 +1,6 @@
 window.liam = (function() {
   'use strict';
-  
+
   let loadedSections = {},
       currentActiveSection;
 
@@ -9,19 +9,18 @@ window.liam = (function() {
     setTheme();
     initNavAndSections();
     showSection('start');
+    startPollingStatus();
   }
 
   function fixClickEvents() {
-    FastClick.attach(document.body);
-
     // Add click effect on widgets that are clickable
-    $(document).on('click', '.box-clickable', function(e) {
+    $(document).on('click', '.clickable', function(e) {
       let target = $(this);
 
-      target.addClass('box-clickable-active');
+      target.addClass('clickable-active');
 
       setTimeout(function() {
-        target.removeClass('box-clickable-active');
+        target.removeClass('clickable-active');
       }, 20);
     });
   }
@@ -100,6 +99,7 @@ window.liam = (function() {
       sectionEl.load(confSection.html, () => {
         loadedSections[section] = true;
         currentActiveSection = liam.sections[section];
+        currentActiveSection.init();
         currentActiveSection.selected();
       });
     } else {
@@ -108,11 +108,32 @@ window.liam = (function() {
     }
   }
 
+  function startPollingStatus() {
+    liam.rest.getStatus().done(data => {
+      liam.data.status = data;
+      window.dispatchEvent(new Event('statusUpdated'));
+    });
+
+    setInterval(() => {
+      liam.rest.getStatus().done(data => {
+        if (JSON.stringify(data) !== JSON.stringify(liam.data.status)) {
+          liam.data.status = data;
+          window.dispatchEvent(new Event('statusUpdated'));
+        }
+      });
+    }, 2000);
+  }
+
   return {
     init: init,
     setTheme: setTheme
   }
 })();
+
+// store for local state.
+window.liam.data = {
+  status: {}
+};
 
 window.liam.config = {
   theme: 'default',
@@ -124,6 +145,14 @@ window.liam.config = {
       base_dimensions: [180, 140],
       icon: 'home',
       html: 'sections/start.html'
+    },
+    {
+      section: 'manual',
+      title: 'Manuell',
+      margins: [10, 10],
+      base_dimensions: [180, 140],
+      icon: 'gamepad',
+      html: 'sections/manual.html'
     },
     {
       section: 'metrics',

@@ -1,15 +1,14 @@
 #ifndef accelerometer_h
 #define accelerometer_h
 
-#include <Adafruit_Sensor.h>
-#include <Adafruit_ADXL345_U.h>
+#include <MPU9250_asukiaaa.h>
 
 struct orientation {
   float pitch;
   float roll;
   float heading;
 };
-
+//https://github.com/asukiaaa/MPU9250_asukiaaa
 class IO_Accelerometer {
   public:
     IO_Accelerometer();
@@ -18,7 +17,7 @@ class IO_Accelerometer {
     orientation getOrientation();
 
   private:
-    Adafruit_ADXL345_Unified accel;
+    MPU9250 sensor;
     bool available = false;
 };
 

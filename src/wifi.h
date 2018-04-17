@@ -5,9 +5,8 @@
 #include <string>
 #include <vector>  // NOTE: needed to fix the following error: "Arduino.h:253:18: error: expected unqualified-id before '(' token".
 #include <queue>
-#include <Ticker.h>
+#include <ESP32Ticker.h>
 #include <Arduino.h>
-#include <ESP8266WiFi.h>
 #include <AsyncMqttClient.h>
 #include <FS.h>
 #include <ESPAsyncTCP.h>

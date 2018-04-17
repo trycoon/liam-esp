@@ -79,6 +79,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
         sample["t"] = s.time;
         sample["lat"] = s.lat;
         sample["lng"] = s.lng;
+        sample["dir"] = 0;
     }
 
     root.printTo(*response);

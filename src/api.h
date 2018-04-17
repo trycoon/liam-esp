@@ -3,7 +3,7 @@
 
 //#include <ArduinoJson.h>
 #include <Arduino.h>  // This include is needed to solve this issue: https://github.com/me-no-dev/ESPAsyncWebServer/issues/46
-#include <Hash.h>     // This include is needed to solve this issue: https://github.com/me-no-dev/ESPAsyncWebServer/issues/46
+//#include <Hash.h>     // This include is needed to solve this issue: https://github.com/me-no-dev/ESPAsyncWebServer/issues/46
 #include <ESPAsyncWebServer.h>
 #include "state_controller.h"
 #include "wheel_controller.h"

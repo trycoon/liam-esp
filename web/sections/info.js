@@ -1,7 +1,11 @@
 liam.sections = liam.sections || {};
-liam.sections.metrics =
+liam.sections.info =
 (function() {
 
+  function init() {
+
+  }
+  
   function selected() {
 
   }
@@ -11,6 +15,7 @@ liam.sections.metrics =
   }
 
   return {
+    init: init,
     selected: selected,
     unselected: unselected
   }

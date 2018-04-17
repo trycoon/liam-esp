@@ -6,19 +6,12 @@
   margin-bottom: 10px;
   white-space: nowrap;
   text-overflow: ellipsis;
+  text-transform: uppercase;
   text-align: center;
 }
 .state-control .buttons {
   margin-bottom: 10px;
 }
-.state-control .button {
-  display: inline-block;
-  border: solid 1px;
-  padding: 10px 5px;
-  margin: 5px;
-  cursor: pointer;
-}
-
-.state-control {
-  opacity': 0.4
+.joyknob {
+  cursor: move;
 }

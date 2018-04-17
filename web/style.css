@@ -1,0 +1,400 @@
+/**
+*** SIMPLE GRID
+*** (C) ZACH COLE 2016
+**/
+@import url(https://fonts.googleapis.com/css?family=Lato:400,300,300italic,400italic,700,700italic);
+/* UNIVERSAL */
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  left: 0;
+  top: 0;
+  font-size: 100%;
+}
+/* ROOT FONT STYLES */
+* {
+  font-family: 'Lato', Helvetica, sans-serif;
+  line-height: 1.5;
+}
+/* TYPOGRAPHY */
+h1 {
+  font-size: 2.5rem;
+}
+h2 {
+  font-size: 2rem;
+}
+h3 {
+  font-size: 1.375rem;
+}
+h4 {
+  font-size: 1.125rem;
+}
+h5 {
+  font-size: 1rem;
+}
+h6 {
+  font-size: 0.875rem;
+}
+p {
+  font-size: 1.125rem;
+  font-weight: 200;
+  line-height: 1.8;
+}
+.font-light {
+  font-weight: 300;
+}
+.font-regular {
+  font-weight: 400;
+}
+.font-heavy {
+  font-weight: 700;
+}
+/* POSITIONING */
+.left {
+  text-align: left;
+}
+.right {
+  text-align: right;
+}
+.center {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+.justify {
+  text-align: justify;
+}
+/* ==== GRID SYSTEM ==== */
+.container {
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.row {
+  position: relative;
+  width: 100%;
+}
+.row [class^="col"] {
+  float: left;
+  margin: 0.5rem 2%;
+  min-height: 0.125rem;
+}
+.col-1,
+.col-2,
+.col-3,
+.col-4,
+.col-5,
+.col-6,
+.col-7,
+.col-8,
+.col-9,
+.col-10,
+.col-11,
+.col-12 {
+  width: 96%;
+}
+.col-1-sm {
+  width: 4.33%;
+}
+.col-2-sm {
+  width: 12.66%;
+}
+.col-3-sm {
+  width: 21%;
+}
+.col-4-sm {
+  width: 29.33%;
+}
+.col-5-sm {
+  width: 37.66%;
+}
+.col-6-sm {
+  width: 46%;
+}
+.col-7-sm {
+  width: 54.33%;
+}
+.col-8-sm {
+  width: 62.66%;
+}
+.col-9-sm {
+  width: 71%;
+}
+.col-10-sm {
+  width: 79.33%;
+}
+.col-11-sm {
+  width: 87.66%;
+}
+.col-12-sm {
+  width: 96%;
+}
+.row::after {
+	content: "";
+	display: table;
+	clear: both;
+}
+.hidden-sm {
+  display: none;
+}
+@media only screen and (min-width: 33.75em) {  /* 540px */
+  .container {
+    width: 80%;
+  }
+}
+@media only screen and (min-width: 45em) {  /* 720px */
+  .col-1 {
+    width: 4.33%;
+  }
+  .col-2 {
+    width: 12.66%;
+  }
+  .col-3 {
+    width: 21%;
+  }
+  .col-4 {
+    width: 29.33%;
+  }
+  .col-5 {
+    width: 37.66%;
+  }
+  .col-6 {
+    width: 46%;
+  }
+  .col-7 {
+    width: 54.33%;
+  }
+  .col-8 {
+    width: 62.66%;
+  }
+  .col-9 {
+    width: 71%;
+  }
+  .col-10 {
+    width: 79.33%;
+  }
+  .col-11 {
+    width: 87.66%;
+  }
+  .col-12 {
+    width: 96%;
+  }
+  .hidden-sm {
+    display: block;
+  }
+}
+@media only screen and (min-width: 60em) { /* 960px */
+  .container {
+    width: 75%;
+    max-width: 60rem;
+  }
+}
+/* Theme - light */
+.theme-light body {
+    background: #e3e3e3;
+    color: #555555
+}
+.theme-light .nav-left {
+    background: #e3e3e3;
+    border-right: 1px solid #999;
+    box-shadow: none;
+    color: #111
+}
+.theme-light .box {
+    background: #ffffff
+}
+.theme-light .clickable-active {
+    background: #d8d8d8
+}
+
+@media (min-width: 480px) {
+    html,
+    body {
+        overflow: hidden
+    }
+}
+body {
+    background: #101519;
+    color: white;
+    font-family: "Open Sans";
+    font-size: 12px;
+    line-height: 1.4em
+}
+
+.nav-left {
+    position: fixed;
+    width: 60px;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: #101519;
+    border-right: 1px solid #1a2126;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.4);
+}
+.nav-left-list {
+    margin: 0;
+    padding: 10px 0px;
+}
+.nav-left-item {
+    display: block;
+    padding: 30% 15%;
+    list-style-type: none;
+    text-align: center;
+    cursor: pointer;
+    opacity: .6;
+}
+.nav-left-item.active {
+    opacity: 1;
+}
+.nav-left-item .fa {
+    display: block;
+    margin: 0 auto 5px auto;
+}
+.main {
+    margin-left: 63px;
+    position: absolute;
+}
+.section:after {
+    content: "";
+    display: table;
+    clear: both
+}
+.box {
+    padding: 10px;
+    overflow: hidden;
+    background: #1a2126;
+    transition: opacity 0.3s ease, background 0.3s;
+}
+.box-content {
+    vertical-align: middle;
+    text-align: center;
+}
+.clickable-active {
+    transition-duration: 0ms;
+    background: #303b44
+}
+.buttons {
+  display:flex;
+  justify-content:space-around;
+}
+.button {
+  display: inline-block;
+  vertical-align: top;
+  line-height: 32px;
+  padding: 0 10px;
+  font-size: 15px;
+  margin: 5px;
+  color: #bbb;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  text-shadow: 0 0 2px rgba(black, .7);
+  background-color: #303030;
+  background-clip: padding-box;
+  border: 1px solid;
+  border-color: #202020 #1a1a1a #111;
+  border-radius: 10px;
+  background-image: linear-gradient(to bottom, #3d3d3d, #272727);
+  box-shadow: 0 1px rgba(255, 255, 255, 0.09), 0 1px 3px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  white-space:nowrap;
+}
+.button-round-left {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  width: 25%;
+}
+.button-round-right {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  width: 25%;
+}
+.button:hover {
+  background-color: #363636;
+  background-image: linear-gradient(top, #404040, #2a2a2a);
+}
+.button:active,
+.button.active {
+  line-height: 34px;
+  color: #ccc;
+  background-color: #b42f32;
+  border-color: #1c1c1c #202020 #222;
+  background-image: linear-gradient(to bottom, #a3161a, #b63335 60%, #bf4749);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3), 0 1px rgba(255, 255, 255, 0.09);
+}
+.button-group.round :first-child {
+  border-radius: 5000px 0 0 5000px;
+}
+.button-group.round :last-child {
+  border-radius: 0 5000px 5000px 0;
+}
+.heading {
+    font-size: 14px;
+    line-height: 1.3;
+    margin-bottom: 10px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: center
+}
+.pulsate {
+    -webkit-animation: pulsate 3s ease-out infinite;
+    animation: pulsate 3s ease-out infinite;
+    opacity: 0.5;
+}
+@-webkit-keyframes pulsate {
+    0% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1.0;
+    }
+    100% {
+        opacity: 0.5;
+    }
+}
+@keyframes pulsate {
+    0% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1.0;
+    }
+    100% {
+        opacity: 0.5;
+    }
+}
+input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    padding: 8px 0;
+    cursor: pointer;
+    background: transparent
+}
+input[type=range]:focus {
+    outline: none
+}
+.icons.md-18 {
+    font-size: 18px
+}
+.fa.md-24 {
+    font-size: 24px
+}
+.fa.md-36 {
+    font-size: 36px
+}
+.fa.md-48 {
+    font-size: 48px
+}
+.fa.md-64 {
+    font-size: 64px
+}

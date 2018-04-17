@@ -1,12 +1,10 @@
 #include <Arduino.h>
-#include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 #include "definitions.h"
 #include "settings.h"
 #include "resources.h"
 #include "io_analog.h"
-#include "io_digital.h"
 #include "io_accelerometer.h"
 #include "wifi.h"
 #include "ota/ota.h"
@@ -29,13 +27,12 @@ extern "C" {
 }
 
 IO_Analog io_analog;
-IO_Digital io_digital;
 IO_Accelerometer io_accelerometer;
 WiFi_Client wifi;
 OTA ota(wifi);
 Wheel leftWheel(Settings::LEFT_WHEEL_MOTOR_PIN, Settings::LEFT_WHEEL_MOTOR_DIRECTION_PIN, Settings::LEFT_WHEEL_MOTOR_INVERTED, Settings::LEFT_WHEEL_MOTOR_SPEED);
 Wheel rightWheel(Settings::RIGHT_WHEEL_MOTOR_PIN, Settings::RIGHT_WHEEL_MOTOR_DIRECTION_PIN, Settings::RIGHT_WHEEL_MOTOR_INVERTED, Settings::RIGHT_WHEEL_MOTOR_SPEED);
-Cutter cutter(io_analog, io_digital);
+Cutter cutter(io_analog);
 BWF bwf;
 Battery battery(io_analog);
 GPS gps;

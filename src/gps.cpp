@@ -19,7 +19,7 @@ bool GPS::isEnabled() {
 }
 
 void GPS::GPS_isr(uint8_t c) {
-  gps.handle(c);
+//  gps.handle(c);
 }
 
 /*void readGPS() {

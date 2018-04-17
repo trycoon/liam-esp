@@ -1,9 +1,13 @@
 #include "cutter.h"
 #include "settings.h"
 
-Cutter::Cutter(IO_Analog& io_analog, IO_Digital& io_digital) : io_analog(io_analog), io_digital(io_digital), cutting(false), load(0) {
+Cutter::Cutter(IO_Analog& io_analog) : io_analog(io_analog), cutting(false), load(0) {
   pinMode(Settings::CUTTER_MOTOR_PIN, OUTPUT);
-  analogWrite(Settings::CUTTER_MOTOR_PIN, 0);
+
+  sigmaDeltaSetup(Cutter::CHANNEL, 312500);
+  //attach pin to channel
+  sigmaDeltaAttachPin(Settings::CUTTER_MOTOR_PIN, Cutter::CHANNEL);
+  sigmaDeltaWrite(Cutter::CHANNEL, 0);
 }
 
 Cutter::~Cutter() {
@@ -17,19 +21,19 @@ void Cutter::start() {
 
   cutting = true;
 
-  io_digital.digitalWrite(Settings::CUTTER_BRAKE_PIN, false);
+  digitalWrite(Settings::CUTTER_BRAKE_PIN, LOW);
   delay(10);
-  analogWrite(Settings::CUTTER_MOTOR_PIN, map(constrain(Settings::CUTTER_MAX_SPEED, 0, 100), 0, 100, 0, PWMRANGE));
+  sigmaDeltaWrite(Cutter::CHANNEL, map(constrain(Settings::CUTTER_MAX_SPEED, 0, 100), 0, 100, 0, 255));
 }
 
 void Cutter::stop(bool brake) {
-  analogWrite(Settings::CUTTER_MOTOR_PIN, 0);
+  sigmaDeltaWrite(Cutter::CHANNEL, 0);
 
   cutting = false;
 
   if (brake) {
     delay(10);
-    io_digital.digitalWrite(Settings::CUTTER_BRAKE_PIN, true);
+    digitalWrite(Settings::CUTTER_BRAKE_PIN, HIGH);
   }
 
   senseLoadTimer.unschedule(senseLoadTimerId);

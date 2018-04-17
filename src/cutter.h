@@ -3,7 +3,6 @@
 
 #include <Arduino.h>
 #include "io_analog.h"
-#include "io_digital.h"
 #include "scheduler/scheduler.h"
 #include "processable.h"
 
@@ -12,17 +11,17 @@
 */
 class Cutter : public Processable {
   public:
-    Cutter(IO_Analog& io_analog, IO_Digital& io_digital);
+    Cutter(IO_Analog& io_analog);
     ~Cutter();
     void start();
     void stop(bool brake);
     bool isCutting();
     uint8_t getLoad();
     void process();
-    
+
   private:
+    const uint8_t CHANNEL = 0;
     IO_Analog& io_analog;
-    IO_Digital& io_digital;
     bool cutting;
     uint8_t load;
     Scheduler senseLoadTimer;

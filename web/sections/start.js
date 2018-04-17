@@ -3,9 +3,7 @@ liam.sections.start =
 (function() {
   'use strict';
 
-  let statusPoller,
-      currentStatus = {},
-      sec = $('.js-section-start');
+  let sec = $('.js-section-start');
 
   function setLaunchMowerState() {
     liam.rest.selectState("LAUNCHING")
@@ -35,51 +33,14 @@ liam.sections.start =
     });
   }
 
-  function setTestState() {
-    liam.rest.selectState("TEST")
-    .fail(function() {
-      alert('error');
-    });
-  }
-
-  function startMowerMotor() {
-    liam.rest.manual("cutter_on")
-    .fail(function() {
-      alert('error');
-    });
-  }
-
-  function stopMowerMotor() {
-    liam.rest.manual("cutter_off")
-    .fail(function() {
-      alert('error');
-    });
-  }
-
-  function selectAutomaticDrive() {
-    $('.js-autodrive').show();
-    $('.js-manualdrive').hide();
-    $('.js-autodriveselector').hide();
-    $('.js-manualdriveselector').show();
-
-    toggleStateButtons();
-  }
-
-  function selectManualDrive() {
-    $('.js-autodrive').hide();
-    $('.js-manualdrive').show();
-    $('.js-autodriveselector').show();
-    $('.js-manualdriveselector').hide();
-  }
-
   function toggleStateButtons() {
     $('.js-launching').show();
     $('.js-docking').show();
     $('.js-paused').show();
     $('.js-mowing').show();
 
-    if (currentStatus.state) {
-      switch (currentStatus.state) {
+    if (liam.data.status.state) {
+      switch (liam.data.status.state) {
         case 'DOCKED': {
           $('.js-launching').show();
           $('.js-docking').hide();
@@ -143,19 +104,18 @@ liam.sections.start =
           $('.js-mowing').show();
           break;
         }
+        default: {
+          console.log('Unknown state: ' + liam.data.status.state);
+        }
       }
     }
   }
 
-  function setup() {
-    selectAutomaticDrive();
+  function init() {
 
-    sec.find('.js-autodriveselector').on('click', function() {
-      selectAutomaticDrive();
-    });
-    sec.find('.js-manualdriveselector').on('click', function() {
-      selectManualDrive();
-    });
+    window.addEventListener('statusUpdated', updatedStatus);
+    updatedStatus();
+
     sec.find('.js-launching').on('click', function() {
       setLaunchMowerState();
     });
@@ -168,60 +128,42 @@ liam.sections.start =
     sec.find('.js-paused').on('click', function() {
       setPausedState();
     });
-    sec.find('.js-test').on('click', function() {
-      setTestState();
-    });
-    sec.find('.js-startmower').on('click', function() {
-      startMowerMotor();
-    });
-    sec.find('.js-stopmower').on('click', function() {
-      stopMowerMotor();
-    });
-
   }
 
   function selected() {
-    liam.rest.getStatus().done(data => {
-      updateStatus(data);
-      toggleStateButtons();
-    });
-
-    statusPoller = setInterval(() => {
-      liam.rest.getStatus().done(data => {
-        updateStatus(data);
-        toggleStateButtons();
-      });
-    }, 2000);
   }
 
   function unselected() {
-    clearInterval(statusPoller);
   }
 
-  function updateStatus(data) {
-    currentStatus = data;
+  function updatedStatus() {
 
+    if (!liam.data.status) {
+      return;
+    }
+    
     let text;
-    switch (data.state) {
-      case 'DOCKED': text = 'Parkerad'; break;
-      case 'LAUNCHING': text = 'Påbörjar klippning'; break;
-      case 'MOWING': text = 'Klipper'; break;
-      case 'DOCKING': text = 'Avslutar klippning'; break;
-      case 'CHARGING': text = 'Laddar'; break;
-      case 'STUCK': text = 'Fastnat'; break;
-      case 'FLIPPED': text = 'Uppochned vänd'; break;
-      case 'MANUAL': text = 'Manuell körning'; break;
-      case 'PAUSED': text = 'Pausad'; break;
-      case 'TEST': text = 'Testkörning'; break;
+    switch (liam.data.status.state) {
+      case 'DOCKED': text = 'PARKERAD'; break;
+      case 'LAUNCHING': text = 'PÅBÖRJAR KLIPPNING'; break;
+      case 'MOWING': text = 'KLIPPNING PÅGÅR'; break;
+      case 'DOCKING': text = 'PARKERAR'; break;
+      case 'CHARGING': text = 'LADDAR'; break;
+      case 'STUCK': text = 'FASTNAT'; break;
+      case 'FLIPPED': text = 'UPPOCHNED VÄND'; break;
+      case 'MANUAL': text = 'MANUELL KÖRNING'; break;
+      case 'PAUSED': text = 'PAUSAD'; break;
+      case 'TEST': text = 'TESTKÖRNING'; break;
       default: text = '';
     }
 
     sec.find('.js-state').text(text);
+
+    toggleStateButtons();
   }
 
-  setup();
-
   return {
+    init: init,
     selected: selected,
     unselected: unselected
   }

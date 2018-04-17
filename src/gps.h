@@ -2,15 +2,15 @@
 #define _gps_h
 
 #include <Arduino.h>
-#include <NMEAGPS.h>
+//#include <NMEAGPS.h>
 
 class GPS {
   public:
     GPS();
     bool isEnabled();
   private:
-    NMEAGPS gps;
-    gps_fix currentFix;
+  //  NMEAGPS gps;
+  //  gps_fix currentFix;
     void GPS_isr(uint8_t c);
 };
 
