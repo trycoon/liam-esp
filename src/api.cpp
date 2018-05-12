@@ -3,15 +3,13 @@
 #include "definitions.h"
 #include "io_accelerometer.h"
 
-
-Api::Api(StateController& stateController, WheelController& wheelController, Battery& battery, Cutter& cutter, GPS& gps, IO_Accelerometer& tilt, Metrics& metrics) :
+/**
+* REST-API class defining all the endpoints.
+* We are aiming for a self explaining API that resembles the HATEOAS constraints.
+*/
+Api::Api(StateController& stateController, Resources& resources) :
   stateController(stateController),
-  wheelController(wheelController),
-  battery(battery),
-  cutter(cutter),
-  gps(gps),
-  tilt(tilt),
-  metrics(metrics) {}
+  resources(resources){}
 
 void Api::setupApi(AsyncWebServer& web_server) {
 
@@ -32,32 +30,13 @@ void Api::setupApi(AsyncWebServer& web_server) {
     JsonObject& links = root.createNestedObject("_links");
     JsonObject& self = links.createNestedObject("self");
     self["href"] = "/api/v1/history/battery";
+    self["method"] = "GET";
 
     JsonArray& samples = root.createNestedArray("samples");
-    for (auto &s: metrics.getBatteryHistory()) {
+    for (auto &s: resources.metrics.getBatteryHistory()) {
         JsonObject& sample = samples.createNestedObject();
         sample["t"] = s.time;
         sample["v"] = s.batteryVoltage;
-    }
-
-    root.printTo(*response);
-    request->send(response);
-  });
-
-  // respond to GET requests on URL /api/v1/history/cutter_load
-  web_server.on("/api/v1/history/cutter_load", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    AsyncResponseStream *response = request->beginResponseStream("application/json");
-    DynamicJsonBuffer jsonBuffer;
-    JsonObject& root = jsonBuffer.createObject();
-    JsonObject& links = root.createNestedObject("_links");
-    JsonObject& self = links.createNestedObject("self");
-    self["href"] = "/api/v1/history/cutter_load";
-
-    JsonArray& samples = root.createNestedArray("samples");
-    for (auto &s: metrics.getCutterLoadHistory()) {
-        JsonObject& sample = samples.createNestedObject();
-        sample["t"] = s.time;
-        sample["v"] = s.cutterLoad;
     }
 
     root.printTo(*response);
@@ -72,34 +51,15 @@ void Api::setupApi(AsyncWebServer& web_server) {
     JsonObject& links = root.createNestedObject("_links");
     JsonObject& self = links.createNestedObject("self");
     self["href"] = "/api/v1/history/position";
+    self["method"] = "GET";
 
     JsonArray& samples = root.createNestedArray("samples");
-    for (auto &s: metrics.getGpsPositionHistory()) {
+    for (auto &s: resources.metrics.getGpsPositionHistory()) {
         JsonObject& sample = samples.createNestedObject();
         sample["t"] = s.time;
         sample["lat"] = s.lat;
         sample["lng"] = s.lng;
-        sample["dir"] = 0;
-    }
-
-    root.printTo(*response);
-    request->send(response);
-  });
-
-  // respond to GET requests on URL /api/v1/history/memory
-  web_server.on("/api/v1/history/memory", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    AsyncResponseStream *response = request->beginResponseStream("application/json");
-    DynamicJsonBuffer jsonBuffer;
-    JsonObject& root = jsonBuffer.createObject();
-    JsonObject& links = root.createNestedObject("_links");
-    JsonObject& self = links.createNestedObject("self");
-    self["href"] = "/api/v1/history/memory";
-
-    JsonArray& samples = root.createNestedArray("samples");
-    for (auto &s: metrics.getMemoryHistory()) {
-        JsonObject& sample = samples.createNestedObject();
-        sample["t"] = s.time;
-        sample["v"] = s.memory;
+        sample["dir"] = s.dir;
     }
 
     root.printTo(*response);
@@ -115,18 +75,15 @@ void Api::setupApi(AsyncWebServer& web_server) {
 
     JsonObject& self = links.createNestedObject("self");
     self["href"] = "/api/v1/history";
+    self["method"] = "GET";
 
     JsonObject& battery = links.createNestedObject("battery");
     battery["href"] = "/api/v1/history/battery";
-
-    JsonObject& cutterLoad = links.createNestedObject("cutterLoad");
-    cutterLoad["href"] = "/api/v1/history/cutter_load";
+    battery["method"] = "GET";
 
     JsonObject& position = links.createNestedObject("position");
     position["href"] = "/api/v1/history/position";
-
-    JsonObject& memory = links.createNestedObject("memory");
-    memory["href"] = "/api/v1/history/memory";
+    position["method"] = "GET";
 
     root.printTo(*response);
     request->send(response);
@@ -141,27 +98,31 @@ void Api::setupApi(AsyncWebServer& web_server) {
 
     JsonObject& self = links.createNestedObject("self");
     self["href"] = "/api/v1/manual";
+    self["method"] = "GET";
 
     JsonObject& forward = links.createNestedObject("forward");
     forward["href"] = "/api/v1/manual/forward";
+    forward["method"] = "PUT";
 
     JsonObject& backward = links.createNestedObject("backward");
     backward["href"] = "/api/v1/manual/backward";
+    backward["method"] = "PUT";
 
-    JsonObject& left = links.createNestedObject("left");
-    left["href"] = "/api/v1/manual/left";
-
-    JsonObject& right = links.createNestedObject("right");
-    right["href"] = "/api/v1/manual/right";
+    JsonObject& left = links.createNestedObject("turn");
+    left["href"] = "/api/v1/manual/turn";
+    left["method"] = "PUT";
 
     JsonObject& stop = links.createNestedObject("stop");
     stop["href"] = "/api/v1/manual/stop";
+    stop["method"] = "PUT";
 
     JsonObject& cutter_on = links.createNestedObject("cutter_on");
     cutter_on["href"] = "/api/v1/manual/cutter_on";
+    cutter_on["method"] = "PUT";
 
     JsonObject& cutter_off = links.createNestedObject("cutter_off");
     cutter_off["href"] = "/api/v1/manual/cutter_off";
+    cutter_off["method"] = "PUT";
 
     root.printTo(*response);
     request->send(response);
@@ -175,18 +136,17 @@ void Api::setupApi(AsyncWebServer& web_server) {
     JsonObject& links = root.createNestedObject("_links");
     JsonObject& self = links.createNestedObject("self");
     self["href"] = "/api/v1/status";
+    self["method"] = "GET";
 
     root["state"] = stateController.getStateInstance()->getStateName();
-    root["batteryVoltage"] = battery.getBatteryVoltage();
-    root["batteryLevel"] = 0;
-    root["cutterLoad"] = cutter.getLoad();
-    root["gps_latitude"] = "0";
-    root["gps_longitude"] = "0";
-    root["gps_heading"] = "0";
+    root["batteryVoltage"] = resources.battery.getBatteryVoltage();
+    root["batteryLevel"] = resources.battery.getBatteryStatus();
+    root["cutterLoad"] = resources.cutter.getLoad();
 
-    orientation orient = tilt.getOrientation();
-    root["tilt_pitch"] = orient.pitch;
-    root["tilt_roll"] = orient.roll;
+    orientation orient = resources.accelerometer.getOrientation();
+    root["pitch"] = orient.pitch;
+    root["roll"] = orient.roll;
+    root["yaw"] = orient.heading;
 
     root.printTo(*response);
     request->send(response);
@@ -200,17 +160,13 @@ void Api::setupApi(AsyncWebServer& web_server) {
     JsonObject& links = root.createNestedObject("_links");
     JsonObject& self = links.createNestedObject("self");
     self["href"] = "/api/v1/system";
+    self["method"] = "GET";
 
     root["name"] = Definitions::APP_NAME;
     root["version"] = Definitions::APP_VERSION;
-    root["coreVersion"] = ESP.getCoreVersion();
     root["cpuFreq"] = ESP.getCpuFreqMHz();
     root["flashChipSize"] = ESP.getFlashChipSize();
     root["freeHeap"] = ESP.getFreeHeap();
-    root["freeSketchSpace"] = ESP.getFreeSketchSpace();
-    root["sketchSize"] = ESP.getSketchSize();
-    root["resetReason"] = ESP.getResetReason();
-    root["resetInfo"] = ESP.getResetInfo();
     root["wifiSignal"] = WiFi.RSSI();
 
     root.printTo(*response);
@@ -226,27 +182,38 @@ void Api::setupApi(AsyncWebServer& web_server) {
 
     JsonObject& self = links.createNestedObject("self");
     self["href"] = "/api/v1";
+    self["method"] = "GET";
 
     JsonObject& history = links.createNestedObject("history");
     history["href"] = "/api/v1/history";
+    history["method"] = "GET";
 
     JsonObject& login = links.createNestedObject("login");
     login["href"] = "/api/v1/login";
 
     JsonObject& manual = links.createNestedObject("manual");
     manual["href"] = "/api/v1/manual";
+    manual["method"] = "GET";
 
     JsonObject& reboot = links.createNestedObject("reboot");
     reboot["href"] = "/api/v1/reboot";
+    reboot["method"] = "PUT";
+
+    JsonObject& factoryreset = links.createNestedObject("factoryreset");
+    factoryreset["href"] = "/api/v1/factoryreset";
+    factoryreset["method"] = "PUT";
 
     JsonObject& state = links.createNestedObject("state");
     state["href"] = "/api/v1/state";
+    state["method"] = "PUT";
 
     JsonObject& status = links.createNestedObject("status");
     status["href"] = "/api/v1/status";
+    status["method"] = "GET";
 
     JsonObject& system = links.createNestedObject("system");
     system["href"] = "/api/v1/system";
+    system["method"] = "GET";
 
     root.printTo(*response);
     request->send(response);
@@ -256,11 +223,12 @@ void Api::setupApi(AsyncWebServer& web_server) {
     request->redirect("/api/v1");
   });
 
-  // PUT, POST request.
+  // PUT, POST requests.
   web_server.onRequestBody([this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
 
     if (request->method() == HTTP_PUT) {
-      // respond to PUT requests on URL /api/v1/state, change state of mower. e.g. {"state": "TEST"}
+      // respond to PUT requests on URL /api/v1/state, change state of mower.
+      // example body: {"state": "TEST"}
       if (request->url() == "/api/v1/state") {
         DynamicJsonBuffer jsonBuffer;
         JsonObject& root = jsonBuffer.parseObject((const char*)data);
@@ -293,102 +261,142 @@ void Api::setupApi(AsyncWebServer& web_server) {
         } else {
           request->send(400, "text/plain", "Bad Request");
         }
-
-        return;
       }
 
       // respond to PUT requests on URL /api/v1/manual/forward, drive mower forward.
-      if (request->url() == "/api/v1/manual/forward") {
+      // example body: {"speed": 50, "turnrate": 0, "smooth": false}
+      else if (request->url() == "/api/v1/manual/forward") {
         if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
           stateController.setState(Definitions::MOWER_STATES::MANUAL);
         }
 
-        wheelController.forward(true);
-        request->send(200);
+        DynamicJsonBuffer jsonBuffer;
+        JsonObject& root = jsonBuffer.parseObject((const char*)data);
 
-        return;
+        if (root.success()) {
+          if (!root.containsKey("speed")) {
+            request->send(400, "text/plain", "Bad Request - missing 'speed' parameter");
+            return;
+          }
+          if (!root.containsKey("turnrate")) {
+            request->send(400, "text/plain", "Bad Request - missing 'turnrate' parameter");
+            return;
+          }
+          if (!root.containsKey("smooth")) {
+            request->send(400, "text/plain", "Bad Request - missing 'smooth' parameter");
+            return;
+          }
+
+          resources.wheelController.forward(root["turnrate"], root["speed"], root["smooth"]);
+          request->send(200);
+        } else {
+          request->send(400, "text/plain", "Bad Request");
+        }
       }
 
       // respond to PUT requests on URL /api/v1/manual/backward, drive mower backward.
-      if (request->url() == "/api/v1/manual/backward") {
+      else if (request->url() == "/api/v1/manual/backward") {
+        // example body: {"speed": 50, "turnrate": 0, "smooth": false}
         if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
           stateController.setState(Definitions::MOWER_STATES::MANUAL);
         }
 
-        wheelController.backward(true);
-        request->send(200);
+        DynamicJsonBuffer jsonBuffer;
+        JsonObject& root = jsonBuffer.parseObject((const char*)data);
 
-        return;
+        if (root.success()) {
+          if (!root.containsKey("speed")) {
+            request->send(400, "text/plain", "Bad Request - missing 'speed' parameter");
+            return;
+          }
+          if (!root.containsKey("turnrate")) {
+            request->send(400, "text/plain", "Bad Request - missing 'turnrate' parameter");
+            return;
+          }
+          if (!root.containsKey("smooth")) {
+            request->send(400, "text/plain", "Bad Request - missing 'smooth' parameter");
+            return;
+          }
+
+          resources.wheelController.backward(root["turnrate"], root["speed"], root["smooth"]);
+          request->send(200);
+        } else {
+          request->send(400, "text/plain", "Bad Request");
+        }
       }
 
-      // respond to PUT requests on URL /api/v1/manual/left, turn mower left.
-      if (request->url() == "/api/v1/manual/left") {
+      // respond to PUT requests on URL /api/v1/manual/turn, turn mower to specified direction (degrees 0-360).
+      // example body: {"direction": 180}
+      else if (request->url() == "/api/v1/manual/turn") {
         if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
           stateController.setState(Definitions::MOWER_STATES::MANUAL);
         }
 
-        wheelController.turnLeft(true);
-        request->send(200);
+        DynamicJsonBuffer jsonBuffer;
+        JsonObject& root = jsonBuffer.parseObject((const char*)data);
 
-        return;
-      }
+        if (root.success()) {
+          if (!root.containsKey("direction")) {
+            request->send(400, "text/plain", "Bad Request - missing 'direction' parameter");
+            return;
+          }
 
-      // respond to PUT requests on URL /api/v1/manual/right, turn mower right.
-      if (request->url() == "/api/v1/manual/right") {
-        if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
-          stateController.setState(Definitions::MOWER_STATES::MANUAL);
+          resources.wheelController.turn(root["direction"]);
+          request->send(200);
+        } else {
+          request->send(400, "text/plain", "Bad Request");
         }
-
-        wheelController.turnRight(true);
-        request->send(200);
-
-        return;
       }
 
       // respond to PUT requests on URL /api/v1/manual/stop, stop mower movement.
-      if (request->url() == "/api/v1/manual/stop") {
+      else if (request->url() == "/api/v1/manual/stop") {
         if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
           stateController.setState(Definitions::MOWER_STATES::MANUAL);
         }
 
-        wheelController.stop(true);
+        resources.wheelController.stop(true);
         request->send(200);
-
-        return;
       }
 
       // respond to PUT requests on URL /api/v1/manual/cutter_on, start mower cutter.
-      if (request->url() == "/api/v1/manual/cutter_on") {
+      else if (request->url() == "/api/v1/manual/cutter_on") {
         if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
           stateController.setState(Definitions::MOWER_STATES::MANUAL);
         }
 
-        cutter.start();
+        resources.cutter.start();
         request->send(200);
-
-        return;
       }
 
       // respond to PUT requests on URL /api/v1/manual/cutter_off, stop mower cutter.
-      if (request->url() == "/api/v1/manual/cutter_off") {
+      else if (request->url() == "/api/v1/manual/cutter_off") {
         if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
           stateController.setState(Definitions::MOWER_STATES::MANUAL);
         }
 
-        cutter.stop(true);
+        resources.cutter.stop(true);
         request->send(200);
-
-        return;
       }
 
       // respond to PUT requests on URL /api/v1/reboot, restart mower.
-      if (request->url() == "/api/v1/reboot") {
+      else if (request->url() == "/api/v1/reboot") {
+        resources.cutter.stop(true);
+        resources.wheelController.stop(false);
         Serial.println("Rebooting by API request");
         request->send(200);
         delay(1000);
         ESP.restart();
+      }
 
-        return;
+      // respond to PUT requests on URL /api/v1/factoryreset, reset all setting and restart mower.
+      else if (request->url() == "/api/v1/factoryreset") {
+        resources.cutter.stop(true);
+        resources.wheelController.stop(false);
+        //presenent.clear();
+        Serial.println("Factory reset by API request");
+        request->send(200);
+        delay(1000);
+        ESP.restart();
       }
     }
 
@@ -396,83 +404,3 @@ void Api::setupApi(AsyncWebServer& web_server) {
     request->send(404, "text/plain", "Not found");
   });
 }
-/*
-void processCommand(char* msgBuffer) {
-    StaticJsonBuffer<BUFF_SIZE> jsonBuffer;
-    JsonObject& root = jsonBuffer.parseObject(msgBuffer);
-
-    if (!root.success()) {
-        Serial.println("parseObject() failed");
-        return;
-    }
-
-    yield();
-    const char* cmd = root["cmd"];
-    char msg[1024];
-    if (strcmp(cmd, "heartBeat")  == 0) {
-        root.printTo(msg, sizeof(msg));
-        safeSend(msg);
-    } else if (strcmp(cmd, "identify")  == 0) {
-        StaticJsonBuffer<1024> jsonBuffer;
-        JsonObject& json = jsonBuffer.createObject();
-
-        //SIZE FOR BASE INFO WITHOUT SERVICES MAY BE ~512 so there 512 jsonBuffer for services array: https://github.com/bblanchon/ArduinoJson/wiki/Memory-model
-        json["cmd"] = "identify";
-        json["chipId"] = ESP.getChipId();
-        json["freeSketchSpace"] = ESP.getFreeSketchSpace();
-
-        JsonObject& version = json.createNestedObject("version");
-        version["sdk"] = system_get_sdk_version();
-        version["major"] = MAJOR_VERSION;
-        version["minor"] = MINOR_VERSION;
-
-        rst_info* resetInfo = system_get_rst_info();
-        JsonObject& reset = json.createNestedObject("reset");
-        reset["reason"] = resetInfo->reason;
-        reset["exccause"] = resetInfo->exccause;
-        reset["epc1"] = resetInfo->epc1;
-        reset["epc2"] = resetInfo->epc2;
-        reset["epc3"] = resetInfo->epc3;
-        reset["excvaddr"] = resetInfo->excvaddr;
-        reset["depc"] = resetInfo->depc;
-
-        JsonObject& flash = json.createNestedObject("flash");
-        flash["id"] = ESP.getFlashChipId();
-        flash["size"] = ESP.getFlashChipSize();
-        flash["realSize"] = ESP.getFlashChipRealSize();
-        flash["speed"] = ESP.getFlashChipSpeed();
-        FlashMode_t ideMode = ESP.getFlashChipMode();
-        flash["mode"] = (ideMode == FM_QIO ? "QIO" : ideMode == FM_QOUT ? "QOUT" : ideMode == FM_DIO ? "DIO" : ideMode == FM_DOUT ? "DOUT" : "UNKNOWN");
-
-        const char* phyModes[] = { "", "B", "G", "N" };
-        JsonObject& wifi = json.createNestedObject("wifi");
-        wifi["channel"] = wifi_get_channel();
-        wifi["reconnect"] = wifi_station_get_auto_connect();
-        wifi["phyMode"] = phyModes[wifi_get_phy_mode()];
-        wifi["ssid"] = WiFi.SSID();
-        wifi["bssid"] = WiFi.BSSIDstr();
-        wifi["mac"] = WiFi.macAddress();
-        wifi["ip"] = IP2Str(WiFi.localIP());
-        wifi["mask"] = IP2Str(WiFi.subnetMask());
-        wifi["gateway"] = IP2Str(WiFi.gatewayIP());
-        wifi["dns"] = IP2Str(WiFi.dnsIP());
-        wifi["hostname"] = WiFi.hostname();
-
-        JsonArray& services = json.createNestedArray("services");
-        for (unsigned int i = 0; i < 10; i++) {
-            JsonObject& service = services.createNestedObject();
-            service["keyA"] = "AAA";
-            service["keyB"] = "BBB";
-            service["keyC"] = 111;
-            yield();
-        }
-
-        json.printTo(msg, sizeof(msg));
-        safeSend(msg);
-    } else if(strcmp(cmd, "restart")  == 0) {
-        ESP.restart();
-    } else if(strcmp(cmd, "perform")  == 0) {
-
-    }
-}
-*/

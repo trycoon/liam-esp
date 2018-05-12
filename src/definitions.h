@@ -17,15 +17,12 @@ namespace Definitions {
                               MOWING,     // mower is currently mowing
                               DOCKING,    // mower has stopped mowing and is heading back to its charging station (battery may be running low)
                               CHARGING,   // mower is docked in its charging station and is currently charging
-                              STUCK,      // mower is stuck somewhere and have shutdown (it may be stuck in a hole, the cutter may be stuck, or some other hardware issues...)
+                              STUCK,      // mower is stuck somewhere and have shutdown (it may be stuck in a hole, the cutter may be stuck, or some other hardware issue...)
                               FLIPPED,    // mower is flipped upside down or tiled too much, stopp mowing and wait to be unflipped.
                               MANUAL,     // mower is in manual drive mode and controlled by user from REST-API.
                               PAUSED,     // mower is paused from it's normal operation, when unpaused it should pursue last state.
                               TEST        // mower is in test mode.
                             };
-
-    extern const int16_t BFW_INSIDE_SIGNAL;
-    extern const int16_t BFW_OUTSIDE_SIGNAL;
 };
 
 #endif

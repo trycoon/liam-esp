@@ -1,20 +1,46 @@
 #include "wifi.h"
+#include <WiFi.h>
+#include <ESPmDNS.h>
 #include "definitions.h"
 #include "settings.h"
-#include <ESP8266mDNS.h>
 
+#include <cassert>
 
+WiFi_Client* WiFi_Client::Instance = nullptr;
+
+void WiFi_Client::WiFiEvent(system_event_id_t event, system_event_info_t info)
+{
+    Serial.printf("[WiFi-event] event: %d\n", event);
+
+    switch(event) {
+    case SYSTEM_EVENT_STA_GOT_IP:
+        Instance->onWifiConnect(event, info);
+        break;
+    case SYSTEM_EVENT_STA_DISCONNECTED:
+        Serial.println("WiFi lost connection");
+        break;
+    }
+}
+
+//TODO: Setup time when we get IP: https://github.com/espressif/arduino-esp32/blob/master/libraries/ESP32/examples/Time/SimpleTime/SimpleTime.ino
+// TODO: Smart Config: http://www.iotsharing.com/2017/05/how-to-use-smartconfig-on-esp32.html
 WiFi_Client::WiFi_Client() : web_server(80) {
-  WiFi.hostname(Definitions::APP_NAME);
+  assert(!Instance);
+  Instance = this;
+  WiFi.setHostname(Definitions::APP_NAME);
   WiFi.mode(WIFI_STA);
 
-  wifiConnectHandler = WiFi.onStationModeGotIP([this](const WiFiEventStationModeGotIP& event) {
-    onWifiConnect(event);
-  });
-
-  wifiDisconnectHandler = WiFi.onStationModeDisconnected([this](const WiFiEventStationModeDisconnected& event) {
-    onWifiDisconnect(event);
-  });
+  WiFi.onEvent(WiFiEvent);
+  /*WiFi.onEvent([this](WiFiEventCb event) {
+    switch(event) {
+      case SYSTEM_EVENT_STA_GOT_IP:
+        //onWifiConnect();
+        break;
+      case SYSTEM_EVENT_STA_DISCONNECTED:
+        //onWifiDisconnect();
+        break;
+    }
+  });*/
 
   setupWebServer();
 
@@ -42,7 +68,7 @@ WiFi_Client::WiFi_Client() : web_server(80) {
 void WiFi_Client::setupWebServer() {
 
     // mount SPIFFS filesystem, the files stored in the "data"-directory in the root of this project. Contains the static webpage files.
-    if (!SPIFFS.begin()) {
+/*    if (!SPIFFS.begin()) {
       Serial.println("Failed to mount SPIFFS filesystem! Rebooting.");
       delay(2000);
       ESP.restart();
@@ -51,8 +77,7 @@ void WiFi_Client::setupWebServer() {
     web_server
     .serveStatic("/", SPIFFS, "/")
     .setDefaultFile("index.html")
-    .setCacheControl("max-age=2592000"); // 30 days.
-    //.setAuthentication("user", "pass");
+    .setCacheControl("max-age=2592000"); // 30 days.*/
 
     Serial.println("web_server initialized");
 }
@@ -70,9 +95,9 @@ void WiFi_Client::connect() {
   WiFi.begin(Settings::SSID, Settings::WIFI_PASSWORD);
 }
 
-void WiFi_Client::onWifiConnect(const WiFiEventStationModeGotIP& event) {
+void WiFi_Client::onWifiConnect(system_event_id_t event, system_event_info_t info) {
   Serial.print("Connected to Wi-Fi using IP-address: ");
-  Serial.print(event.ip);
+  Serial.print(WiFi.localIP()); //String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3])
   Serial.print(", MAC-address: ");
   uint8_t MAC_array[6];
   char MAC_char[18];
@@ -93,7 +118,7 @@ void WiFi_Client::onWifiConnect(const WiFiEventStationModeGotIP& event) {
   }
 }
 
-void WiFi_Client::onWifiDisconnect(const WiFiEventStationModeDisconnected& event) {
+void WiFi_Client::onWifiDisconnect(system_event_id_t event, system_event_info_t info) {
   Serial.println("Disconnected from Wi-Fi.");
 
   mqttReconnectTimer.detach(); // ensure we don't reconnect to MQTT while reconnecting to Wi-Fi
@@ -177,6 +202,44 @@ void WiFi_Client::publish_message(std::string message, std::string subtopic) {
 void WiFi_Client::onMqttPublish(uint16_t packetId) {
   Serial.print("MQTT Publish acknowledged, packet id: ");
   Serial.println(packetId);
+}
+
+/**
+* Check if we have necessary WiFi settings, if not then enter "ESP SmartConfig"-mode to bind to an existing accesspoint.
+*/
+void WiFi_Client::checkWifiSettings() {
+  if (sizeof(Settings::SSID) == 0) {
+    Serial.println("Missing WiFi settings, starting up own accesspoint for SmartConfig.");
+    WiFi.mode(WIFI_AP_STA);
+    WiFi.beginSmartConfig();
+
+    //Wait for SmartConfig packet from mobile
+    Serial.println("Waiting for SmartConfig.");
+    while (!WiFi.smartConfigDone()) {
+      delay(500);
+      Serial.print(".");
+    }
+
+    Serial.println("");
+    Serial.println("SmartConfig received.");
+
+    //Wait for WiFi to connect to AP
+    Serial.println("Waiting for WiFi");
+    while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
+      Serial.print(".");
+    }
+
+    Serial.println("WiFi Connected.");
+
+    Serial.print("IP Address: ");
+    Serial.println(WiFi.localIP());
+
+    // TODO: save settings to persistant store.
+    Serial.println("Restarting software.");
+    delay(2000);
+    ESP.restart();
+  }
 }
 
 AsyncWebServer& WiFi_Client::getWebServer() {

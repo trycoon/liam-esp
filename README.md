@@ -5,7 +5,7 @@
 
 
 ## Overview
-ESP8266 port of Liam Arduino lawn mower
+ESP32 port of Liam Arduino lawn mower
 
 
 ## Features

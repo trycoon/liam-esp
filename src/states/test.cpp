@@ -16,22 +16,22 @@ void Test::selected(Definitions::MOWER_STATES lastState) {
 
   testSequence.schedule([this]() {
     Serial.println("forward");
-    resources.wheelController.forward();
+    resources.wheelController.forward(0, 100, true);
   }, 2000);
 
   testSequence.schedule([this]() {
     Serial.println("stop");
-    resources.wheelController.stop();
+    resources.wheelController.stop(true);
   }, 20000);
 
   testSequence.schedule([this]() {
     Serial.println("left");
-    resources.wheelController.turnLeft(true, 1500);
+    resources.wheelController.turn(-90);
   }, 50);
 
   testSequence.schedule([this]() {
     Serial.println("right");
-    resources.wheelController.turnRight(true, 1500);
+    resources.wheelController.turn(90);
   }, 2000);
 
   testSequence.schedule([this]() {
@@ -41,12 +41,12 @@ void Test::selected(Definitions::MOWER_STATES lastState) {
 
   testSequence.schedule([this]() {
     Serial.println("backward");
-    resources.wheelController.backward();
+    resources.wheelController.backward(0, 100, true);
   }, 50);
 
   testSequence.schedule([this]() {
     Serial.println("stop");
-    resources.wheelController.stop();
+    resources.wheelController.stop(true);
   }, 10000);
 
   testSequence.schedule([this, lastState]() {

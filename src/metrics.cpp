@@ -1,6 +1,6 @@
 #include "metrics.h"
 
-Metrics::Metrics(Battery& battery, Cutter& cutter, GPS& gps) : metricSamples(MAX_SAMPLES), battery(battery), cutter(cutter), gps(gps) {
+Metrics::Metrics(Battery& battery, GPS& gps) : metricSamples(MAX_SAMPLES), battery(battery), gps(gps) {
   pollTimer.schedule([this]() {
     getSample();
   }, 5000, true);
@@ -21,10 +21,8 @@ void Metrics::getSample() {
 
   sample.time = millis();
   sample.batteryVoltage = battery.getBatteryVoltage();
-  sample.cutterLoad = cutter.getLoad();
 //  sample.lat = gps.getPosition();
 //  sample.lng;
-  sample.memory = ESP.getFreeHeap();
 
   metricSamples.push_back(sample);
 }
@@ -47,20 +45,6 @@ std::list<batterySample> Metrics::getBatteryHistory() {
   return samples;
 }
 
-std::list<cutterLoadSample> Metrics::getCutterLoadHistory() {
-  std::list<cutterLoadSample> samples;
-
-  for (auto &s: metricSamples){
-    cutterLoadSample sample;
-    sample.time = s.time;
-    sample.cutterLoad = s.cutterLoad;
-
-    samples.push_back(sample);
-  }
-
-  return samples;
-}
-
 std::list<gpsPosition> Metrics::getGpsPositionHistory() {
   std::list<gpsPosition> samples;
 
@@ -69,20 +53,6 @@ std::list<gpsPosition> Metrics::getGpsPositionHistory() {
     sample.time = s.time;
     sample.lat = s.lat;
     sample.lng = s.lng;
-
-    samples.push_back(sample);
-  }
-
-  return samples;
-}
-
-std::list<heapMemory> Metrics::getMemoryHistory() {
-  std::list<heapMemory> samples;
-
-  for (auto &s: metricSamples){
-    heapMemory sample;
-    sample.time = s.time;
-    sample.memory = s.memory;
 
     samples.push_back(sample);
   }

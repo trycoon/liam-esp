@@ -22,8 +22,8 @@ void Wheel::setSpeed(int8_t speed) {
   } else {
     digitalWrite(motor_dir_pin, wheel_invert ? 0 : 1);
   }
-
-  analogWrite(motor_pin, map(abs(speed), 0, 100, 0, PWMRANGE));
+  //https://github.com/espressif/arduino-esp32/blob/master/libraries/ESP32/examples/AnalogOut/LEDCSoftwareFade/LEDCSoftwareFade.ino
+  //analogWrite(motor_pin, map(abs(speed), 0, 100, 0, PWMRANGE));
 }
 
 int8_t Wheel::getSpeed() {

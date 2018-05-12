@@ -12,10 +12,10 @@ class Battery : public Processable {
     Battery(IO_Analog& io_analog);
     float getChargerVoltage();
     float getBatteryVoltage();
+    float getBatteryStatus();
     bool isCharging();
     bool needRecharge();
     bool isFullyCharged();
-    unsigned long lastBatteryChargePeriod();
     void process();
 
   private:
@@ -25,10 +25,7 @@ class Battery : public Processable {
     bool _isCharging;
     bool _needRecharge;
     bool _isFullyCharged;
-    unsigned long _lastBatteryChargePeriod;
-    unsigned long _lastBatteryStartChargeTimestamp;
     Scheduler pollTimer;
-    uint32_t chargeStartTime;
     void updateReadings();
 };
 

@@ -1,6 +1,5 @@
 #include <Arduino.h>
-#include <ESP8266mDNS.h>
-#include <WiFiUdp.h>
+#include <Wire.h>
 #include "definitions.h"
 #include "settings.h"
 #include "resources.h"
@@ -16,15 +15,12 @@
 #include "gps.h"
 #include "metrics.h"
 #include "state_controller.h"
+#include "configuration.h"
 #include "api.h"
 
 /*
- * Software to control a LIAM robot mower using a NodeMCU/ESP-12E (or similar ESP8266) microcontroller.
+ * Software to control a LIAM robotmower using a NodeMCU/ESP-32 (or similar ESP32) microcontroller.
  */
-
-extern "C" {
-  #include "user_interface.h" // needed for system_update_cpu_freq()
-}
 
 IO_Analog io_analog;
 IO_Accelerometer io_accelerometer;
@@ -36,11 +32,12 @@ Cutter cutter(io_analog);
 BWF bwf;
 Battery battery(io_analog);
 GPS gps;
-WheelController wheelController(leftWheel, rightWheel);
-Resources resources(wifi, wheelController, cutter, bwf, battery, gps);
+WheelController wheelController(leftWheel, rightWheel, io_accelerometer);
+Metrics metrics(battery, gps);
+Configuration configuration;
+Resources resources(wifi, wheelController, cutter, bwf, battery, gps, configuration, io_accelerometer, metrics);
 StateController stateController(Definitions::MOWER_STATES::DOCKED, resources);  // initialize state controller, assume we are DOCKED to begin with.
-Metrics metrics(battery, cutter, gps);
-Api api(stateController, wheelController, battery, cutter, gps, io_accelerometer, metrics);
+Api api(stateController, resources);
 
 
 void scan_I2C() {
@@ -82,20 +79,17 @@ void scan_I2C() {
 }
 
 void setup() {
-  system_update_cpu_freq(80);   // Run CPU at 80 MHz, default.
-  //system_update_cpu_freq(160);  // Run CPU at 160 MHz, untested.
-
   Serial.begin(115200);
   Serial.print(Definitions::APP_NAME);
   Serial.print(" v");
   Serial.println(Definitions::APP_VERSION);
-
   scan_I2C();
   api.setupApi(wifi.getWebServer());
   wifi.connect();
   ota.start();
 }
 
+// Main program loop
 void loop() {
   ota.handle();
 
@@ -104,16 +98,9 @@ void loop() {
     stateController.setState(Definitions::MOWER_STATES::FLIPPED);
   }
 
-  yield();
   stateController.getStateInstance()->process();
-  yield();
   wheelController.process();
-  yield();
   battery.process();
-  yield();
   cutter.process();
-  yield();
   metrics.process();
-
-  yield();
 }

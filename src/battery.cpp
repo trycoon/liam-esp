@@ -18,17 +18,21 @@ void Battery::updateReadings() {
   float charger = io_analog.getChannelVoltage(Settings::CHARGER_SENSOR_CHANNEL);
   chargerVoltage = charger / Settings::CHARGER_RESISTOR_DIVISOR;
 
-  // if we detect more than 10 volts on charge pins then assume we are charging.
-  if (_isCharging == false && chargerVoltage >= 10.0) {
-    _isCharging = true;
-    chargeStartTime = millis();
-  } else if (_isCharging == true && chargerVoltage < 10.0) {
-    _isCharging = false;
-    _lastBatteryChargePeriod = millis() - chargeStartTime;
-  }
-
   _needRecharge = batteryVoltage <= Settings::BATTERY_EMPTY;
   _isFullyCharged = batteryVoltage >= Settings::BATTERY_FULLY_CHARGED;
+
+  // if we detect more than 10 volts on charge pins then assume we are charging.
+  if (!_isCharging && !_isFullyCharged && chargerVoltage >= 10.0) {
+    _isCharging = true;
+    //TODO: save timestamp when we started charging
+  } else if (_isCharging && chargerVoltage < 10.0) {
+    _isCharging = false;
+  }
+
+  if (_isCharging && _isFullyCharged) {
+    _isCharging = false;
+    //TODO: save timestamp when we stopped charging
+  }
 }
 
 float Battery::getChargerVoltage() {
@@ -37,6 +41,13 @@ float Battery::getChargerVoltage() {
 
 float Battery::getBatteryVoltage() {
   return batteryVoltage;
+}
+
+/*
+* Get battery status in percent, 100% = fully charged.
+*/
+float Battery::getBatteryStatus() {
+  return (batteryVoltage - Settings::BATTERY_EMPTY) / (Settings::BATTERY_FULLY_CHARGED - Settings::BATTERY_EMPTY);
 }
 
 bool Battery::isCharging() {
@@ -53,11 +64,4 @@ bool Battery::isFullyCharged() {
 
 void Battery::process() {
   pollTimer.process();
-}
-
-/**
-* The time that has elapsed between we started charging until we have finished charging, in milliseconds.
-*/
-unsigned long Battery::lastBatteryChargePeriod() {
-  return _lastBatteryChargePeriod;
 }

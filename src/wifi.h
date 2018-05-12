@@ -9,7 +9,7 @@
 #include <Arduino.h>
 #include <AsyncMqttClient.h>
 #include <FS.h>
-#include <ESPAsyncTCP.h>
+#include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 
 
@@ -26,8 +26,7 @@ class WiFi_Client {
     AsyncWebServer& getWebServer();  // code-smell, we should think of a better way than to expose this inner reference when we need to register routes!
 
   private:
-    WiFiEventHandler wifiConnectHandler;
-    WiFiEventHandler wifiDisconnectHandler;
+    static WiFi_Client* Instance;
     Ticker wifiReconnectTimer;
 
     AsyncMqttClient mqttClient;
@@ -36,15 +35,16 @@ class WiFi_Client {
     std::queue<MQTT_Message> msgQueue;
 
     AsyncWebServer web_server;
-
+    static void WiFiEvent(system_event_id_t event, system_event_info_t info);
     bool isMQTT_enabled();
     void flushQueue();
-    void onWifiConnect(const WiFiEventStationModeGotIP& event);
-    void onWifiDisconnect(const WiFiEventStationModeDisconnected& event);
+    void onWifiConnect(system_event_id_t event, system_event_info_t info);
+    void onWifiDisconnect(system_event_id_t event, system_event_info_t info);
     void connectToMqtt();
     void onMqttConnect(bool sessionPresent);
     void onMqttDisconnect(AsyncMqttClientDisconnectReason reason);
     void onMqttPublish(uint16_t packetId);
+    void checkWifiSettings();
     void setupWebServer();
 };
 

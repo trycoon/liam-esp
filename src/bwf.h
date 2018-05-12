@@ -13,6 +13,24 @@ class BWF {
     BWF();
     bool isLeftInsideFence();
     bool isRightInsideFence();
+
+  private:
+    const int BFW_STEP_DELAY = 100;  // microseconds
+
+    // Signal the Border Wire Fence sensors should look for, as transmitted by the charging station.
+    // When this signal is detected the sensor-part of the mower is on the INSIDE of the border fence.
+    const int BFW_INSIDE_SIGNAL[10] = {+1, +1, -1, +1, 0, 0, 0, 0, 0, 0 }; // https://en.wikipedia.org/wiki/Barker_code (length 4)
+    //  +---+       +---+
+    //  |   |       |   |     Expected received signal
+    //  |   |       |   |
+    //  +   +---+   |   +------------------------
+    //          |   |
+    //          |   |
+    //          +---+
+
+    //https://github.com/G6EJD/ESP32-8-Octave-Audio-Spectrum-Display/blob/master/ESP32_Spectrum_Display_03.ino
+    //http://www.grauonline.de/alexwww/ardumower/filter/filter.html
+    //https://www.ardumower.de/index.php/en/induktion
 };
 
 #endif

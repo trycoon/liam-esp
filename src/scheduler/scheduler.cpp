@@ -80,7 +80,6 @@ void Scheduler::process() {
       // execute scheduled function.
       (*i).func();
 
-      yield();
       // reschedule if set to repeat.
 
       if ((*i).repeat) {
@@ -101,6 +100,4 @@ void Scheduler::process() {
       ++i;
     }
   }
-
-  yield();
 }

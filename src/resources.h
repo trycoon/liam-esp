@@ -7,6 +7,9 @@
 #include "bwf.h"
 #include "battery.h"
 #include "gps.h"
+#include "configuration.h"
+#include "io_accelerometer.h"
+#include "metrics.h"
 
 /**
 * Container class for holding references to instances that should be shared between many classes.
@@ -19,13 +22,19 @@ class Resources {
                            Cutter& cutter,
                            BWF& bwf,
                            Battery& battery,
-                           GPS& gps)
+                           GPS& gps,
+                           Configuration& configuration,
+                           IO_Accelerometer& accelerometer,
+                           Metrics& metrics)
                            : mqtt(mqtt),
                              wheelController(wheelController),
                              cutter(cutter),
                              bwf(bwf),
                              battery(battery),
-                             gps(gps) { }
+                             gps(gps),
+                             configuration(configuration),
+                             accelerometer(accelerometer),
+                             metrics(metrics) { }
 
     WiFi_Client& mqtt;
     WheelController& wheelController;
@@ -33,6 +42,9 @@ class Resources {
     BWF& bwf;
     Battery& battery;
     GPS& gps;
+    Configuration& configuration;
+    IO_Accelerometer& accelerometer;
+    Metrics& metrics;
 };
 
 #endif

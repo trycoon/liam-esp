@@ -1,8 +1,4 @@
-liam.rest =
-(function() {
-  'use strict';
-
-  function selectState(state) {
+  export function selectState(state) {
     return $.ajax({
       url: '/api/v1/state',
       method: 'PUT',
@@ -16,15 +12,15 @@ liam.rest =
     });
   }
 
-  function getStatus(params) {
-    return $.getJSON('/api/v1/status', params);
+ export function getStatus() {
+    return $.getJSON('/api/v1/status');
   }
 
-  function getSystem(params) {
-    return $.getJSON('/api/v1/system', params);
+ export function getSystem() {
+    return $.getJSON('/api/v1/system');
   }
 
-  function manual(command, params) {
+ export function manual(command, params) {
     return $.ajax({
       url: `/api/v1/manual/${command}`,
       method: 'PUT',
@@ -35,11 +31,3 @@ liam.rest =
       data: params || '{}'
     });
   }
-
-  return {
-    selectState: selectState,
-    getStatus: getStatus,
-    getSystem: getSystem,
-    manual: manual
-  }
-})();

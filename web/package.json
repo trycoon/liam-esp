@@ -1,0 +1,46 @@
+{
+  "name": "liam-esp",
+  "version": "1.0.0",
+  "description": "GUI for Liam-ESP",
+  "private": true,
+  "author": "Henrik Östman",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/trycoon/liam-esp/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/trycoon/liam-esp.git"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "dev": "webpack-dev-server --hot --inline --config build/webpack.config.js",
+    "build": "rimraf ./dist && NODE_ENV=production webpack --config build/webpack.config.js"
+  },
+  "homepage": "https://github.com/trycoon/liam-esp",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.3"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.6.1",
+    "css-loader": "^0.28.11",
+    "eslint-plugin-import": "^2.11.0",
+    "extract-text-webpack-plugin": "^4.0.0-beta.0",
+    "file-loader": "^1.1.11",
+    "html-webpack-plugin": "^3.2.0",
+    "node-sass": "^4.8.3",
+    "rimraf": "^2.6.2",
+    "sass-loader": "^7.0.1",
+    "style-loader": "^0.20.3",
+    "url-loader": "^1.0.1",
+    "webpack": "^4.6.0",
+    "webpack-api-mocker": "^1.4.3",
+    "webpack-cli": "^2.0.14",
+    "webpack-dev-server": "^3.1.3"
+  }
+}

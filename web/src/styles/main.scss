@@ -1,7 +1,3 @@
-/**
-*** SIMPLE GRID
-*** (C) ZACH COLE 2016
-**/
 @import url(https://fonts.googleapis.com/css?family=Lato:400,300,300italic,400italic,700,700italic);
 /* UNIVERSAL */
 html,
@@ -13,6 +9,24 @@ body {
   left: 0;
   top: 0;
   font-size: 100%;
+  background: #1a2126;
+  color: white;
+}
+@media (min-width: 480px) {
+  html,
+  body {
+      overflow: hidden
+  }
+}
+input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    padding: 8px 0;
+    cursor: pointer;
+    background: transparent
+}
+input[type=range]:focus {
+    outline: none
 }
 /* ROOT FONT STYLES */
 * {
@@ -28,15 +42,6 @@ h2 {
 }
 h3 {
   font-size: 1.375rem;
-}
-h4 {
-  font-size: 1.125rem;
-}
-h5 {
-  font-size: 1rem;
-}
-h6 {
-  font-size: 0.875rem;
 }
 p {
   font-size: 1.125rem;
@@ -67,131 +72,6 @@ p {
 .justify {
   text-align: justify;
 }
-/* ==== GRID SYSTEM ==== */
-.container {
-  width: 90%;
-  margin-left: auto;
-  margin-right: auto;
-}
-.row {
-  position: relative;
-  width: 100%;
-}
-.row [class^="col"] {
-  float: left;
-  margin: 0.5rem 2%;
-  min-height: 0.125rem;
-}
-.col-1,
-.col-2,
-.col-3,
-.col-4,
-.col-5,
-.col-6,
-.col-7,
-.col-8,
-.col-9,
-.col-10,
-.col-11,
-.col-12 {
-  width: 96%;
-}
-.col-1-sm {
-  width: 4.33%;
-}
-.col-2-sm {
-  width: 12.66%;
-}
-.col-3-sm {
-  width: 21%;
-}
-.col-4-sm {
-  width: 29.33%;
-}
-.col-5-sm {
-  width: 37.66%;
-}
-.col-6-sm {
-  width: 46%;
-}
-.col-7-sm {
-  width: 54.33%;
-}
-.col-8-sm {
-  width: 62.66%;
-}
-.col-9-sm {
-  width: 71%;
-}
-.col-10-sm {
-  width: 79.33%;
-}
-.col-11-sm {
-  width: 87.66%;
-}
-.col-12-sm {
-  width: 96%;
-}
-.row::after {
-	content: "";
-	display: table;
-	clear: both;
-}
-.hidden-sm {
-  display: none;
-}
-@media only screen and (min-width: 33.75em) {  /* 540px */
-  .container {
-    width: 80%;
-  }
-}
-@media only screen and (min-width: 45em) {  /* 720px */
-  .col-1 {
-    width: 4.33%;
-  }
-  .col-2 {
-    width: 12.66%;
-  }
-  .col-3 {
-    width: 21%;
-  }
-  .col-4 {
-    width: 29.33%;
-  }
-  .col-5 {
-    width: 37.66%;
-  }
-  .col-6 {
-    width: 46%;
-  }
-  .col-7 {
-    width: 54.33%;
-  }
-  .col-8 {
-    width: 62.66%;
-  }
-  .col-9 {
-    width: 71%;
-  }
-  .col-10 {
-    width: 79.33%;
-  }
-  .col-11 {
-    width: 87.66%;
-  }
-  .col-12 {
-    width: 96%;
-  }
-  .hidden-sm {
-    display: block;
-  }
-}
-@media only screen and (min-width: 60em) { /* 960px */
-  .container {
-    width: 75%;
-    max-width: 60rem;
-  }
-}
 /* Theme - light */
 .theme-light body {
     background: #e3e3e3;
@@ -209,21 +89,7 @@ p {
 .theme-light .clickable-active {
     background: #d8d8d8
 }
-
-@media (min-width: 480px) {
-    html,
-    body {
-        overflow: hidden
-    }
-}
-body {
-    background: #101519;
-    color: white;
-    font-family: "Open Sans";
-    font-size: 12px;
-    line-height: 1.4em
-}
-
+/* Navigation meny */
 .nav-left {
     position: fixed;
     width: 60px;
@@ -256,28 +122,24 @@ body {
     display: block;
     margin: 0 auto 5px auto;
 }
+/* Main area */
 .main {
-    margin-left: 63px;
     position: absolute;
+    left: 63px;
+    padding: 10px;
 }
 .section:after {
     content: "";
     display: table;
     clear: both
 }
-.box {
-    padding: 10px;
-    overflow: hidden;
-    background: #1a2126;
-    transition: opacity 0.3s ease, background 0.3s;
-}
-.box-content {
-    vertical-align: middle;
-    text-align: center;
-}
 .clickable-active {
     transition-duration: 0ms;
     background: #303b44
+}
+a {
+    color: #0066BBFF;
+    text-decoration: none;
 }
 .buttons {
   display:flex;
@@ -373,16 +235,6 @@ body {
         opacity: 0.5;
     }
 }
-input[type=range] {
-    -webkit-appearance: none;
-    width: 100%;
-    padding: 8px 0;
-    cursor: pointer;
-    background: transparent
-}
-input[type=range]:focus {
-    outline: none
-}
 .icons.md-18 {
     font-size: 18px
 }
@@ -397,4 +249,27 @@ input[type=range]:focus {
 }
 .fa.md-64 {
     font-size: 64px
+}
+
+.state-control .state {
+  color: red;
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 1.3;
+  margin-bottom: 10px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  text-align: center;
+}
+.state-control .buttons {
+  margin-bottom: 10px;
+}
+
+.joystick {
+    display: inline-block;
+    margin: auto;
+    .joyknob {
+        cursor: move;
+    }
 }

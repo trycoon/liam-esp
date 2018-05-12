@@ -1,8 +1,6 @@
 #ifndef accelerometer_h
 #define accelerometer_h
 
-#include <MPU9250_asukiaaa.h>
-
 struct orientation {
   float pitch;
   float roll;
@@ -17,7 +15,7 @@ class IO_Accelerometer {
     orientation getOrientation();
 
   private:
-    MPU9250 sensor;
+    //MPU9250 sensor;
     bool available = false;
 };
 

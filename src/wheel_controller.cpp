@@ -1,32 +1,28 @@
 #include "wheel_controller.h"
 #include "settings.h"
 
-WheelController::WheelController(Wheel& leftWheel, Wheel& rightWheel) :
+WheelController::WheelController(Wheel& leftWheel, Wheel& rightWheel, IO_Accelerometer& accelerometer) :
             leftWheel(leftWheel),
-            rightWheel(rightWheel) { }
+            rightWheel(rightWheel),
+            accelerometer(accelerometer) { }
 
 WheelController::~WheelController() {
   stop(false);
 }
 
-void WheelController::forward(bool smooth) {
+void WheelController::forward(int8_t turnrate, uint8_t speed, bool smooth) {
   leftWheel.setSpeed(100);
   rightWheel.setSpeed(100);
 }
 
-void WheelController::backward(bool smooth) {
+void WheelController::backward(int8_t turnrate, uint8_t speed, bool smooth) {
   leftWheel.setSpeed(-100);
   rightWheel.setSpeed(-100);
 }
 
-void WheelController::turnLeft(bool smooth, uint16_t milliseconds, std::function<void(void)> fn) {
+void WheelController::turn(uint16_t direction, std::function<void(void)> fn) {
   leftWheel.setSpeed(-Settings::WHEEL_MOTOR_TURN_SPEED);
   rightWheel.setSpeed(Settings::WHEEL_MOTOR_TURN_SPEED);
-}
-
-void WheelController::turnRight(bool smooth, uint16_t milliseconds, std::function<void(void)> fn) {
-  leftWheel.setSpeed(Settings::WHEEL_MOTOR_TURN_SPEED);
-  rightWheel.setSpeed(-Settings::WHEEL_MOTOR_TURN_SPEED);
 }
 
 void WheelController::stop(bool smooth) {

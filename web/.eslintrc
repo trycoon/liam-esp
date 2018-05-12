@@ -1,0 +1,36 @@
+{
+    "rules": {
+      "indent": [
+        2,
+        2,
+        {"VariableDeclarator": { "var": 2, "let": 2, "const": 3}}
+      ],
+      "linebreak-style": [2, "unix"],
+      "semi": [2, "always"],
+      "comma-dangle": [2, "always-multiline"]
+    },
+    "env": {
+      "es6": true,
+      "browser": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:import/errors",
+      "plugin:import/warnings"
+    ],
+    "parserOptions": {
+      "ecmaFeatures": {
+        "experimentalObjectRestSpread": true,
+        "ecmaVersion": 6,
+        "sourceType": "module"
+      }
+    },
+    "globals": {
+      "require": false,
+      "module": true,
+      "Environment": false,
+      "__dirname": false,
+      "process": false
+    }
+  }
+  

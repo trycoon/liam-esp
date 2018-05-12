@@ -11,8 +11,8 @@ namespace Settings {
     /*
       I2C pins
     */
-    const uint8_t SDA_PIN = D2; // could be any free and suitable pin. We use default D2 here.
-    const uint8_t SCL_PIN = D1; // could be any free and suitable pin. We use default D1 here.
+    const uint8_t SDA_PIN = 21; // could be any free and suitable pin. We use default 21 here.
+    const uint8_t SCL_PIN = 22; // could be any free and suitable pin. We use default 22 here.
 
     /*
       A/D converter I2C address
@@ -28,13 +28,13 @@ namespace Settings {
     /*
       Wheel motor settings
     */
-     const uint8_t LEFT_WHEEL_MOTOR_PIN = D0;
-     const uint8_t LEFT_WHEEL_MOTOR_DIRECTION_PIN = D3;
+     const uint8_t LEFT_WHEEL_MOTOR_PIN = 19;
+     const uint8_t LEFT_WHEEL_MOTOR_DIRECTION_PIN = 18;
      const uint8_t LEFT_WHEEL_MOTOR_SPEED = 100;   // 0-100 (%), used to compensate for drifting motors, lower this value if mower drift to the right.
      const bool LEFT_WHEEL_MOTOR_INVERTED = false; // Set to "true" if left wheel runs backward when mower should be running forward.
 
-     const uint8_t RIGHT_WHEEL_MOTOR_PIN = D7;
-     const uint8_t RIGHT_WHEEL_MOTOR_DIRECTION_PIN = D4;
+     const uint8_t RIGHT_WHEEL_MOTOR_PIN = 17;
+     const uint8_t RIGHT_WHEEL_MOTOR_DIRECTION_PIN = 16;
      const uint8_t RIGHT_WHEEL_MOTOR_SPEED = 100;   // 0-100 (%), used to compensate for drifting motors, lower this value if mower drift to the left.
      const bool RIGHT_WHEEL_MOTOR_INVERTED = true;  // Set to "true" if right wheel runs backward when mower should be running forward.
 
@@ -45,8 +45,8 @@ namespace Settings {
     /*
       Cutter settings
     */
-     const uint8_t CUTTER_MOTOR_PIN = D8;
-     const uint8_t CUTTER_BRAKE_PIN = 2;     // Pin on digital port expander for braking cutter motor.
+     const uint8_t CUTTER_MOTOR_PIN = 0;    // Pin to PWM-control motor.
+     const uint8_t CUTTER_BRAKE_PIN = 4;     // Pin for braking cutter motor.
      const uint8_t CUTTER_LOAD_CHANNEL = 0;  // Channel on ADC for measuring cutter motor load.
      const uint8_t CUTTER_MAX_SPEED = 100;   // 0-100 (%), lower this value if cutter spinning too fast.
      // When the load on the cuttor motor surpasses this limit, the cutter is working too hard cutting the grass (and we should reduce speed of wheels to compensate).
@@ -55,8 +55,8 @@ namespace Settings {
     /*
       Border Wire Fence settings
     */
-     const uint8_t LEFT_BWF_PIN = D5;
-     const uint8_t RIGHT_BWF_PIN = D6;
+     const uint8_t LEFT_BWF_PIN = 34;
+     const uint8_t RIGHT_BWF_PIN = 35;
     // How long the mower should be running without hitting the border wire, in seconds.
     // This is a safety setting that prevent the mower to escape too far away.
     // If the mower react this time setting before it react the border fence it will stop and enter the STUCK-state.
@@ -100,6 +100,6 @@ namespace Settings {
       Tested with GY-NEO6MV2 (https://www.openimpulse.com/blog/wp-content/uploads/wpsc/downloadables/GY-NEO6MV2-GPS-Module-Datasheet.pdf)
       Set GPS_RX_PIN and GPS_TX_PIN to "0" if not used!
     */
-     const uint8_t GPS_RX_PIN = 3;  // D9 GPIO3 (RXD0)
-     const uint8_t GPS_TX_PIN = 1;  // D10 GPIO1 (TDX0)
+     const uint8_t GPS_RX_PIN = 3;  // GPIO3 (RXD0)
+     const uint8_t GPS_TX_PIN = 1;  // GPIO1 (TDX0)
 }
