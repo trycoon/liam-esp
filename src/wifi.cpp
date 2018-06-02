@@ -1,47 +1,112 @@
 #include "wifi.h"
 #include <WiFi.h>
+#include <string>
+#include <time.h>
+#include <SPIFFS.h>
 #include <ESPmDNS.h>
 #include "definitions.h"
+#include "configuration.h"
 #include "settings.h"
-
 #include <cassert>
 
+static const char* MQTT_TOPIC = "home/liam-esp";
+static const char* DEFAULT_NTP = "pool.ntp.org";
+// TODO: AVOID "%" in CSS, https://github.com/me-no-dev/ESPAsyncWebServer/pull/366
+static const char SETUP_HTML[] PROGMEM = "<html><head><meta name=\"viewport\" content=\"width=device-width\"><title>Liam-ESP</title><style>fieldset{padding:1em;font:0.8em/1 sans-serif;margin:1em}legend{padding:0.2em 0.5em;border:1px solid black;font-size:0.9em}label{float:left;margin-right:0.5em;padding-top:0.2em;text-align:right;font-weight:bold;width:6em}input{margin-bottom:0.4em;padding-left: 0.2em;}.center{display:block;margin-right:auto;margin-left:auto;text-align:center}a:link{text-decoration:none;}</style></head><body><h1 class=\"center\">Setup</h1><form action=\"/setup\" method=\"post\"><fieldset><legend>WiFi</legend><label>SSID: </label><input type=\"text\" name=\"SSID\" length=32 value=\"%SSID%\"><br><label>Password: </label><input type=\"password\" name=\"WIFI_PASSWORD\" length=64 value=\"%WIFI_PASSWORD%\"></fieldset><fieldset><legend>Administrator</legend><label>Username: </label><input type=\"text\" name=\"USERNAME\" length=20 value=\"%USERNAME%\"><br><label>Password: </label><input type=\"password\" name=\"PASSWORD\" length=20 value=\"%PASSWORD%\"></fieldset><fieldset><legend>Time</legend><label>NTP-server: </label><input type=\"text\" name=\"NTP_SERVER\" length=40 value=\"%NTP_SERVER%\"><br><label>Time zone: </label><input type=\"number\" name=\"GMT\"  min=\"-12\" max=\"12\" value=\"%GMT%\">&nbsp;<a href=\"https://upload.wikimedia.org/wikipedia/commons/e/e8/Standard_World_Time_Zones.png\" target=\"_blank\">&nbsp;i&nbsp;</a></fieldset><fieldset><legend>MQTT</legend><label>Server: </label><input type=\"text\" name=\"MQTT_SERVER\" placeholder=\"leave blank if not used\" length=64 value=\"%MQTT_SERVER%\"><br><label>Port: </label><input type=\"number\" name=\"MQTT_PORT\" placeholder=\"leave blank if not used\" min=\"1024\" max=\"65535\" value=\"%MQTT_PORT%\"><br> <label>Topic: </label> <input type=\"text\" name=\"MQTT_TOPIC\" placeholder=\"leave blank if not used\" length=200 value=\"%MQTT_TOPIC%\"></fieldset><input type=\"submit\" value=\"Save\" class=\"center\"></form></body></html>";
+static const char NO_WEB_UI[] PROGMEM = "Web interface is not available. See README.md for instructions about how to flash interface into mower.";
 WiFi_Client* WiFi_Client::Instance = nullptr;
 
-void WiFi_Client::WiFiEvent(system_event_id_t event, system_event_info_t info)
-{
-    Serial.printf("[WiFi-event] event: %d\n", event);
-
-    switch(event) {
-    case SYSTEM_EVENT_STA_GOT_IP:
-        Instance->onWifiConnect(event, info);
-        break;
-    case SYSTEM_EVENT_STA_DISCONNECTED:
-        Serial.println("WiFi lost connection");
-        break;
-    }
-}
-
-//TODO: Setup time when we get IP: https://github.com/espressif/arduino-esp32/blob/master/libraries/ESP32/examples/Time/SimpleTime/SimpleTime.ino
-// TODO: Smart Config: http://www.iotsharing.com/2017/05/how-to-use-smartconfig-on-esp32.html
+// Constructor
 WiFi_Client::WiFi_Client() : web_server(80) {
   assert(!Instance);
   Instance = this;
-  WiFi.setHostname(Definitions::APP_NAME);
-  WiFi.mode(WIFI_STA);
+}
 
-  WiFi.onEvent(WiFiEvent);
-  /*WiFi.onEvent([this](WiFiEventCb event) {
+// Method that get called upon when the template engine renders the SETUP_HTML-page and finds a "%<placeholder>%"-element.
+// We populate the HTML with settings saved from Flash memory (or default values).
+String WiFi_Client::renderPlaceholder(const String& placeholder) {
+  if (placeholder == "USERNAME") {
+    return Configuration::getString("USERNAME", "admin");
+  } else if (placeholder == "PASSWORD") {
+    return Configuration::getString("PASSWORD");
+  } else if (placeholder == "MQTT_SERVER") {
+    return Configuration::getString("MQTT_SERVER");
+  } else if (placeholder == "MQTT_PORT") {
+    return Configuration::getString("MQTT_PORT", "1883");
+  } else if (placeholder == "MQTT_TOPIC") {
+    return Configuration::getString("MQTT_TOPIC", MQTT_TOPIC);
+  } else if (placeholder == "NTP_SERVER") {
+    return Configuration::getString("NTP_SERVER", DEFAULT_NTP);
+  } else if (placeholder == "GMT") {
+    return Configuration::getString("GMT", "0");
+  } else if (placeholder == "WIFI_PASSWORD") {
+    return Configuration::getString("WIFI_PASSWORD");
+  } else if (placeholder == "SSID") {
+    return Configuration::getString("SSID");
+  } else {
+    return String();
+  }
+}
+
+void printLocalTime() {
+  struct tm timeinfo;
+  if(!getLocalTime(&timeinfo)){
+    Serial.println("Failed to obtain time");
+    return;
+  }
+  Serial.println(&timeinfo, "Time: %A, %d %B %Y, %H:%M:%S");
+}
+
+// WiFi status eventhandler, called upon when WiFi connection change status.
+void WiFi_Client::WiFiEvent(WiFiEvent_t event, system_event_info_t info) {
     switch(event) {
+      case SYSTEM_EVENT_AP_START: {
+        // When we run as an accesspoint
+        WiFi.softAPsetHostname(Definitions::APP_NAME);
+        WiFi.softAPenableIpV6();
+        break;
+      case SYSTEM_EVENT_STA_START:
+        // When we run in Station-mode (are connected to an accesspoint as client)
+        WiFi.setHostname(Definitions::APP_NAME);
+        break;
+      case SYSTEM_EVENT_STA_CONNECTED:
+        WiFi.enableIpV6();
+        break;
+      case SYSTEM_EVENT_AP_STA_GOT_IP6:
+        //both interfaces get the same event
+        Serial.print("STA IPv6: ");
+        Serial.println(WiFi.localIPv6());
+        Serial.print("AP IPv6: ");
+        Serial.println(WiFi.softAPIPv6());
+        break;
       case SYSTEM_EVENT_STA_GOT_IP:
-        //onWifiConnect();
+        Instance->onWifiConnect(event, info);
+        break;
+      case SYSTEM_EVENT_STA_LOST_IP:
+        Instance->onWifiDisconnect(event, info);
         break;
       case SYSTEM_EVENT_STA_DISCONNECTED:
-        //onWifiDisconnect();
+        Instance->onWifiDisconnect(event, info);
         break;
+      default:
+        break; // just to prevent us from getting compile warnings.
     }
-  });*/
+  }
+}
 
+// Setup and connect WiFi, should only be called upon once.
+void WiFi_Client::start() {
+
+  WiFi.onEvent(WiFiEvent);
+  WiFi.mode(WIFI_MODE_APSTA);
+  WiFi.softAP(Definitions::APP_NAME);
+  Serial.println("AP Started");
+  Serial.print("AP SSID: ");
+  Serial.println(Definitions::APP_NAME);
+  Serial.print("AP IPv4: ");
+  Serial.println(WiFi.softAPIP());
+
+  connect();
   setupWebServer();
 
   if (isMQTT_enabled()) {
@@ -57,71 +122,137 @@ WiFi_Client::WiFi_Client() : web_server(80) {
       onMqttPublish(packetId);
     });
 
-    mqttClient.setServer(Settings::MQTT_SERVER, Settings::MQTT_PORT);
+    mqttClient.setServer(Configuration::getString("MQTT_SERVER", "").c_str(), Configuration::getInt("MQTT_PORT", 1883));
     //mqttClient.setCredentials("MQTT_USERNAME", "MQTT_PASSWORD");
     mqttClient.setKeepAlive(15); // seconds
     mqttClient.setClientId(Definitions::APP_NAME);
-    mqttClient.setWill(Settings::MQTT_TOPIC.c_str(), 2, true, "DISCONNECTED");
+    mqttClient.setWill(Configuration::getString("MQTT_TOPIC", MQTT_TOPIC).c_str(), 2, true, "DISCONNECTED");
   }
 }
 
 void WiFi_Client::setupWebServer() {
 
-    // mount SPIFFS filesystem, the files stored in the "data"-directory in the root of this project. Contains the static webpage files.
-/*    if (!SPIFFS.begin()) {
-      Serial.println("Failed to mount SPIFFS filesystem! Rebooting.");
-      delay(2000);
+    // Start web server.
+    web_server.begin();
+    Serial.println("Web server initialized");
+
+    // remove all previous rewrites, handlers and onNotFound/onFileUpload/onRequestBody callbacks (unsure if web_server.begin() does that for us)
+    web_server.reset();
+
+    web_server.on("/setup", HTTP_GET, [](AsyncWebServerRequest *request) {
+      request->send_P(200, "text/html", SETUP_HTML, renderPlaceholder);
+    });
+    // Handle Post-back form from setup page.
+    web_server.on("/setup", HTTP_POST, [](AsyncWebServerRequest *request) {
+      if(request->hasParam("USERNAME", true)){
+        Configuration::set("USERNAME", request->getParam("USERNAME", true)->value());
+      }
+      if(request->hasParam("PASSWORD", true)){
+        Configuration::set("PASSWORD", request->getParam("PASSWORD", true)->value());
+      }
+      if(request->hasParam("MQTT_SERVER", true)){
+        Configuration::set("MQTT_SERVER", request->getParam("MQTT_SERVER", true)->value());
+      }
+      if(request->hasParam("MQTT_PORT", true)){
+        Configuration::set("MQTT_PORT", request->getParam("MQTT_PORT", true)->value());
+      }
+      if(request->hasParam("MQTT_TOPIC", true)){
+        Configuration::set("MQTT_TOPIC", request->getParam("MQTT_TOPIC", true)->value());
+      }
+      if(request->hasParam("NTP_SERVER", true)){
+        Configuration::set("NTP_SERVER", request->getParam("NTP_SERVER", true)->value());
+      }
+      if(request->hasParam("GMT", true)){
+        Configuration::set("GMT", request->getParam("GMT", true)->value());
+      }
+      if(request->hasParam("WIFI_PASSWORD", true)){
+        Configuration::set("WIFI_PASSWORD", request->getParam("WIFI_PASSWORD", true)->value());
+      }
+      if(request->hasParam("SSID", true)){
+        Configuration::set("SSID", request->getParam("SSID", true)->value());
+      }
+
+      Serial.println("Saved configuration.");
+      request->redirect("/");
+      sleep(100);
       ESP.restart();
+    });
+
+    // When no SSID set, redirect first page to setup page.
+    if (Configuration::getString("SSID", "").length() == 0) {
+      web_server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+        request->redirect("/setup");
+      });
     }
 
-    web_server
-    .serveStatic("/", SPIFFS, "/")
-    .setDefaultFile("index.html")
-    .setCacheControl("max-age=2592000"); // 30 days.*/
+    web_server.onNotFound([](AsyncWebServerRequest *request){
+      request->send(404);
+    });
 
-    Serial.println("web_server initialized");
+    // mount SPIFFS filesystem, the files stored in the "data"-directory in the root of this project. Contains the web application files.
+    if (!SPIFFS.begin()) {
+      Serial.println("Failed to mount SPIFFS filesystem.");
+      // If we have WiFi settings but web interface is not available, notify user so that they don't think anything is broken.
+      if (Configuration::getString("SSID", "").length() > 0) {
+        web_server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+          request->send_P(200, "text/plain", NO_WEB_UI);
+        }).setFilter(ON_STA_FILTER);
+      }
+      return;
+    }
+
+    if (Configuration::getString("SSID", "").length() > 0) {
+      web_server
+      .serveStatic("/", SPIFFS, "/")
+      .setDefaultFile("index.html")
+      .setCacheControl("max-age=2592000") // 30 days.*/
+      .setFilter(ON_STA_FILTER)
+      .setAuthentication(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str());
+    }
 }
 
 bool WiFi_Client::isMQTT_enabled() {
-  if (strcmp(Settings::MQTT_SERVER, "") || strcmp(Settings::MQTT_SERVER, "<your MQTT servers IP-address>")) {
+  if (Configuration::getString("MQTT_SERVER", "").length() == 0) {
     return false;
   } else {
     return true;
   }
 }
 
+// Call upon this method to connect/reconnect WiFi
 void WiFi_Client::connect() {
-  Serial.println("Connecting to Wi-Fi...");
-  WiFi.begin(Settings::SSID, Settings::WIFI_PASSWORD);
+  Serial.println("Connecting to WiFi...");
+  WiFi.begin(Configuration::getString("SSID").c_str(), Configuration::getString("WIFI_PASSWORD").c_str());
 }
 
-void WiFi_Client::onWifiConnect(system_event_id_t event, system_event_info_t info) {
-  Serial.print("Connected to Wi-Fi using IP-address: ");
-  Serial.print(WiFi.localIP()); //String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3])
-  Serial.print(", MAC-address: ");
-  uint8_t MAC_array[6];
-  char MAC_char[18];
-  WiFi.macAddress(MAC_array);
-  for (int i = 0; i < sizeof(MAC_array); ++i){
-    sprintf(MAC_char,"%s%02x:", MAC_char, MAC_array[i]);
-  }
-  Serial.println(MAC_char);
+// Method is called upon when have a WiFi connection with an IP address (note that this method could be called upon several times).
+void WiFi_Client::onWifiConnect(WiFiEvent_t event, system_event_info_t info) {
+  //TODO: Setup time when we get IP: https://github.com/espressif/arduino-esp32/blob/master/libraries/ESP32/examples/Time/SimpleTime/SimpleTime.ino
 
-  // Annonce us on Wi-Fi network using mDNS.
+  Serial.print("Connected to WiFi accesspoint: ");
+  Serial.print(WiFi.SSID());
+  Serial.print(", using IP-address: ");
+  Serial.println(WiFi.localIP());
+  //close own AP network
+  WiFi.mode(WIFI_MODE_STA);
+
+  // Annonce us on WiFi network using Multicast DNS.
   MDNS.begin(Definitions::APP_NAME);
   MDNS.addService("http","tcp",80);
-  // Start web server.
-  web_server.begin();
+  // Get time from NTP server.
+  configTime(atol(Configuration::getString("GMT", "0").c_str()) * 3600, 3600, Configuration::getString("NTP_SERVER", DEFAULT_NTP).c_str()); // sencond parameter is daylight offset (3600 = summertime)
+  printLocalTime();
 
   if (isMQTT_enabled()) {
     connectToMqtt();
   }
 }
 
-void WiFi_Client::onWifiDisconnect(system_event_id_t event, system_event_info_t info) {
-  Serial.println("Disconnected from Wi-Fi.");
+// Method is called upon when WiFi connection is lost, it will try to reconnect.
+void WiFi_Client::onWifiDisconnect(WiFiEvent_t event, system_event_info_t info) {
+  Serial.println("Disconnected from WiFi.");
 
-  mqttReconnectTimer.detach(); // ensure we don't reconnect to MQTT while reconnecting to Wi-Fi
+  mqttReconnectTimer.detach(); // ensure we don't reconnect to MQTT while reconnecting to WiFi
 
   wifiReconnectTimer.once<WiFi_Client*>(2, [](WiFi_Client* instance) {
     instance->connect();
@@ -134,7 +265,7 @@ void WiFi_Client::connectToMqtt() {
 }
 
 void WiFi_Client::onMqttConnect(bool sessionPresent) {
-  mqttClient.publish(Settings::MQTT_TOPIC.c_str(), 1, true, "CONNECTED");
+  mqttClient.publish(Configuration::getString("MQTT_TOPIC", MQTT_TOPIC).c_str(), 1, true, "CONNECTED");
   Serial.println("Connected to the MQTT broker.");
   Serial.print("Session present: ");
   Serial.println(sessionPresent);
@@ -178,7 +309,7 @@ void WiFi_Client::flushQueue() {
 
 void WiFi_Client::publish_message(std::string message, std::string subtopic) {
   if (isMQTT_enabled()) {
-    std::string topic = Settings::MQTT_TOPIC;
+    std::string topic = Configuration::getString("MQTT_TOPIC", MQTT_TOPIC).c_str();
 
     if (subtopic.length() > 0) {
       // make sure subtopics always begins with an slash ("/")
@@ -202,44 +333,6 @@ void WiFi_Client::publish_message(std::string message, std::string subtopic) {
 void WiFi_Client::onMqttPublish(uint16_t packetId) {
   Serial.print("MQTT Publish acknowledged, packet id: ");
   Serial.println(packetId);
-}
-
-/**
-* Check if we have necessary WiFi settings, if not then enter "ESP SmartConfig"-mode to bind to an existing accesspoint.
-*/
-void WiFi_Client::checkWifiSettings() {
-  if (sizeof(Settings::SSID) == 0) {
-    Serial.println("Missing WiFi settings, starting up own accesspoint for SmartConfig.");
-    WiFi.mode(WIFI_AP_STA);
-    WiFi.beginSmartConfig();
-
-    //Wait for SmartConfig packet from mobile
-    Serial.println("Waiting for SmartConfig.");
-    while (!WiFi.smartConfigDone()) {
-      delay(500);
-      Serial.print(".");
-    }
-
-    Serial.println("");
-    Serial.println("SmartConfig received.");
-
-    //Wait for WiFi to connect to AP
-    Serial.println("Waiting for WiFi");
-    while (WiFi.status() != WL_CONNECTED) {
-      delay(500);
-      Serial.print(".");
-    }
-
-    Serial.println("WiFi Connected.");
-
-    Serial.print("IP Address: ");
-    Serial.println(WiFi.localIP());
-
-    // TODO: save settings to persistant store.
-    Serial.println("Restarting software.");
-    delay(2000);
-    ESP.restart();
-  }
 }
 
 AsyncWebServer& WiFi_Client::getWebServer() {

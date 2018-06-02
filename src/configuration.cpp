@@ -1,33 +1,55 @@
+#include <Preferences.h>
+#include <unordered_map>
 #include "configuration.h"
 
-Configuration::Configuration() {
-  preferences.begin("liam-esp", false);
-}
+namespace Configuration {
 
-Configuration::~Configuration() {
-  preferences.end();
-}
+  Preferences preferences;
+  // local caches to prevent us from reading from Flashmemory all the time.
+  std::unordered_map<const char*, String> strConfig;
+  std::unordered_map<const char*, int32_t> intConfig;
 
-bool Configuration::getBool(const char *key, bool defaultValue) {
-  return preferences.getBool(key, defaultValue);
-}
+  void set(const char* key, String value) {
+    preferences.begin("liam-esp", false);
+    preferences.putString(key, value);
+    strConfig[key] = value;
+    preferences.end();
+  }
 
-int32_t Configuration::getInt(const char *key, int32_t defaultValue) {
-  return preferences.getInt(key, defaultValue);
-}
+  String getString(const char* key, const String defaultValue) {
+    auto search = strConfig.find(key);
 
-String Configuration::getString(const char *key, String defaultValue) {
-  return preferences.getString(key, defaultValue);
-}
+    if (search != strConfig.end()) {
+      return search->second;  //second=value
+    } else {
+      preferences.begin("liam-esp", false);
+      auto value = preferences.getString(key, defaultValue);
+      strConfig[key] = value;
+      preferences.end();
 
-void Configuration::putBool(const char *key, bool value){
-  preferences.putBool(key, value);
-}
+      return value;
+    }
+  }
 
-void Configuration::putInt(const char *key, int32_t value) {
-  preferences.putInt(key, value);
-}
+  void set(const char* key, int32_t value) {
+    preferences.begin("liam-esp", false);
+    preferences.putInt(key, value);
+    intConfig[key] = value;
+    preferences.end();
+  }
 
-void Configuration::putString(const char *key, String value) {
-  preferences.putString(key, value);
+  int32_t getInt(const char* key, const int32_t defaultValue) {
+    auto search = intConfig.find(key);
+
+    if (search != intConfig.end()) {
+      return search->second;  //second=value
+    } else {
+      preferences.begin("liam-esp", false);
+      auto value = preferences.getInt(key, defaultValue);
+      intConfig[key] = value;
+      preferences.end();
+
+      return value;
+    }
+  }
 }

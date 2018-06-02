@@ -2,7 +2,7 @@
 #define _statecontroller_h
 
 #include <unordered_map>
-#include <vector>  // NOTE: needed to fix the following error: "Arduino.h:253:18: error: expected unqualified-id before '(' token".
+#include <vector> // NOTE: needed to fix the following error: "Arduino.h:253:18: error: expected unqualified-id before '(' token".
 #include "definitions.h"
 #include "resources.h"
 #include "states/abstract_state.h"

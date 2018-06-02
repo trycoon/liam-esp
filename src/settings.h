@@ -3,7 +3,6 @@
 
 #include <string>
 #include <Arduino.h>
-#include "secrets.h"
 
 namespace Settings {
   extern const uint8_t SDA_PIN;

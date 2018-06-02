@@ -11,20 +11,10 @@ ESP32 port of Liam Arduino lawn mower
 ## Features
 using plattform.io
 
-TODO: implement first-time portal https://github.com/tzapu/WiFiManager
-or https://github.com/copercini/esp32-iot-examples/blob/master/WiFi_portal/WiFi_portal.ino
-for ESP32 look at this fork: https://github.com/bbx10/WebServer_tng, https://github.com/bbx10/DNSServer_tng, https://github.com/bbx10/ESPWebServer, https://github.com/bbx10/Hash_tng
-
+TODO: logging library: https://esp-idf.readthedocs.io/en/v1.0/api/log.html
 TODO: check if we could use a PID-library to tune BWF readings when docking. https://github.com/br3ttb/Arduino-PID-Library
-
-TODO: uptime and time keeping: https://github.com/vitotai/BrewManiacEsp8266/blob/master/BrewManiacEx/TimeKeeper.cpp
-
 TODO: Multithreading on ESP32, processable.h-interface and let each class use this one instead: https://github.com/copercini/esp32-iot-examples/blob/master/multiloop/multiloop.ino, if not working then look at this: https://www.arduino.cc/en/Reference/Scheduler or this (works even in Arduino-mode): http://www.freertos.org/a00125.html
-
-TODO: save and load settings from Preference, save statechanges in state_controller so we can continue after reboot:
-https://github.com/espressif/arduino-esp32/blob/master/libraries/Preferences/examples/StartCounter/StartCounter.ino
-
-TODO: see this for inspiration: https://bitbucket.org/xoseperez/espurna/src/e6e9f9d6d4bd16005446e08b98d47c6cd254ad16?at=master
+TODO: see this for inspiration: https://bitbucket.org/xoseperez/espurna/src
 
 ## Build software
 

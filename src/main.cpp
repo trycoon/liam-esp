@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include "definitions.h"
+#include "configuration.h"
 #include "settings.h"
 #include "resources.h"
 #include "io_analog.h"
@@ -15,29 +16,26 @@
 #include "gps.h"
 #include "metrics.h"
 #include "state_controller.h"
-#include "configuration.h"
 #include "api.h"
-
+#include "configuration.h"
 /*
  * Software to control a LIAM robotmower using a NodeMCU/ESP-32 (or similar ESP32) microcontroller.
  */
-
 IO_Analog io_analog;
 IO_Accelerometer io_accelerometer;
 WiFi_Client wifi;
-OTA ota(wifi);
+//OTA ota(wifi);
 Wheel leftWheel(Settings::LEFT_WHEEL_MOTOR_PIN, Settings::LEFT_WHEEL_MOTOR_DIRECTION_PIN, Settings::LEFT_WHEEL_MOTOR_INVERTED, Settings::LEFT_WHEEL_MOTOR_SPEED);
 Wheel rightWheel(Settings::RIGHT_WHEEL_MOTOR_PIN, Settings::RIGHT_WHEEL_MOTOR_DIRECTION_PIN, Settings::RIGHT_WHEEL_MOTOR_INVERTED, Settings::RIGHT_WHEEL_MOTOR_SPEED);
-Cutter cutter(io_analog);
-BWF bwf;
-Battery battery(io_analog);
-GPS gps;
 WheelController wheelController(leftWheel, rightWheel, io_accelerometer);
+//Cutter cutter(io_analog);
+BWF bwf;
+GPS gps;
+/*Battery battery(io_analog);
 Metrics metrics(battery, gps);
-Configuration configuration;
-Resources resources(wifi, wheelController, cutter, bwf, battery, gps, configuration, io_accelerometer, metrics);
+Resources resources(wifi, wheelController, cutter, bwf, battery, gps, io_accelerometer, metrics);
 StateController stateController(Definitions::MOWER_STATES::DOCKED, resources);  // initialize state controller, assume we are DOCKED to begin with.
-Api api(stateController, resources);
+Api api(stateController, resources);*/
 
 
 void scan_I2C() {
@@ -84,14 +82,14 @@ void setup() {
   Serial.print(" v");
   Serial.println(Definitions::APP_VERSION);
   scan_I2C();
-  api.setupApi(wifi.getWebServer());
-  wifi.connect();
-  ota.start();
+  wifi.start();
+  /*api.setupApi(wifi.getWebServer());
+  ota.start();*/
 }
 
 // Main program loop
 void loop() {
-  ota.handle();
+/*  ota.handle();
 
   // always check if we are flipped.
   if (io_accelerometer.isFlipped() && stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::FLIPPED) {
@@ -102,5 +100,5 @@ void loop() {
   wheelController.process();
   battery.process();
   cutter.process();
-  metrics.process();
+  metrics.process();*/
 }

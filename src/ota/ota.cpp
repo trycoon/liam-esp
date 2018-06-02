@@ -1,10 +1,8 @@
-#include <vector> // NOTE: needed to fix the following error: "Arduino.h:253:18: error: expected unqualified-id before '(' token".
 #include <ArduinoOTA.h>
 #include "definitions.h"
+#include "configuration.h"
 #include "settings.h"
 #include "ota.h"
-
-// TODO: Replace with webbased OTA? https://github.com/esp8266/Arduino/tree/master/doc/ota_updates
 
 OTA::OTA(WiFi_Client& wifiClient) : wifi(wifiClient) {
 
@@ -14,7 +12,7 @@ OTA::OTA(WiFi_Client& wifiClient) : wifi(wifiClient) {
   ArduinoOTA.setHostname(Definitions::APP_NAME);
 
   // authentication string
-  ArduinoOTA.setPassword(Settings::OTA_PASSWORD);
+  ArduinoOTA.setPassword(Configuration::getString("PASSWORD", "liam").c_str());
 
   ArduinoOTA.onStart([this]() {
     String type;

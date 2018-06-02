@@ -1,5 +1,5 @@
 #include "api.h"
-#include "ArduinoJson.h"
+#include <ArduinoJson.h>
 #include "definitions.h"
 #include "io_accelerometer.h"
 
@@ -15,8 +15,8 @@ void Api::setupApi(AsyncWebServer& web_server) {
 
   // HTTP basic authentication
   web_server.on("/api/v1/login", HTTP_GET, [](AsyncWebServerRequest *request) {
-    if (!request->authenticate("admin", "pass")) {
-        return request->requestAuthentication();
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+      return request->requestAuthentication();
     }
 
     request->send(200, "text/plain", "Login Success!");
@@ -24,6 +24,10 @@ void Api::setupApi(AsyncWebServer& web_server) {
 
   // respond to GET requests on URL /api/v1/history/battery
   web_server.on("/api/v1/history/battery", HTTP_GET, [this](AsyncWebServerRequest *request) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+      return request->requestAuthentication();
+    }
+
     AsyncResponseStream *response = request->beginResponseStream("application/json");
     DynamicJsonBuffer jsonBuffer;
     JsonObject& root = jsonBuffer.createObject();
@@ -45,6 +49,10 @@ void Api::setupApi(AsyncWebServer& web_server) {
 
   // respond to GET requests on URL /api/v1/history/position
   web_server.on("/api/v1/history/position", HTTP_GET, [this](AsyncWebServerRequest *request) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+      return request->requestAuthentication();
+    }
+
     AsyncResponseStream *response = request->beginResponseStream("application/json");
     DynamicJsonBuffer jsonBuffer;
     JsonObject& root = jsonBuffer.createObject();
@@ -68,6 +76,10 @@ void Api::setupApi(AsyncWebServer& web_server) {
 
   // respond to GET requests on URL /api/v1/history
   web_server.on("/api/v1/history", HTTP_GET, [](AsyncWebServerRequest *request) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+      return request->requestAuthentication();
+    }
+
     AsyncResponseStream *response = request->beginResponseStream("application/json");
     DynamicJsonBuffer jsonBuffer;
     JsonObject& root = jsonBuffer.createObject();
@@ -91,6 +103,10 @@ void Api::setupApi(AsyncWebServer& web_server) {
 
   // respond to GET requests on URL /api/v1/manual
   web_server.on("/api/v1/manual", HTTP_GET, [](AsyncWebServerRequest *request) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+      return request->requestAuthentication();
+    }
+
     AsyncResponseStream *response = request->beginResponseStream("application/json");
     DynamicJsonBuffer jsonBuffer;
     JsonObject& root = jsonBuffer.createObject();
@@ -130,6 +146,10 @@ void Api::setupApi(AsyncWebServer& web_server) {
 
   // respond to GET requests on URL /api/v1/status
   web_server.on("/api/v1/status", HTTP_GET, [this](AsyncWebServerRequest *request) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+      return request->requestAuthentication();
+    }
+
     AsyncResponseStream *response = request->beginResponseStream("application/json");
     DynamicJsonBuffer jsonBuffer;
     JsonObject& root = jsonBuffer.createObject();
@@ -154,6 +174,10 @@ void Api::setupApi(AsyncWebServer& web_server) {
 
   // respond to GET requests on URL /api/v1/system
   web_server.on("/api/v1/system", HTTP_GET, [](AsyncWebServerRequest *request) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+      return request->requestAuthentication();
+    }
+
     AsyncResponseStream *response = request->beginResponseStream("application/json");
     DynamicJsonBuffer jsonBuffer;
     JsonObject& root = jsonBuffer.createObject();
@@ -175,6 +199,10 @@ void Api::setupApi(AsyncWebServer& web_server) {
 
   // respond to GET requests on URL /api/v1
   web_server.on("/api/v1", HTTP_GET, [](AsyncWebServerRequest *request) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+      return request->requestAuthentication();
+    }
+
     AsyncResponseStream *response = request->beginResponseStream("application/json");
     DynamicJsonBuffer jsonBuffer;
     JsonObject& root = jsonBuffer.createObject();
@@ -225,6 +253,10 @@ void Api::setupApi(AsyncWebServer& web_server) {
 
   // PUT, POST requests.
   web_server.onRequestBody([this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+      return request->requestAuthentication();
+    }
 
     if (request->method() == HTTP_PUT) {
       // respond to PUT requests on URL /api/v1/state, change state of mower.

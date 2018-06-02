@@ -27,7 +27,7 @@ StateController::StateController(Definitions::MOWER_STATES initialState, Resourc
 }
 
 void StateController::setState(Definitions::MOWER_STATES newState) {
-  //TODO: only set set if not save as previous!
+  //TODO: only set if not save as previous!
   // save reference to previous state before we switching to a new one. We check for nullptr because the first time there will be no previous state.
   Definitions::MOWER_STATES previousState = currentStateInstance == nullptr ? newState : currentStateInstance->getState();
 

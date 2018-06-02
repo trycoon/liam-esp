@@ -23,7 +23,6 @@ class Resources {
                            BWF& bwf,
                            Battery& battery,
                            GPS& gps,
-                           Configuration& configuration,
                            IO_Accelerometer& accelerometer,
                            Metrics& metrics)
                            : mqtt(mqtt),
@@ -32,7 +31,6 @@ class Resources {
                              bwf(bwf),
                              battery(battery),
                              gps(gps),
-                             configuration(configuration),
                              accelerometer(accelerometer),
                              metrics(metrics) { }
 
@@ -42,7 +40,6 @@ class Resources {
     BWF& bwf;
     Battery& battery;
     GPS& gps;
-    Configuration& configuration;
     IO_Accelerometer& accelerometer;
     Metrics& metrics;
 };
