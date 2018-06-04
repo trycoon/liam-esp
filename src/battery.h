@@ -13,6 +13,8 @@ class Battery : public Processable {
     float getChargerVoltage();
     float getBatteryVoltage();
     float getBatteryStatus();
+    uint32_t getLastFullyChargeTime();
+    uint32_t getLastChargeDuration();
     bool isCharging();
     bool needRecharge();
     bool isFullyCharged();

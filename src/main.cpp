@@ -25,17 +25,17 @@ IO_Analog io_analog;
 IO_Accelerometer io_accelerometer;
 WiFi_Client wifi;
 //OTA ota(wifi);
-Wheel leftWheel(Settings::LEFT_WHEEL_MOTOR_PIN, Settings::LEFT_WHEEL_MOTOR_DIRECTION_PIN, Settings::LEFT_WHEEL_MOTOR_INVERTED, Settings::LEFT_WHEEL_MOTOR_SPEED);
-Wheel rightWheel(Settings::RIGHT_WHEEL_MOTOR_PIN, Settings::RIGHT_WHEEL_MOTOR_DIRECTION_PIN, Settings::RIGHT_WHEEL_MOTOR_INVERTED, Settings::RIGHT_WHEEL_MOTOR_SPEED);
+Wheel leftWheel(1, Settings::LEFT_WHEEL_MOTOR_PIN, Settings::LEFT_WHEEL_MOTOR_DIRECTION_PIN, Settings::LEFT_WHEEL_MOTOR_INVERTED, Settings::LEFT_WHEEL_MOTOR_SPEED);
+Wheel rightWheel(2, Settings::RIGHT_WHEEL_MOTOR_PIN, Settings::RIGHT_WHEEL_MOTOR_DIRECTION_PIN, Settings::RIGHT_WHEEL_MOTOR_INVERTED, Settings::RIGHT_WHEEL_MOTOR_SPEED);
 WheelController wheelController(leftWheel, rightWheel, io_accelerometer);
-//Cutter cutter(io_analog);
+Cutter cutter(io_analog);
 BWF bwf;
 GPS gps;
-/*Battery battery(io_analog);
+Battery battery(io_analog);
 Metrics metrics(battery, gps);
 Resources resources(wifi, wheelController, cutter, bwf, battery, gps, io_accelerometer, metrics);
-StateController stateController(Definitions::MOWER_STATES::DOCKED, resources);  // initialize state controller, assume we are DOCKED to begin with.
-Api api(stateController, resources);*/
+/*StateController stateController(Definitions::MOWER_STATES::DOCKED, resources);  // initialize state controller, assume we are DOCKED to begin with.
+/*Api api(stateController, resources);*/
 
 
 void scan_I2C() {
@@ -96,9 +96,9 @@ void loop() {
     stateController.setState(Definitions::MOWER_STATES::FLIPPED);
   }
 
-  stateController.getStateInstance()->process();
+  stateController.getStateInstance()->process();*/
   wheelController.process();
   battery.process();
   cutter.process();
-  metrics.process();*/
+  metrics.process();
 }

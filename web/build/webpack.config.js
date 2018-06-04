@@ -105,7 +105,7 @@ if (!isProd) {
   // Add buildcheck if any resources grow too big, the embeded system has very limited space.
   config.performance = {
     hints: 'warning',
-    maxEntrypointSize: 10000,
+    maxEntrypointSize: 50000,
     maxAssetSize: 60000,
   };
 }

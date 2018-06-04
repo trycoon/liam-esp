@@ -25,7 +25,6 @@ struct gpsPosition {
   uint32_t time;
   double lat;
   double lng;
-  uint16_t dir;
 };
 
 /**

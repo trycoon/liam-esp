@@ -7,6 +7,7 @@ BWF::BWF() {
   // http://www.grauonline.de/alexwww/ardumower/filter/filter.html
 }
 
+// USE Remote Controll: https://esp-idf.readthedocs.io/en/v3.0/api-reference/peripherals/rmt.html?highlight=remote%20controll
 bool BWF::isLeftInsideFence() {
   return true;
 }

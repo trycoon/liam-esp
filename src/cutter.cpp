@@ -7,7 +7,7 @@ Cutter::Cutter(IO_Analog& io_analog) : io_analog(io_analog), cutting(false), loa
   sigmaDeltaSetup(Cutter::CHANNEL, 312500);
   //attach pin to channel
   sigmaDeltaAttachPin(Settings::CUTTER_MOTOR_PIN, Cutter::CHANNEL);
-  sigmaDeltaWrite(Cutter::CHANNEL, 0);
+  stop(false);
 }
 
 Cutter::~Cutter() {
@@ -34,9 +34,15 @@ void Cutter::stop(bool brake) {
   if (brake) {
     delay(10);
     digitalWrite(Settings::CUTTER_BRAKE_PIN, HIGH);
+  } else {
+    digitalWrite(Settings::CUTTER_BRAKE_PIN, LOW);
   }
 
   senseLoadTimer.unschedule(senseLoadTimerId);
+}
+
+bool Cutter::isCutting() {
+    return cutting;
 }
 
 void Cutter::senseLoad() {

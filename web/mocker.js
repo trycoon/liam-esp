@@ -11,11 +11,13 @@
  */
 let currentState = {
       state: 'DOCKED',
+      isCharging: false,
       cutterRotating: false,
       batteryVoltage: 14,
       batteryLevel: 90,
+      lastFullyChargeTime: new Date() - 1000,
+      lastChargeDuration: 1000*60*60,
       cutterLoad: 30,
-      dir: 90,
       pitch: 0,
       roll: 0,
       yaw: 45

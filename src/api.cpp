@@ -67,7 +67,6 @@ void Api::setupApi(AsyncWebServer& web_server) {
         sample["t"] = s.time;
         sample["lat"] = s.lat;
         sample["lng"] = s.lng;
-        sample["dir"] = s.dir;
     }
 
     root.printTo(*response);
@@ -161,6 +160,9 @@ void Api::setupApi(AsyncWebServer& web_server) {
     root["state"] = stateController.getStateInstance()->getStateName();
     root["batteryVoltage"] = resources.battery.getBatteryVoltage();
     root["batteryLevel"] = resources.battery.getBatteryStatus();
+    root["isCharging"] = resources.battery.isCharging();
+    root["lastFullyChargeTime"] = resources.battery.getLastFullyChargeTime();
+    root["lastChargeDuration"] = resources.battery.getLastChargeDuration();
     root["cutterLoad"] = resources.cutter.getLoad();
 
     orientation orient = resources.accelerometer.getOrientation();

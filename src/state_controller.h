@@ -34,6 +34,4 @@ class StateController {
     std::unordered_map<Definitions::MOWER_STATES, AbstractState*, EnumClassHash> stateLookup;
 };
 
-
-
 #endif

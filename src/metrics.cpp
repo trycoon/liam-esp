@@ -33,9 +33,9 @@ void Metrics::process() {
 
 std::list<batterySample> Metrics::getBatteryHistory() {
   std::list<batterySample> samples;
+  batterySample sample;
 
   for (auto &s: metricSamples){
-    batterySample sample;
     sample.time = s.time;
     sample.batteryVoltage = s.batteryVoltage;
 
@@ -47,9 +47,9 @@ std::list<batterySample> Metrics::getBatteryHistory() {
 
 std::list<gpsPosition> Metrics::getGpsPositionHistory() {
   std::list<gpsPosition> samples;
+  gpsPosition sample;
 
   for (auto &s: metricSamples){
-    gpsPosition sample;
     sample.time = s.time;
     sample.lat = s.lat;
     sample.lng = s.lng;
