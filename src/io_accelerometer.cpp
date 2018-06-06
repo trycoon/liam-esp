@@ -3,6 +3,7 @@
 
 // https://learn.adafruit.com/adafruit-bno055-absolute-orientation-sensor/pinouts
 // https://github.com/adafruit/Adafruit_BNO055
+// https://github.com/adafruit/Adafruit_BNO055/pull/21/files
 IO_Accelerometer::IO_Accelerometer() {
 
 /*  if (Settings::IO_ACCELEROMETER_ADDRESS > 0) {

@@ -4,7 +4,7 @@ let interval;
 function getInfoAndRender() {
     api.getSystem().done(data => {
         $('.js-section-info .appName').text(data.name);
-        $('.js-section-info .appVersion').text(data.appVersion);
+        $('.js-section-info .appVersion').text(data.version);
         $('.js-section-info .uptime').text(data.uptime);
         $('.js-section-info .cpuFreq').text(data.cpuFreq);
         $('.js-section-info .flashChipSize').text(data.flashChipSize);

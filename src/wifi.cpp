@@ -122,7 +122,7 @@ void WiFi_Client::start() {
       onMqttPublish(packetId);
     });
 
-    mqttClient.setServer(Configuration::getString("MQTT_SERVER", "").c_str(), Configuration::getInt("MQTT_PORT", 1883));
+    mqttClient.setServer(Configuration::getString("MQTT_SERVER").c_str(), Configuration::getInt("MQTT_PORT", 1883));
     //mqttClient.setCredentials("MQTT_USERNAME", "MQTT_PASSWORD");
     mqttClient.setKeepAlive(15); // seconds
     mqttClient.setClientId(Definitions::APP_NAME);
@@ -212,7 +212,7 @@ void WiFi_Client::setupWebServer() {
 }
 
 bool WiFi_Client::isMQTT_enabled() {
-  if (Configuration::getString("MQTT_SERVER", "").length() == 0) {
+  if (Configuration::getString("MQTT_SERVER", "").length() == 0 || Configuration::getString("MQTT_TOPIC", "").length() == 0) {
     return false;
   } else {
     return true;
@@ -227,7 +227,6 @@ void WiFi_Client::connect() {
 
 // Method is called upon when have a WiFi connection with an IP address (note that this method could be called upon several times).
 void WiFi_Client::onWifiConnect(WiFiEvent_t event, system_event_info_t info) {
-  //TODO: Setup time when we get IP: https://github.com/espressif/arduino-esp32/blob/master/libraries/ESP32/examples/Time/SimpleTime/SimpleTime.ino
 
   Serial.print("Connected to WiFi accesspoint: ");
   Serial.print(WiFi.SSID());
@@ -308,8 +307,8 @@ void WiFi_Client::flushQueue() {
 }
 
 void WiFi_Client::publish_message(std::string message, std::string subtopic) {
-  if (isMQTT_enabled()) {
-    std::string topic = Configuration::getString("MQTT_TOPIC", MQTT_TOPIC).c_str();
+  /*if (isMQTT_enabled()) {
+    std::string topic = Configuration::getString("MQTT_TOPIC").c_str();
 
     if (subtopic.length() > 0) {
       // make sure subtopics always begins with an slash ("/")
@@ -327,7 +326,7 @@ void WiFi_Client::publish_message(std::string message, std::string subtopic) {
 
     msgQueue.push({ message, topic });
     flushQueue();
-  }
+  }*/
 }
 
 void WiFi_Client::onMqttPublish(uint16_t packetId) {

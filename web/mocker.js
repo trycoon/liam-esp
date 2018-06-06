@@ -52,9 +52,9 @@ let currentState = {
       'GET /api/v1/system' : {
         name: 'liam-esp',
         version: '1.0.0',
-        cpuFreq: 80,
-        flashChipSize: 1234,
-        freeHeap: 40000,
+        cpuFreq: 240,
+        flashChipSize: 4194304,
+        freeHeap: 109608,
         wifiSignal: -37
       },
 

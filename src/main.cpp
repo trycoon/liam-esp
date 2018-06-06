@@ -17,7 +17,7 @@
 #include "metrics.h"
 #include "state_controller.h"
 #include "api.h"
-#include "configuration.h"
+
 /*
  * Software to control a LIAM robotmower using a NodeMCU/ESP-32 (or similar ESP32) microcontroller.
  */
@@ -34,8 +34,8 @@ GPS gps;
 Battery battery(io_analog);
 Metrics metrics(battery, gps);
 Resources resources(wifi, wheelController, cutter, bwf, battery, gps, io_accelerometer, metrics);
-/*StateController stateController(Definitions::MOWER_STATES::DOCKED, resources);  // initialize state controller, assume we are DOCKED to begin with.
-/*Api api(stateController, resources);*/
+StateController stateController(Definitions::MOWER_STATES::DOCKED, resources);  // initialize state controller, assume we are DOCKED to begin with.
+Api api(stateController, resources);
 
 
 void scan_I2C() {
@@ -83,20 +83,20 @@ void setup() {
   Serial.println(Definitions::APP_VERSION);
   scan_I2C();
   wifi.start();
-  /*api.setupApi(wifi.getWebServer());
-  ota.start();*/
+  api.setupApi(wifi.getWebServer());
+  //ota.start();
 }
 
 // Main program loop
 void loop() {
-/*  ota.handle();
+  //  ota.handle();
 
   // always check if we are flipped.
   if (io_accelerometer.isFlipped() && stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::FLIPPED) {
     stateController.setState(Definitions::MOWER_STATES::FLIPPED);
   }
 
-  stateController.getStateInstance()->process();*/
+  stateController.getStateInstance()->process();
   wheelController.process();
   battery.process();
   cutter.process();
