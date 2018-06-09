@@ -1,7 +1,7 @@
 #include "api.h"
 #include <ArduinoJson.h>
 #include "definitions.h"
-#include "io_accelerometer.h"
+#include "io_accelerometer/io_accelerometer.h"
 
 /**
 * REST-API class defining all the endpoints.

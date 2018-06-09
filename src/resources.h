@@ -8,7 +8,7 @@
 #include "battery.h"
 #include "gps.h"
 #include "configuration.h"
-#include "io_accelerometer.h"
+#include "io_accelerometer/io_accelerometer.h"
 #include "metrics.h"
 
 /**

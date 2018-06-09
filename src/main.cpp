@@ -5,7 +5,7 @@
 #include "settings.h"
 #include "resources.h"
 #include "io_analog.h"
-#include "io_accelerometer.h"
+#include "io_accelerometer/io_accelerometer.h"
 #include "wifi.h"
 #include "ota/ota.h"
 #include "wheel_controller.h"
@@ -22,7 +22,7 @@
  * Software to control a LIAM robotmower using a NodeMCU/ESP-32 (or similar ESP32) microcontroller.
  */
 IO_Analog io_analog;
-IO_Accelerometer io_accelerometer;
+IO_Accelerometer io_accelerometer(Wire);
 WiFi_Client wifi;
 //OTA ota(wifi);
 Wheel leftWheel(1, Settings::LEFT_WHEEL_MOTOR_PIN, Settings::LEFT_WHEEL_MOTOR_DIRECTION_PIN, Settings::LEFT_WHEEL_MOTOR_INVERTED, Settings::LEFT_WHEEL_MOTOR_SPEED);

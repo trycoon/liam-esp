@@ -3,7 +3,7 @@
 
 #include <functional>
 #include "wheel.h"
-#include "io_accelerometer.h"
+#include "io_accelerometer/io_accelerometer.h"
 #include "processable.h"
 
 class WheelController : public Processable {
