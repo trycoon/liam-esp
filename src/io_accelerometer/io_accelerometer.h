@@ -14,6 +14,7 @@ struct orientation {
 class IO_Accelerometer {
   public:
     IO_Accelerometer(TwoWire& w);
+    bool needCalibration();
     bool isAvailable();
     bool isFlipped();
     orientation getOrientation();
@@ -23,6 +24,7 @@ class IO_Accelerometer {
     Adafruit_BNO055* accel;
     bool initialized = false;
     bool available = false;
+    bool isCalibrated = false;
     void initialize();
 };
 

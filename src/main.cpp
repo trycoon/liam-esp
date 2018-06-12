@@ -40,7 +40,7 @@ Api api(stateController, resources);
 
 void scan_I2C() {
   Wire.begin(Settings::SDA_PIN, Settings::SCL_PIN);
-  byte error, address;
+  /*byte error, address;
   int devices = 0;
 
   Serial.println("Scanning for I2C devices...");
@@ -73,7 +73,7 @@ void scan_I2C() {
     Serial.println("No I2C devices found");
   } else {
     Serial.println("scanning done.");
-  }
+  }*/
 }
 
 void setup() {
@@ -82,6 +82,7 @@ void setup() {
   Serial.print(" v");
   Serial.println(Definitions::APP_VERSION);
   scan_I2C();
+  Serial.println(io_accelerometer.getOrientation().heading);
   wifi.start();
   api.setupApi(wifi.getWebServer());
   //ota.start();
@@ -92,7 +93,7 @@ void loop() {
   //  ota.handle();
 
   // always check if we are flipped.
-  if (io_accelerometer.isFlipped() && stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::FLIPPED) {
+  /*if (io_accelerometer.isFlipped() && stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::FLIPPED) {
     stateController.setState(Definitions::MOWER_STATES::FLIPPED);
   }
 
@@ -100,5 +101,5 @@ void loop() {
   wheelController.process();
   battery.process();
   cutter.process();
-  metrics.process();
+  metrics.process();*/
 }

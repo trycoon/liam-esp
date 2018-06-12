@@ -15,11 +15,6 @@ namespace Settings {
     const uint8_t SCL_PIN = 22; // could be any free and suitable pin. We use default 22 here.
 
     /*
-      A/D converter I2C address
-    */
-    const uint8_t IO_ANALOG_ADDRESS = 0x48;
-
-    /*
       Accelerometer
     */
     const uint8_t IO_ACCELEROMETER_ADDRESS = 0x53; // I2C address, set to "0" if not available.

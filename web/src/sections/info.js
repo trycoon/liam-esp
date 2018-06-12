@@ -25,6 +25,4 @@ export function unselected() {
     clearInterval(interval);
 }
 
-export function init() {
-
-}
+export function init() {}

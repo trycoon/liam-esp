@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,minimal-ui">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chartist@0.11.0/dist/chartist.css" integrity="sha256-ZdPdgx9fZU2qFRxu9ejkHfEBScOXb4TdG9xq82Dd6J8=" crossorigin="anonymous">
     <title>Liam-ESP</title>
   </head>
   <body>
@@ -28,9 +29,6 @@
               <span class="js-mowing button">Fortsätt klippa</span>
             </div>
           </div>
-          <!--<div class="batterystatus-control">
-            <span class="batterystatus"></span>
-          </div>-->
       </section>
       <section class="section js-section js-section-manual">
         <div class="state-control">
@@ -43,11 +41,17 @@
             <span class="js-stopmower button">Stoppa klippare</span>
           </div>
         </div>
-        <!--<div class="batterystatus-control">
-          <span class="batterystatus"></span>
-        </div>-->
       </section>
       <section class="section js-section js-section-metrics">
+          <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+            <canvas id="battery-chart"></canvas>
+          </div>
+          <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+            <canvas id="wifi-chart"></canvas>
+          </div>
+          <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+            <canvas id="cutterload-chart"></canvas>
+          </div>
       </section>
       <section class="section js-section js-section-settings">
         <a href="/setup">Installations guide</a>
@@ -57,7 +61,6 @@
       </section>
       <section class="section js-section js-section-info">
         <div>
-          <h3>Liam ESP</h3>
           <p>
             Application:&nbsp;<i class="appName"></i><br>
             Version:&nbsp;<i class="appVersion"></i><br>
@@ -73,5 +76,7 @@
     </div>
     <script src="//use.fontawesome.com/7690b4446d.js"></script>
     <script src="//code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartist@0.11.0/dist/chartist.min.js" integrity="sha256-UzffRueYhyZDw8Cj39UCnnggvBfa1fPcDQ0auvCbvCc=" crossorigin="anonymous"></script>
   </body>
 </html>

@@ -13,11 +13,11 @@ let currentState = {
       state: 'DOCKED',
       isCharging: false,
       cutterRotating: false,
-      batteryVoltage: 14,
+      batteryVoltage: Math.floor(Math.random() * (10 - 16 + 1)) + 16,
       batteryLevel: 90,
       lastFullyChargeTime: new Date() - 1000,
       lastChargeDuration: 1000*60*60,
-      cutterLoad: 30,
+      cutterLoad: Math.random() * 100,
       pitch: 0,
       roll: 0,
       yaw: 45
@@ -36,7 +36,11 @@ let currentState = {
       return samples;
     },
     proxy = {
-      'GET /api/v1/status': currentState,
+      'GET /api/v1/status': (req, res) => {
+        currentState.batteryVoltage = Math.floor(Math.random() * (10 - 16 + 1)) + 16;
+        currentState.cutterLoad = Math.random() * 100;
+        return res.json(currentState);
+      },
       'PUT /api/v1/state': (req, res) => {
         currentState.state = req.body.state;
       },
@@ -49,13 +53,15 @@ let currentState = {
       'GET /api/v1/history/battery': {
         samples: batterySamples()
       },
-      'GET /api/v1/system' : {
-        name: 'liam-esp',
-        version: '1.0.0',
-        cpuFreq: 240,
-        flashChipSize: 4194304,
-        freeHeap: 109608,
-        wifiSignal: -37
+      'GET /api/v1/system' : (req, res) => {
+        return res.json({
+          name: 'liam-esp',
+          version: '1.0.0',
+          cpuFreq: 240,
+          flashChipSize: 4194304,
+          freeHeap: 109608,
+          wifiSignal: Math.floor(Math.random() * (-30 - -90 + 1)) + -90
+        });
       },
 
       'PUT /api/v1/reboot': (req, res) => {}

@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <title>Liam-ESP</title>
-  <link href="/style.b9a64c3cbcf0ff046694.css" rel="stylesheet"></head>
+  <link href="/style.1b1ca306521c6a136b87.css" rel="stylesheet"></head>
   <body>
     <nav class="nav-left js-nav-left">
       <ul class="nav-left-list js-nav-left-list">
@@ -28,9 +28,9 @@
               <span class="js-mowing button">Fortsätt klippa</span>
             </div>
           </div>
-          <!--<div class="batterystatus-control">
-            <span class="batterystatus"></span>
-          </div>-->
+          <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+            <canvas id="battery-chart"></canvas>
+          </div>
       </section>
       <section class="section js-section js-section-manual">
         <div class="state-control">
@@ -43,9 +43,9 @@
             <span class="js-stopmower button">Stoppa klippare</span>
           </div>
         </div>
-        <!--<div class="batterystatus-control">
-          <span class="batterystatus"></span>
-        </div>-->
+        <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+          <canvas id="battery-chart"></canvas>
+        </div>
       </section>
       <section class="section js-section js-section-metrics">
       </section>
@@ -57,7 +57,6 @@
       </section>
       <section class="section js-section js-section-info">
         <div>
-          <h3>Liam ESP</h3>
           <p>
             Application:&nbsp;<i class="appName"></i><br>
             Version:&nbsp;<i class="appVersion"></i><br>
@@ -67,11 +66,16 @@
             Free heap memory:&nbsp;<i class="freeHeap"></i>&nbsp;Bytes<br>
             WiFi signal:&nbsp;<i class="wifiSignal"></i>&nbsp;dBm
           </p>
+          <p>WiFi signal</p>
+          <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+            <canvas id="wifi-chart"></canvas>
+          </div>
           <a href="/swagger.html" target="_blank">REST API</a>
         </div>
       </section>
     </div>
     <script src="//use.fontawesome.com/7690b4446d.js"></script>
     <script src="//code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-  <script type="text/javascript" src="/app.b9a64c3cbcf0ff046694.js"></script></body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+  <script type="text/javascript" src="/app.1b1ca306521c6a136b87.js"></script></body>
 </html>
