@@ -104,6 +104,7 @@ export function init() {
 
   // https://github.com/slobdell/joystick
   // view-source:http://svg-whiz.com/svg/DragAndDrop.svg
+  // http://www.petercollingridge.co.uk/tutorials/svg/interactive/dragging/
   // http://www.petercollingridge.co.uk/interactive-svg-components/draggable-svg-element
 }
 

@@ -4,32 +4,30 @@ let interval,
     batteryChart,
     batteryData = [],
     wifiChart,
+    wifiData = [],
     cutterLoadChart,
     cutterLoadData = [];
 
 function getInfoAndRender() {
     api.getSystem().done(data => {
-
-        wifiChart.data.labels.push(''); // we dont't display labels but we need this to advance x-axis.
-        wifiChart.data.datasets.forEach((dataset) => {
-            // prevent chart from growing to infinity (consuming browser memory)
-            if (dataset.data.length > MAX_SAMPLES) {
-                wifiChart.data.labels = wifiChart.data.labels.slice(-MAX_SAMPLES);
-                dataset.data = dataset.data.slice(-MAX_SAMPLES);
-            }
-            dataset.data.push(data.wifiSignal);
+        // prevent chart from growing to infinity (consuming browser memory)
+        if (wifiData.length > MAX_SAMPLES) {
+            wifiData = wifiData.slice(-MAX_SAMPLES);
+        }
+        wifiData.push(data.wifiSignal);
+    
+        wifiChart.update({
+            series: [wifiData],
         });
-
-        wifiChart.update();
     });
 
-    batteryChart.data.labels = new Array(batteryData.length);
-    batteryChart.data.datasets[0].data = batteryData;
-    batteryChart.update();
+    batteryChart.update({
+            series: [batteryData],
+    });
 
-    cutterLoadChart.data.labels = new Array(cutterLoadData.length);
-    cutterLoadChart.data.datasets[0].data = cutterLoadData;
-    cutterLoadChart.update();
+    cutterLoadChart.update({
+            series: [cutterLoadData],
+    });
 }
 
 // Keep receiving and storing useful metrics, that we could display later
@@ -59,115 +57,39 @@ export function unselected() {
 export function init() {
     window.addEventListener('statusUpdated', updatedStatus);
 
-    batteryChart = new Chart(document.getElementById("battery-chart"), {
-        type: 'line',
-        data: {
-            labels: [],
-            datasets: [{
-                fill: true,
-                lineTension: 0, // no bezierCurve
-                backgroundColor: '#0B0',
-                borderColor: '#070',
-                data: [],                
-            }]
-        },
-        options: {
-            //animation: false,
-            responsive: true,
-            title: {
-                display: true,
-                text: 'Battery voltage'
-            },
-            legend: {
-                display: false
-            },
-            scales: {
-                yAxes: [{
-                    display: true,
-                    gridLines: {
-                        color: '#777'
-                    },
-                    ticks: {
-                        min: 0,
-                        max: 20
-                    }
-                }]
-            }
-        }
+    batteryChart = new Chartist.Line('#battery-chart', {
+        series: [batteryData],
+    }, {
+        width: 300,
+        height: 200,
     });
 
-    wifiChart = new Chart(document.getElementById("wifi-chart"), {
-        type: 'line',
-        data: {
-            labels: [],
-            datasets: [{
-                fill: false,
-                lineTension: 0, // no bezierCurve
-                backgroundColor: '#00B',
-                borderColor: '#007',
-                data: [],                
-            }]
+    wifiChart = new Chartist.Line('#wifi-chart', {
+        series: [wifiData],
+    }, {
+        width: 300,
+        height: 200,
+        /*fullWidth: true,
+        axisX: {
+            type: Chartist.AutoScaleAxis,
+            showLabel: false,
+            showGrid: true,
         },
-        options: {
-            //animation: false,
-            responsive: true,
-            title: {
-                display: true,
-                text: 'WiFi strength'
-            },
-            legend: {
-                display: false
-            },
-            scales: {
-                yAxes: [{
-                    display: true,
-                    gridLines: {
-                        color: '#777'
-                    },
-                    //type: 'logarithmic',
-                    /*ticks: {
-                        min: -90,
-                        max: -30
-                    }*/
-                }]
-            }
-        }
+        axisY: {
+            offset: 0,
+            showLabel: false,
+            showGrid: false,
+        },
+        lineSmooth: Chartist.Interpolation.simple(),
+        showLine: true,
+        showPoint: true,
+        showArea: true,*/
     });
 
-    cutterLoadChart = new Chart(document.getElementById("cutterload-chart"), {
-        type: 'line',
-        data: {
-            labels: [],
-            datasets: [{
-                fill: true,
-                lineTension: 0, // no bezierCurve
-                backgroundColor: '#00B',
-                borderColor: '#007',
-                data: [],                
-            }]
-        },
-        options: {
-            //animation: false,
-            responsive: true,
-            title: {
-                display: true,
-                text: 'Cutter load'
-            },
-            legend: {
-                display: false
-            },
-            scales: {
-                yAxes: [{
-                    display: true,
-                    gridLines: {
-                        color: '#777'
-                    },
-                    ticks: {
-                        min: 0,
-                        max: 100
-                    }
-                }]
-            }
-        }
+    cutterLoadChart = new Chartist.Line('#cutterload-chart', {
+        series: [cutterLoadData],
+    }, {
+        width: 300,
+        height: 200,
     });
 }

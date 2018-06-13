@@ -5,6 +5,7 @@ const { resolve } = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const apiMocker = require('webpack-api-mocker');
 
 const config = {
@@ -88,6 +89,12 @@ const config = {
     new webpack.optimize.LimitChunkCountPlugin({
       maxChunks: 1
     }),
+    new CopyWebpackPlugin([
+      {
+        from: resolve(__dirname, '..', 'src', 'html', 'swagger'),
+        to: resolve(__dirname, '..', '..', 'data')
+      }
+    ]),
   ],
 };
 
