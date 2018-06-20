@@ -7,7 +7,7 @@
 #include "states/stuck.h"
 #include "states/flipped.h"
 #include "states/manual.h"
-#include "states/paused.h"
+#include "states/stop.h"
 #include "states/test.h"
 
 
@@ -20,7 +20,7 @@ StateController::StateController(Definitions::MOWER_STATES initialState, Resourc
   stateLookup[Definitions::MOWER_STATES::STUCK] = new Stuck(Definitions::MOWER_STATES::STUCK, *this, resources);
   stateLookup[Definitions::MOWER_STATES::FLIPPED] = new Flipped(Definitions::MOWER_STATES::FLIPPED, *this, resources);
   stateLookup[Definitions::MOWER_STATES::MANUAL] = new Manual(Definitions::MOWER_STATES::MANUAL, *this, resources);
-  stateLookup[Definitions::MOWER_STATES::PAUSED] = new Paused(Definitions::MOWER_STATES::PAUSED, *this, resources);
+  stateLookup[Definitions::MOWER_STATES::STOP] = new Stop(Definitions::MOWER_STATES::STOP, *this, resources);
   stateLookup[Definitions::MOWER_STATES::TEST] = new Test(Definitions::MOWER_STATES::TEST, *this, resources);
 
   setState(initialState);

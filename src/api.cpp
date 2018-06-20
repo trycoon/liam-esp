@@ -280,8 +280,8 @@ void Api::setupApi(AsyncWebServer& web_server) {
             } else if (state == "DOCKING") {
               stateController.setState(Definitions::MOWER_STATES::DOCKING);
               request->send(200);
-            } else if (state == "PAUSED") {
-              stateController.setState(Definitions::MOWER_STATES::PAUSED);
+            } else if (state == "STOP") {
+              stateController.setState(Definitions::MOWER_STATES::STOP);
               request->send(200);
             } else if (state == "TEST") {
               stateController.setState(Definitions::MOWER_STATES::TEST);

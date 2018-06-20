@@ -43,7 +43,7 @@ function setTheme(name) {
 
 function showSection(section) {
   let sections = $('.js-section'),
-      navItems = $('.js-nav-left-item'),
+      navItems = $('.js-main-nav-item'),
       sectionEl = $('.js-section-' + section),
       navSectionEl = $('.js-nav-section-' + section);
 
@@ -79,7 +79,7 @@ function startPollingStatus() {
 function init() {
   // Hide all sections first, showSection() will show the appropriate one.
   $('.section').hide();
-  $('.js-nav-left').on('click', '.js-nav-left-item', function() {
+  $('.js-main-nav').on('click', '.js-main-nav-item', function() {
     showSection($(this).data('section'));
   });
 

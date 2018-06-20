@@ -1091,10 +1091,10 @@
         "state"
       ]
     },
-    "PausedRequest": {
-      "title": "pausedRequest",
+    "StopRequest": {
+      "title": "stopRequest",
       "example": {
-        "state": "PAUSED"
+        "state": "STOP"
       },
       "type": "object",
       "properties": {

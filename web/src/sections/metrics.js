@@ -60,36 +60,40 @@ export function init() {
     batteryChart = new Chartist.Line('#battery-chart', {
         series: [batteryData],
     }, {
-        width: 300,
-        height: 200,
+        axisX: {
+            showGrid: false,
+        },
+        axisY: {
+            showLabel: true,
+        },
+        showPoint: false,
     });
 
     wifiChart = new Chartist.Line('#wifi-chart', {
         series: [wifiData],
     }, {
-        width: 300,
-        height: 200,
-        /*fullWidth: true,
         axisX: {
-            type: Chartist.AutoScaleAxis,
-            showLabel: false,
-            showGrid: true,
-        },
-        axisY: {
-            offset: 0,
-            showLabel: false,
             showGrid: false,
         },
-        lineSmooth: Chartist.Interpolation.simple(),
-        showLine: true,
-        showPoint: true,
-        showArea: true,*/
+        axisY: {
+            showLabel: true,
+        },
+        showPoint: false,
+        high: -20,
+        low: -100,
     });
 
     cutterLoadChart = new Chartist.Line('#cutterload-chart', {
         series: [cutterLoadData],
     }, {
-        width: 300,
-        height: 200,
+        axisX: {
+            showGrid: false,
+        },
+        axisY: {
+            showLabel: true,
+        },
+        showPoint: false,
+        high: 100,
+        low: 0,
     });
 }

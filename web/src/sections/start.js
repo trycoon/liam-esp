@@ -23,82 +23,78 @@ function setDockingState() {
   });
 }
 
-function setPausedState() {
-  api.selectState("PAUSED")
+function setStopState() {
+  api.selectState("STOP")
   .fail(function() {
     alert('error');
   });
 }
 
 function toggleStateButtons() {
-  $('.js-launching').show();
-  $('.js-docking').show();
-  $('.js-paused').show();
-  $('.js-mowing').show();
 
   if (liam.data.status.state) {
     switch (liam.data.status.state) {
       case 'DOCKED': {
         $('.js-launching').show();
         $('.js-docking').hide();
-        $('.js-paused').hide();
         $('.js-mowing').hide();
+        $('.js-stop').hide();
         break;
       }
       case 'LAUNCHING': {
         $('.js-launching').hide();
         $('.js-docking').show();
-        $('.js-paused').show();
-        $('.js-mowing').show();
+        $('.js-mowing').hide();
+        $('.js-stop').show();
         break;
       }
       case 'MOWING': {
         $('.js-launching').hide();
         $('.js-docking').show();
-        $('.js-paused').show();
         $('.js-mowing').hide();
+        $('.js-stop').show();
         break;
       }
       case 'DOCKING': {
         $('.js-launching').show();
         $('.js-docking').hide();
-        $('.js-paused').show();
         $('.js-mowing').show();
+        $('.js-stop').show();
         break;
       }
       case 'CHARGING': {
         $('.js-launching').show();
         $('.js-docking').hide();
-        $('.js-paused').hide();
         $('.js-mowing').hide();
+        $('.js-stop').hide();
         break;
       }
       case 'STUCK': {
         $('.js-launching').hide();
         $('.js-docking').show();
-        $('.js-paused').hide();
         $('.js-mowing').show();
+        $('.js-stop').hide();
         break;
       }
       case 'FLIPPED': {
         $('.js-launching').hide();
         $('.js-docking').show();
-        $('.js-paused').hide();
         $('.js-mowing').show();
+        $('.js-stop').hide();
         break;
       }
-      case 'PAUSED': {
+      case 'STOP': {
         $('.js-launching').hide();
         $('.js-docking').show();
-        $('.js-paused').hide();
         $('.js-mowing').show();
+        $('.js-stop').hide();
         break;
       }
       case 'TEST': {
         $('.js-launching').hide();
         $('.js-docking').show();
-        $('.js-paused').show();
         $('.js-mowing').show();
+        $('.js-stop').show();
         break;
       }
       default: {
@@ -124,7 +120,7 @@ function updatedStatus() {
     case 'STUCK': text = 'FASTNAT'; break;
     case 'FLIPPED': text = 'UPPOCHNED VÄND'; break;
     case 'MANUAL': text = 'MANUELL KÖRNING'; break;
-    case 'PAUSED': text = 'PAUSAD'; break;
+    case 'STOP': text = 'STOPPAD'; break;
     case 'TEST': text = 'TESTKÖRNING'; break;
     default: text = '...';
   }
@@ -154,7 +150,7 @@ export function init() {
   sec.find('.js-docking').on('click', function() {
     setDockingState();
   });
-  sec.find('.js-paused').on('click', function() {
-    setPausedState();
+  sec.find('.js-stop').on('click', function() {
+    setStopState();
   });
 }

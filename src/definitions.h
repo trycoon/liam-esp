@@ -20,7 +20,7 @@ namespace Definitions {
                               STUCK,      // mower is stuck somewhere and have shutdown (it may be stuck in a hole, the cutter may be stuck, or some other hardware issue...)
                               FLIPPED,    // mower is flipped upside down or tiled too much, stopp mowing and wait to be unflipped.
                               MANUAL,     // mower is in manual drive mode and controlled by user from REST-API.
-                              PAUSED,     // mower is paused from it's normal operation, when unpaused it should pursue last state.
+                              STOP,       // mower is stopped from it's normal operation, this happens when user press the physical stopbutton or UI button.
                               TEST        // mower is in test mode.
                             };
 };

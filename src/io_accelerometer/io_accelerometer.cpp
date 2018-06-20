@@ -4,7 +4,7 @@
 #include "configuration.h"
 #include "settings.h"
 
-// https://learn.adafruit.com/adafruit-bno055-absolute-orientation-sensor/pinouts
+// https://github.com/kriswiner/EM7180_SENtral_sensor_hub/wiki/A.-A-Short-Survey-of-Sensor-Fusion-Solutions
 
 IO_Accelerometer::IO_Accelerometer(TwoWire& w): _Wire(w) {
   accel = new Adafruit_BNO055(w, 10, BNO055_ADDRESS_B);
