@@ -6,6 +6,9 @@
 
 static const char *TAG = "API";
 
+// TODO: readup on setting correct JSON buffer size:
+// https://pe56d.s3.amazonaws.com/o_1cf4sjcksmad9da48q1gapkh810.pdf?AWSAccessKeyId=AKIAIP3NFJ5OR5FTFOQQ&Signature=JhIzgbSoA3TIqOX86P%2BGmZ4ppkg%3D&Expires=1530352969&response-content-disposition=inline;filename=%22preview.pdf%22&response-content-type=application/pdf
+// https://arduinojson.org/v5/faq/
 /**
 * REST-API class defining all the endpoints.
 * We are aiming for a self explaining API that resembles the HATEOAS constraints.
@@ -32,7 +35,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
     }
 
     AsyncResponseStream *response = request->beginResponseStream("application/json");
-    DynamicJsonBuffer jsonBuffer;
+    DynamicJsonBuffer jsonBuffer(512);
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
     JsonObject& self = links.createNestedObject("self");
@@ -57,7 +60,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
     }
 
     AsyncResponseStream *response = request->beginResponseStream("application/json");
-    DynamicJsonBuffer jsonBuffer;
+    DynamicJsonBuffer jsonBuffer(512);
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
     JsonObject& self = links.createNestedObject("self");
@@ -83,7 +86,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
     }
 
     AsyncResponseStream *response = request->beginResponseStream("application/json");
-    DynamicJsonBuffer jsonBuffer;
+    DynamicJsonBuffer jsonBuffer(512);
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
 
@@ -110,7 +113,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
     }
 
     AsyncResponseStream *response = request->beginResponseStream("application/json");
-    DynamicJsonBuffer jsonBuffer;
+    DynamicJsonBuffer jsonBuffer(512);
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
 
@@ -153,7 +156,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
     }
 
     AsyncResponseStream *response = request->beginResponseStream("application/json");
-    DynamicJsonBuffer jsonBuffer;
+    DynamicJsonBuffer jsonBuffer(512);
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
     JsonObject& self = links.createNestedObject("self");
@@ -184,7 +187,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
     }
 
     AsyncResponseStream *response = request->beginResponseStream("application/json");
-    DynamicJsonBuffer jsonBuffer;
+    DynamicJsonBuffer jsonBuffer(512);
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
     JsonObject& self = links.createNestedObject("self");
@@ -209,7 +212,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
     }
 
     AsyncResponseStream *response = request->beginResponseStream("application/json");
-    DynamicJsonBuffer jsonBuffer;
+    DynamicJsonBuffer jsonBuffer(512);
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
 
@@ -267,7 +270,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
       // respond to PUT requests on URL /api/v1/state, change state of mower.
       // example body: {"state": "TEST"}
       if (request->url() == "/api/v1/state") {
-        DynamicJsonBuffer jsonBuffer;
+        DynamicJsonBuffer jsonBuffer(512);
         JsonObject& root = jsonBuffer.parseObject((const char*)data);
 
         if (root.success()) {
@@ -307,7 +310,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
           stateController.setState(Definitions::MOWER_STATES::MANUAL);
         }
 
-        DynamicJsonBuffer jsonBuffer;
+        DynamicJsonBuffer jsonBuffer(512);
         JsonObject& root = jsonBuffer.parseObject((const char*)data);
 
         if (root.success()) {
@@ -338,7 +341,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
           stateController.setState(Definitions::MOWER_STATES::MANUAL);
         }
 
-        DynamicJsonBuffer jsonBuffer;
+        DynamicJsonBuffer jsonBuffer(512);
         JsonObject& root = jsonBuffer.parseObject((const char*)data);
 
         if (root.success()) {
@@ -369,7 +372,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
           stateController.setState(Definitions::MOWER_STATES::MANUAL);
         }
 
-        DynamicJsonBuffer jsonBuffer;
+        DynamicJsonBuffer jsonBuffer(512);
         JsonObject& root = jsonBuffer.parseObject((const char*)data);
 
         if (root.success()) {

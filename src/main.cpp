@@ -95,11 +95,11 @@ void loop() {
   // always check if we are flipped.
   /*if (io_accelerometer.isFlipped() && stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::FLIPPED) {
     stateController.setState(Definitions::MOWER_STATES::FLIPPED);
-  }
+  }*/
 
   stateController.getStateInstance()->process();
   wheelController.process();
-  battery.process();
-  cutter.process();
-  metrics.process();*/
+  //battery.process();
+  //cutter.process();
+  //metrics.process();
 }
