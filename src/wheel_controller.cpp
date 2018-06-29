@@ -11,13 +11,35 @@ WheelController::~WheelController() {
 }
 
 void WheelController::forward(int8_t turnrate, uint8_t speed, bool smooth) {
-  leftWheel.setSpeed(100);
-  rightWheel.setSpeed(100);
+  turnrate = constrain(turnrate, -100, 100);
+  speed = constrain(speed, 0, 100);
+
+  if (turnrate < 0) {
+    leftWheel.setSpeed(speed + turnrate);
+    rightWheel.setSpeed(speed);
+  } else if (turnrate > 0) {
+    leftWheel.setSpeed(speed);
+    rightWheel.setSpeed(speed - turnrate);
+  } else {
+    leftWheel.setSpeed(speed);
+    rightWheel.setSpeed(speed);
+  }  
 }
 
 void WheelController::backward(int8_t turnrate, uint8_t speed, bool smooth) {
-  leftWheel.setSpeed(-100);
-  rightWheel.setSpeed(-100);
+  turnrate = constrain(turnrate, -100, 100);
+  speed = constrain(speed, 0, 100);
+
+  if (turnrate < 0) {
+    leftWheel.setSpeed(-speed - turnrate);
+    rightWheel.setSpeed(-speed);
+  } else if (turnrate > 0) {
+    leftWheel.setSpeed(-speed);
+    rightWheel.setSpeed(-speed + turnrate);
+  } else {
+    leftWheel.setSpeed(-speed);
+    rightWheel.setSpeed(-speed);
+  }
 }
 
 void WheelController::turn(uint16_t direction, std::function<void(void)> fn) {

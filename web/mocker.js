@@ -50,6 +50,10 @@ let currentState = {
       'PUT /api/v1/manual/cutter_off': (req, res) => {
         currentState.cutterRotating = false;
       },
+      'PUT /api/v1/manual/forward': (req, res) => {},
+      'PUT /api/v1/manual/backward': (req, res) => {},
+      'PUT /api/v1/manual/turn': (req, res) => {},
+      'PUT /api/v1/manual/stop': (req, res) => {},
       'GET /api/v1/history/battery': {
         samples: batterySamples()
       },

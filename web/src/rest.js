@@ -28,6 +28,6 @@
         'content-type': 'application/json',
         'cache-control': 'no-cache'
       },
-      data: params || '{}'
+      data: params ? JSON.stringify(params) : '{}'
     });
   }

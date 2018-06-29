@@ -1,7 +1,10 @@
 #include "api.h"
 #include <ArduinoJson.h>
+#include "esp_log.h"
 #include "definitions.h"
 #include "io_accelerometer/io_accelerometer.h"
+
+static const char *TAG = "API";
 
 /**
 * REST-API class defining all the endpoints.
@@ -320,7 +323,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
             request->send(400, "text/plain", "Bad Request - missing 'smooth' parameter");
             return;
           }
-
+          Serial.printf("root[turnrate]=%d, root[speed]=%d", atoi(root["turnrate"]), atoi(root["speed"]));
           resources.wheelController.forward(root["turnrate"], root["speed"], root["smooth"]);
           request->send(200);
         } else {
@@ -434,7 +437,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
       }
     }
 
-    Serial.printf("Resource not found: http://%s%s\n", request->host().c_str(), request->url().c_str());
-    request->send(404, "text/plain", "Not found");
+    //Serial.printf("Resource not found: http://%s%s\n", request->host().c_str(), request->url().c_str());
+    //request->send(404, "text/plain", "Not found");
   });
 }

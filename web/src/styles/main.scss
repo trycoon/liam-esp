@@ -42,6 +42,15 @@ a {
     color: #0066BBFF;
     text-decoration: none;
 }
+
+@mixin no-select {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
 /* ROOT FONT STYLES */
 * {
   font-family: 'Lato', Helvetica, sans-serif;
@@ -177,6 +186,7 @@ p {
   width: 100%;
   max-width: 200px;
   white-space:nowrap;
+  @include no-select;
 }
 .button-round-left {
   border-top-left-radius: 10px;

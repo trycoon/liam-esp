@@ -12,14 +12,14 @@ class WheelController : public Processable {
     ~WheelController();
     /**
      * Drives mower forward at specified speed and turning at specified speed.
-     * @param turnrate speed of turning (-127-0 left, 0-128 right). 0 = don't turn.
+     * @param turnrate speed of turning (-1=>-100 left, 1=>100 right). 0 = don't turn.
      * @param speed forward speed (0-100%)
      * @param smooth smoothly take us to target speed.
      */ 
     void forward(int8_t turnrate, uint8_t speed, bool smooth = false);
     /**
      * Drives mower backward at specified speed and turning at specified speed.
-     * @param turnrate speed of turning (-127-0 left, 0-128 right). 0 = don't turn.
+     * @param turnrate speed of turning (-1=>-100 left, 1=>100 right). 0 = don't turn.
      * @param speed backward speed (0-100%)
      * @param smooth smoothly take us to target speed.
      */ 
