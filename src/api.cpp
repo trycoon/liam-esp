@@ -86,7 +86,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
     }
 
     AsyncResponseStream *response = request->beginResponseStream("application/json");
-    DynamicJsonBuffer jsonBuffer(512);
+    DynamicJsonBuffer jsonBuffer(100);
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
 
@@ -187,7 +187,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
     }
 
     AsyncResponseStream *response = request->beginResponseStream("application/json");
-    DynamicJsonBuffer jsonBuffer(512);
+    DynamicJsonBuffer jsonBuffer(200);
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
     JsonObject& self = links.createNestedObject("self");
@@ -259,188 +259,221 @@ void Api::setupApi(AsyncWebServer& web_server) {
     request->redirect("/api/v1");
   });
 
-  // PUT, POST requests.
-  web_server.onRequestBody([this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+  // respond to PUT requests on URL /api/v1/state, change state of mower.
+  // example body: {"state": "TEST"}
+  web_server.on("/api/v1/state", HTTP_PUT, [](AsyncWebServerRequest *request) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+      return request->requestAuthentication();
+    }
+  }, NULL, [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+    DynamicJsonBuffer jsonBuffer(100);
+    JsonObject& root = jsonBuffer.parseObject((const char*)data);
 
+    if (root.success()) {
+      if (root.containsKey("state")) {
+        String state = root["state"].asString();
+
+        if (state == "LAUNCHING") {
+          stateController.setState(Definitions::MOWER_STATES::LAUNCHING);
+          request->send(200);
+        } else if (state == "MOWING") {
+          stateController.setState(Definitions::MOWER_STATES::MOWING);
+          request->send(200);
+        } else if (state == "DOCKING") {
+          stateController.setState(Definitions::MOWER_STATES::DOCKING);
+          request->send(200);
+        } else if (state == "STOP") {
+          stateController.setState(Definitions::MOWER_STATES::STOP);
+          request->send(200);
+        } else if (state == "TEST") {
+          stateController.setState(Definitions::MOWER_STATES::TEST);
+          request->send(200);
+        } else {
+          request->send(422, "text/plain", "unknown state: " + state);
+        }
+      } else {
+        request->send(400, "text/plain", "Bad Request");
+      }
+    } else {
+      request->send(400, "text/plain", "Bad Request");
+    }
+  });
+
+  // respond to PUT requests on URL /api/v1/manual/forward, drive mower forward.
+  // example body: {"speed": 50, "turnrate": 0, "smooth": false}
+  web_server.on("/api/v1/manual/forward", HTTP_PUT, [this](AsyncWebServerRequest *request) {
     if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
       return request->requestAuthentication();
     }
 
-    if (request->method() == HTTP_PUT) {
-      // respond to PUT requests on URL /api/v1/state, change state of mower.
-      // example body: {"state": "TEST"}
-      if (request->url() == "/api/v1/state") {
-        DynamicJsonBuffer jsonBuffer(512);
-        JsonObject& root = jsonBuffer.parseObject((const char*)data);
+    if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
+      stateController.setState(Definitions::MOWER_STATES::MANUAL);
+    }
+  }, NULL, [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+    DynamicJsonBuffer jsonBuffer(50);
+    JsonObject& root = jsonBuffer.parseObject((const char*)data);
 
-        if (root.success()) {
-          if (root.containsKey("state")) {
-            String state = root["state"].asString();
-
-            if (state == "LAUNCHING") {
-              stateController.setState(Definitions::MOWER_STATES::LAUNCHING);
-              request->send(200);
-            } else if (state == "MOWING") {
-              stateController.setState(Definitions::MOWER_STATES::MOWING);
-              request->send(200);
-            } else if (state == "DOCKING") {
-              stateController.setState(Definitions::MOWER_STATES::DOCKING);
-              request->send(200);
-            } else if (state == "STOP") {
-              stateController.setState(Definitions::MOWER_STATES::STOP);
-              request->send(200);
-            } else if (state == "TEST") {
-              stateController.setState(Definitions::MOWER_STATES::TEST);
-              request->send(200);
-            } else {
-              request->send(422, "text/plain", "unknown state: " + state);
-            }
-          } else {
-            request->send(400, "text/plain", "Bad Request");
-          }
-        } else {
-          request->send(400, "text/plain", "Bad Request");
-        }
+    if (root.success()) {
+      if (!root.containsKey("speed")) {
+        request->send(400, "text/plain", "Bad Request - missing 'speed' parameter");
+        return;
       }
-
-      // respond to PUT requests on URL /api/v1/manual/forward, drive mower forward.
-      // example body: {"speed": 50, "turnrate": 0, "smooth": false}
-      else if (request->url() == "/api/v1/manual/forward") {
-        if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
-          stateController.setState(Definitions::MOWER_STATES::MANUAL);
-        }
-
-        DynamicJsonBuffer jsonBuffer(512);
-        JsonObject& root = jsonBuffer.parseObject((const char*)data);
-
-        if (root.success()) {
-          if (!root.containsKey("speed")) {
-            request->send(400, "text/plain", "Bad Request - missing 'speed' parameter");
-            return;
-          }
-          if (!root.containsKey("turnrate")) {
-            request->send(400, "text/plain", "Bad Request - missing 'turnrate' parameter");
-            return;
-          }
-          if (!root.containsKey("smooth")) {
-            request->send(400, "text/plain", "Bad Request - missing 'smooth' parameter");
-            return;
-          }
-          Serial.printf("root[turnrate]=%d, root[speed]=%d", atoi(root["turnrate"]), atoi(root["speed"]));
-          resources.wheelController.forward(root["turnrate"], root["speed"], root["smooth"]);
-          request->send(200);
-        } else {
-          request->send(400, "text/plain", "Bad Request");
-        }
+      if (!root.containsKey("turnrate")) {
+        request->send(400, "text/plain", "Bad Request - missing 'turnrate' parameter");
+        return;
       }
-
-      // respond to PUT requests on URL /api/v1/manual/backward, drive mower backward.
-      else if (request->url() == "/api/v1/manual/backward") {
-        // example body: {"speed": 50, "turnrate": 0, "smooth": false}
-        if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
-          stateController.setState(Definitions::MOWER_STATES::MANUAL);
-        }
-
-        DynamicJsonBuffer jsonBuffer(512);
-        JsonObject& root = jsonBuffer.parseObject((const char*)data);
-
-        if (root.success()) {
-          if (!root.containsKey("speed")) {
-            request->send(400, "text/plain", "Bad Request - missing 'speed' parameter");
-            return;
-          }
-          if (!root.containsKey("turnrate")) {
-            request->send(400, "text/plain", "Bad Request - missing 'turnrate' parameter");
-            return;
-          }
-          if (!root.containsKey("smooth")) {
-            request->send(400, "text/plain", "Bad Request - missing 'smooth' parameter");
-            return;
-          }
-
-          resources.wheelController.backward(root["turnrate"], root["speed"], root["smooth"]);
-          request->send(200);
-        } else {
-          request->send(400, "text/plain", "Bad Request");
-        }
+      if (!root.containsKey("smooth")) {
+        request->send(400, "text/plain", "Bad Request - missing 'smooth' parameter");
+        return;
       }
+      
+      resources.wheelController.forward(root["turnrate"], root["speed"], root["smooth"]);
+      request->send(200);
+    } else {
+      request->send(400, "text/plain", "Bad Request");
+    }
+  });
 
-      // respond to PUT requests on URL /api/v1/manual/turn, turn mower to specified direction (degrees 0-360).
-      // example body: {"direction": 180}
-      else if (request->url() == "/api/v1/manual/turn") {
-        if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
-          stateController.setState(Definitions::MOWER_STATES::MANUAL);
-        }
-
-        DynamicJsonBuffer jsonBuffer(512);
-        JsonObject& root = jsonBuffer.parseObject((const char*)data);
-
-        if (root.success()) {
-          if (!root.containsKey("direction")) {
-            request->send(400, "text/plain", "Bad Request - missing 'direction' parameter");
-            return;
-          }
-
-          resources.wheelController.turn(root["direction"]);
-          request->send(200);
-        } else {
-          request->send(400, "text/plain", "Bad Request");
-        }
-      }
-
-      // respond to PUT requests on URL /api/v1/manual/stop, stop mower movement.
-      else if (request->url() == "/api/v1/manual/stop") {
-        if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
-          stateController.setState(Definitions::MOWER_STATES::MANUAL);
-        }
-
-        resources.wheelController.stop(true);
-        request->send(200);
-      }
-
-      // respond to PUT requests on URL /api/v1/manual/cutter_on, start mower cutter.
-      else if (request->url() == "/api/v1/manual/cutter_on") {
-        if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
-          stateController.setState(Definitions::MOWER_STATES::MANUAL);
-        }
-
-        resources.cutter.start();
-        request->send(200);
-      }
-
-      // respond to PUT requests on URL /api/v1/manual/cutter_off, stop mower cutter.
-      else if (request->url() == "/api/v1/manual/cutter_off") {
-        if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
-          stateController.setState(Definitions::MOWER_STATES::MANUAL);
-        }
-
-        resources.cutter.stop(true);
-        request->send(200);
-      }
-
-      // respond to PUT requests on URL /api/v1/reboot, restart mower.
-      else if (request->url() == "/api/v1/reboot") {
-        resources.cutter.stop(true);
-        resources.wheelController.stop(false);
-        Serial.println("Rebooting by API request");
-        request->send(200);
-        delay(1000);
-        ESP.restart();
-      }
-
-      // respond to PUT requests on URL /api/v1/factoryreset, reset all setting and restart mower.
-      else if (request->url() == "/api/v1/factoryreset") {
-        resources.cutter.stop(true);
-        resources.wheelController.stop(false);
-        //presenent.clear();
-        Serial.println("Factory reset by API request");
-        request->send(200);
-        delay(1000);
-        ESP.restart();
-      }
+  // respond to PUT requests on URL /api/v1/manual/backward, drive mower backward.
+  // example body: {"speed": 50, "turnrate": 0, "smooth": false}
+  web_server.on("/api/v1/manual/backward", HTTP_PUT, [this](AsyncWebServerRequest *request) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+      return request->requestAuthentication();
     }
 
-    //Serial.printf("Resource not found: http://%s%s\n", request->host().c_str(), request->url().c_str());
-    //request->send(404, "text/plain", "Not found");
+    if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
+      stateController.setState(Definitions::MOWER_STATES::MANUAL);
+    }
+  }, NULL, [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+    DynamicJsonBuffer jsonBuffer(50);
+    JsonObject& root = jsonBuffer.parseObject((const char*)data);
+
+    if (root.success()) {
+      if (!root.containsKey("speed")) {
+        request->send(400, "text/plain", "Bad Request - missing 'speed' parameter");
+        return;
+      }
+      if (!root.containsKey("turnrate")) {
+        request->send(400, "text/plain", "Bad Request - missing 'turnrate' parameter");
+        return;
+      }
+      if (!root.containsKey("smooth")) {
+        request->send(400, "text/plain", "Bad Request - missing 'smooth' parameter");
+        return;
+      }
+      
+      resources.wheelController.backward(root["turnrate"], root["speed"], root["smooth"]);
+      request->send(200);
+    } else {
+      request->send(400, "text/plain", "Bad Request");
+    }
   });
+
+  // respond to PUT requests on URL /api/v1/manual/turn, turn mower to specified direction (degrees 0-360).
+  // example body: {"direction": 180}
+  web_server.on("/api/v1/manual/turn", HTTP_PUT, [this](AsyncWebServerRequest *request) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+      return request->requestAuthentication();
+    }
+
+    if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
+      stateController.setState(Definitions::MOWER_STATES::MANUAL);
+    }
+  }, NULL, [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+    DynamicJsonBuffer jsonBuffer(50);
+    JsonObject& root = jsonBuffer.parseObject((const char*)data);
+
+    if (root.success()) {
+      if (!root.containsKey("direction")) {
+        request->send(400, "text/plain", "Bad Request - missing 'direction' parameter");
+        return;
+      }
+
+      resources.wheelController.turn(root["direction"]);
+      request->send(200);
+    } else {
+      request->send(400, "text/plain", "Bad Request");
+    }
+  });
+
+  // respond to PUT requests on URL /api/v1/manual/stop, stop mower movement.
+  web_server.on("/api/v1/manual/stop", HTTP_PUT, [this](AsyncWebServerRequest *request) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+      return request->requestAuthentication();
+    }
+
+    if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
+      stateController.setState(Definitions::MOWER_STATES::MANUAL);
+    }
+
+    resources.wheelController.stop(true);
+    request->send(200);
+  }, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+    // nothing.
+  });
+
+  // respond to PUT requests on URL /api/v1/manual/cutter_on, start mower cutter.
+  web_server.on("/api/v1/manual/cutter_on", HTTP_PUT, [this](AsyncWebServerRequest *request) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+      return request->requestAuthentication();
+    }
+
+    if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
+      stateController.setState(Definitions::MOWER_STATES::MANUAL);
+    }
+
+    resources.cutter.start();
+    request->send(200);    
+  }, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+    // nothing.
+  });
+
+  // respond to PUT requests on URL /api/v1/manual/cutter_off, stop mower cutter.
+  web_server.on("/api/v1/manual/cutter_off", HTTP_PUT, [this](AsyncWebServerRequest *request) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+      return request->requestAuthentication();
+    }
+
+    if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
+      stateController.setState(Definitions::MOWER_STATES::MANUAL);
+    }
+
+    resources.cutter.stop(true);
+    request->send(200);
+  }, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+    // nothing.
+  });
+
+  // respond to PUT requests on URL /api/v1/reboot, restart mower.
+  web_server.on("/api/v1/reboot", HTTP_PUT, [this](AsyncWebServerRequest *request) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+      return request->requestAuthentication();
+    }
+
+    resources.cutter.stop(true);
+    resources.wheelController.stop(false);
+    Serial.println("Rebooting by API request");
+    request->send(200);
+    delay(1000);
+    ESP.restart();
+  }, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+    // nothing.
+  });
+
+  // respond to PUT requests on URL /api/v1/factoryreset, reset all setting and restart mower.
+  web_server.on("/api/v1/factoryreset", HTTP_PUT, [this](AsyncWebServerRequest *request) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+      return request->requestAuthentication();
+    }
+
+    resources.cutter.stop(true);
+    resources.wheelController.stop(false);
+    //TODO: presenent.clear();
+    Serial.println("Factory reset by API request");
+    request->send(200);
+    delay(1000);
+    ESP.restart();
+  }, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+    // nothing.
+  }); 
 }

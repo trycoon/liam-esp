@@ -31,3 +31,27 @@
       data: params ? JSON.stringify(params) : '{}'
     });
   }
+
+  export function restart() {
+    return $.ajax({
+      url: `/api/v1/reboot`,
+      method: 'PUT',
+      headers: {
+        'content-type': 'application/json',
+        'cache-control': 'no-cache'
+      },
+      data: '{}'
+    });
+  }
+
+  export function factoryreset() {
+    return $.ajax({
+      url: `/api/v1/factoryreset`,
+      method: 'PUT',
+      headers: {
+        'content-type': 'application/json',
+        'cache-control': 'no-cache'
+      },
+      data: '{}'
+    });
+  }

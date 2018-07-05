@@ -232,6 +232,21 @@ void WiFi_Client::onWifiConnect(WiFiEvent_t event, system_event_info_t info) {
   Serial.print(WiFi.SSID());
   Serial.print(", using IP-address: ");
   Serial.println(WiFi.localIP());
+
+  WiFi.macAddress(mac);
+  Serial.print("MAC: ");
+  Serial.print(mac[0], HEX);
+  Serial.print(":");
+  Serial.print(mac[1], HEX);
+  Serial.print(":");
+  Serial.print(mac[2], HEX);
+  Serial.print(":");
+  Serial.print(mac[3], HEX);
+  Serial.print(":");
+  Serial.print(mac[4], HEX);
+  Serial.print(":");
+  Serial.println(mac[5], HEX);
+  
   //close own AP network
   WiFi.mode(WIFI_MODE_STA);
 

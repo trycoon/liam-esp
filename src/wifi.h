@@ -35,7 +35,8 @@ class WiFi_Client {
     Ticker mqttReconnectTimer;
     Ticker flushQueueTimer;
     std::queue<MQTT_Message> msgQueue;
-
+    byte mac[6];
+    
     AsyncWebServer web_server;
     static void WiFiEvent(system_event_id_t event, system_event_info_t info);
     bool isMQTT_enabled();
