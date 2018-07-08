@@ -16,7 +16,7 @@ let currentState = {
       batteryVoltage: Math.floor(Math.random() * (10 - 16 + 1)) + 16,
       batteryLevel: 90,
       lastFullyChargeTime: new Date() - 1000,
-      lastChargeDuration: 1000*60*60,
+      lastChargeDuration: 1000 *60 * 60,
       cutterLoad: Math.random() * 100,
       pitch: 0,
       roll: 0,
@@ -35,6 +35,7 @@ let currentState = {
 
       return samples;
     },
+    uptime = new Date(),
     proxy = {
       'GET /api/v1/status': (req, res) => {
         currentState.batteryVoltage = Math.floor(Math.random() * (10 - 16 + 1)) + 16;
@@ -61,6 +62,7 @@ let currentState = {
         return res.json({
           name: 'liam-esp',
           version: '1.0.0',
+          uptime: Math.round((new Date().getTime() - uptime.getTime()) / 1000),
           cpuFreq: 240,
           flashChipSize: 4194304,
           freeHeap: 109608,

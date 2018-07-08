@@ -5,7 +5,7 @@ function getInfoAndRender() {
     api.getSystem().done(data => {
         $('.js-section-info .appName').text(data.name);
         $('.js-section-info .appVersion').text(data.version);
-        $('.js-section-info .uptime').text(data.uptime);
+        $('.js-section-info .uptime').text(data.uptime); //TODO: print text: "xx hour yy min zz sec"
         $('.js-section-info .cpuFreq').text(data.cpuFreq);
         $('.js-section-info .flashChipSize').text(data.flashChipSize);
         $('.js-section-info .freeHeap').text(data.freeHeap);

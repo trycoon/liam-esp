@@ -20,7 +20,7 @@
         </ul>
       </nav>
       <div class="main js-main">
-        <section class="section js-section js-section-start">
+        <section class="section js-section js-section-start" style="display: none">
           <div class="state-control">
               <div class="state pulsate js-state font-heavy">...</div>
               <div class="buttons center">
@@ -31,7 +31,7 @@
               </div>
             </div>
         </section>
-        <section class="section js-section js-section-manual">
+        <section class="section js-section js-section-manual" style="display: none">
           <div class="state-control">
             <svg class="joystick" viewBox="0 0 100 100" preserveAspectRatio="xMaxYMax meet">
               <circle class="joypad" cx="50" cy="50" r="48" stroke="#1E90FF" stroke-width="1" fill="#0000FF55"/>
@@ -43,7 +43,7 @@
             </div>
           </div>
         </section>
-        <section class="section js-section js-section-metrics">
+        <section class="section js-section js-section-metrics" style="display: none">
             <h3>Battery voltage</h3>
             <div id="battery-chart" class="ct-chart ct-minor-seventh"></div>
             <h3>WiFi reception</h3>
@@ -51,13 +51,13 @@
             <h3>Cuttermotor load (%)</h3>
             <div id="cutterload-chart" class="ct-chart ct-minor-seventh"></div>
         </section>
-        <section class="section js-section js-section-settings">
+        <section class="section js-section js-section-settings" style="display: none">
           <div class="buttons center">
             <a href="/setup" class="button">Installations guide</a>
             <span class="js-restart button">Starta om</span>
             <span class="js-factoryreset button">Fabriks återställ</span>
         </section>
-        <section class="section js-section js-section-info">
+        <section class="section js-section js-section-info" style="display: none">
           <div>
             <p>
               Application:&nbsp;<i class="appName"></i><br>

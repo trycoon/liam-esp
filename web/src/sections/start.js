@@ -5,28 +5,28 @@ let sec = $('.js-section-start');
 function setLaunchMowerState() {
   api.selectState("LAUNCHING")
   .fail(function() {
-    alert('error');
+    console.error(e);
   });
 }
 
 function setMowingState() {
   api.selectState("MOWING")
   .fail(function() {
-    alert('error');
+    console.error(e);
   });
 }
 
 function setDockingState() {
   api.selectState("DOCKING")
   .fail(function() {
-    alert('error');
+    console.error(e);
   });
 }
 
 function setStopState() {
   api.selectState("STOP")
   .fail(function() {
-    alert('error');
+    console.error(e);
   });
 }
 
@@ -88,6 +88,13 @@ function toggleStateButtons() {
         $('.js-docking').show();
         $('.js-mowing').show();
         $('.js-stop').hide();
+        break;
+      }
+      case 'MANUAL': {
+        $('.js-launching').hide();
+        $('.js-docking').show();
+        $('.js-mowing').show();
+        $('.js-stop').show();
         break;
       }
       case 'TEST': {

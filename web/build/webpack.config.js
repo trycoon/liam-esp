@@ -40,10 +40,13 @@ const config = {
     rules: [
       {
         test: /\.js$/,
-        loader: 'babel-loader',
-
-        // Dependencies do not require transpilation
         exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['env']
+          }
+        },
       },
       {
         test: /\.css$/,

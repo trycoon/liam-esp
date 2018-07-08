@@ -12,14 +12,14 @@ export function unselected() {
 function restart() {
     api.restart()
     .fail(function() {
-        alert('error');
+        console.error(e);
     });
 }
 
 function factoryreset() {
     api.factoryreset()
     .fail(function() {
-        alert('error');
+        console.error(e);
     });
 }
 

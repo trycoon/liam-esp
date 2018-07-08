@@ -6,9 +6,8 @@
 
 static const char *TAG = "API";
 
-// TODO: readup on setting correct JSON buffer size:
-// https://pe56d.s3.amazonaws.com/o_1cf4sjcksmad9da48q1gapkh810.pdf?AWSAccessKeyId=AKIAIP3NFJ5OR5FTFOQQ&Signature=JhIzgbSoA3TIqOX86P%2BGmZ4ppkg%3D&Expires=1530352969&response-content-disposition=inline;filename=%22preview.pdf%22&response-content-type=application/pdf
-// https://arduinojson.org/v5/faq/
+// THIS SHOULD BE DONE ON EVERY API CHANGE! Calculate JsonBuffer size: https://arduinojson.org/v5/assistant/.
+
 /**
 * REST-API class defining all the endpoints.
 * We are aiming for a self explaining API that resembles the HATEOAS constraints.
@@ -25,7 +24,9 @@ void Api::setupApi(AsyncWebServer& web_server) {
       return request->requestAuthentication();
     }
 
-    request->send(200, "text/plain", "Login Success!");
+    auto *response = request->beginResponse(200, "text/plain", "Login Success!");
+    response->addHeader("Cache-Control", "no-store, must-revalidate");
+    request->send(response);
   });
 
   // respond to GET requests on URL /api/v1/history/battery
@@ -34,8 +35,9 @@ void Api::setupApi(AsyncWebServer& web_server) {
       return request->requestAuthentication();
     }
 
-    AsyncResponseStream *response = request->beginResponseStream("application/json");
-    DynamicJsonBuffer jsonBuffer(512);
+    auto *response = request->beginResponseStream("application/json");
+    response->addHeader("Cache-Control", "no-store, must-revalidate");
+    DynamicJsonBuffer jsonBuffer(20000);
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
     JsonObject& self = links.createNestedObject("self");
@@ -59,8 +61,9 @@ void Api::setupApi(AsyncWebServer& web_server) {
       return request->requestAuthentication();
     }
 
-    AsyncResponseStream *response = request->beginResponseStream("application/json");
-    DynamicJsonBuffer jsonBuffer(512);
+    auto *response = request->beginResponseStream("application/json");
+    response->addHeader("Cache-Control", "no-store, must-revalidate");    
+    DynamicJsonBuffer jsonBuffer(60000);
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
     JsonObject& self = links.createNestedObject("self");
@@ -71,8 +74,8 @@ void Api::setupApi(AsyncWebServer& web_server) {
     for (auto &s: resources.metrics.getGpsPositionHistory()) {
         JsonObject& sample = samples.createNestedObject();
         sample["t"] = s.time;
-        sample["lat"] = s.lat;
-        sample["lng"] = s.lng;
+        sample["lt"] = s.lat;
+        sample["lg"] = s.lng;
     }
 
     root.printTo(*response);
@@ -85,8 +88,8 @@ void Api::setupApi(AsyncWebServer& web_server) {
       return request->requestAuthentication();
     }
 
-    AsyncResponseStream *response = request->beginResponseStream("application/json");
-    DynamicJsonBuffer jsonBuffer(100);
+    auto *response = request->beginResponseStream("application/json");
+    DynamicJsonBuffer jsonBuffer(350);
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
 
@@ -112,8 +115,8 @@ void Api::setupApi(AsyncWebServer& web_server) {
       return request->requestAuthentication();
     }
 
-    AsyncResponseStream *response = request->beginResponseStream("application/json");
-    DynamicJsonBuffer jsonBuffer(512);
+    auto *response = request->beginResponseStream("application/json");
+    DynamicJsonBuffer jsonBuffer(750);
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
 
@@ -155,7 +158,8 @@ void Api::setupApi(AsyncWebServer& web_server) {
       return request->requestAuthentication();
     }
 
-    AsyncResponseStream *response = request->beginResponseStream("application/json");
+    auto *response = request->beginResponseStream("application/json");
+    response->addHeader("Cache-Control", "no-store, must-revalidate");    
     DynamicJsonBuffer jsonBuffer(512);
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
@@ -170,7 +174,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
     root["lastFullyChargeTime"] = resources.battery.getLastFullyChargeTime();
     root["lastChargeDuration"] = resources.battery.getLastChargeDuration();
     root["cutterLoad"] = resources.cutter.getLoad();
-
+    root["cutterRotating"] = resources.cutter.isCutting();
     orientation orient = resources.accelerometer.getOrientation();
     root["pitch"] = orient.pitch;
     root["roll"] = orient.roll;
@@ -186,8 +190,9 @@ void Api::setupApi(AsyncWebServer& web_server) {
       return request->requestAuthentication();
     }
 
-    AsyncResponseStream *response = request->beginResponseStream("application/json");
-    DynamicJsonBuffer jsonBuffer(200);
+    auto *response = request->beginResponseStream("application/json");
+    response->addHeader("Cache-Control", "no-store, must-revalidate");    
+    DynamicJsonBuffer jsonBuffer(400);
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
     JsonObject& self = links.createNestedObject("self");
@@ -196,6 +201,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
 
     root["name"] = Definitions::APP_NAME;
     root["version"] = Definitions::APP_VERSION;
+    root["uptime"] = 1; // TODO: implement.
     root["cpuFreq"] = ESP.getCpuFreqMHz();
     root["flashChipSize"] = ESP.getFlashChipSize();
     root["freeHeap"] = ESP.getFreeHeap();
@@ -212,7 +218,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
     }
 
     AsyncResponseStream *response = request->beginResponseStream("application/json");
-    DynamicJsonBuffer jsonBuffer(512);
+    DynamicJsonBuffer jsonBuffer(860);
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
 
@@ -310,7 +316,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
       stateController.setState(Definitions::MOWER_STATES::MANUAL);
     }
   }, NULL, [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
-    DynamicJsonBuffer jsonBuffer(50);
+    DynamicJsonBuffer jsonBuffer(100);
     JsonObject& root = jsonBuffer.parseObject((const char*)data);
 
     if (root.success()) {
@@ -345,7 +351,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
       stateController.setState(Definitions::MOWER_STATES::MANUAL);
     }
   }, NULL, [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
-    DynamicJsonBuffer jsonBuffer(50);
+    DynamicJsonBuffer jsonBuffer(100);
     JsonObject& root = jsonBuffer.parseObject((const char*)data);
 
     if (root.success()) {
@@ -380,7 +386,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
       stateController.setState(Definitions::MOWER_STATES::MANUAL);
     }
   }, NULL, [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
-    DynamicJsonBuffer jsonBuffer(50);
+    DynamicJsonBuffer jsonBuffer(100);
     JsonObject& root = jsonBuffer.parseObject((const char*)data);
 
     if (root.success()) {

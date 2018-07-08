@@ -1,7 +1,5 @@
 import * as api from '../rest.js';
 
-// See http://www.petercollingridge.co.uk/tutorials/svg/interactive/dragging/ for joystick implementation
-
 const DEADZONE_SIZE = 10; // Joystick center deadzone, to prevent drifting when knob is almost centered in the middle.
 
 let joypad = {
@@ -30,14 +28,14 @@ export function unselected() {
 function startMowerMotor() {
   api.manual("cutter_on")
   .fail(function(e) {
-    alert('Error: '+ e);
+    console.error(e);
   });
 }
 
 function stopMowerMotor() {
   api.manual("cutter_off")
   .fail(function(e) {
-    alert('Error: '+ e);
+    console.error(e);
   });
 }
 
