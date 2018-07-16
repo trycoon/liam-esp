@@ -9,6 +9,14 @@ namespace Configuration {
   std::unordered_map<const char*, String> strConfig;
   std::unordered_map<const char*, int32_t> intConfig;
 
+  void wipe() {
+    preferences.begin("liam-esp", false);
+    preferences.clear();
+    strConfig.clear();
+    intConfig.clear();
+    preferences.end();
+  }
+
   void clear(const char* key) {
     preferences.begin("liam-esp", false);
     preferences.remove(key);

@@ -11,13 +11,13 @@ The concept and basic ideas are sprung from the ["Liam lawn mower"](https://gith
 Here are some of the features of this project:
 
 - Automatic mowing of lawn using a two wheel robot
-- Support for limiting mower access using a Buried Wire Fence (virtual wall)
+- Support for limiting mower movement using a Buried Wire Fence (virtual wall)
 - WiFi connected (can operate when signal is weak/lost, will reconnect when signal is available)
 - Easy to use REST-based API, self explaining (HATEOAS compatible), with Swagger support.  
 - Monitor mower using MQTT protocol (works with most Home automation systems)
 - NTP time support, making scheduling of mowing a breeze
 - Integrated Web UI for controlling and monitoring mower
-- Support accelerometer, gyroscope, and e-compass to keep mower on a straight line and detect if mower are tilted too much (safety reasons)
+- Support accelerometer, gyroscope, and e-compass to keep mower on a straight line, and detect if mower are flipped over (safety reasons)
 
 ## Build and upload software
 
@@ -53,6 +53,8 @@ Then exit back to the project root directory and run:
   platformio run -t uploadfs
 ```
 (click the flash-button on the microcontroller to allow flashing)
+
+Press the "Reset" button on the ESP32 board and you should now be able to visit the mowers [user interface](http://liam-esp.local) using a webbrowser.
 
 ## TODO
 

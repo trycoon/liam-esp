@@ -15,30 +15,34 @@ Cutter::~Cutter() {
 }
 
 void Cutter::start() {
-  senseLoadTimerId = senseLoadTimer.schedule([this]() {
-    senseLoad();
-  }, 100, true);
+  if (!cutting) {
+    senseLoadTimerId = senseLoadTimer.schedule([this]() {
+      senseLoad();
+    }, 100, true);
 
-  cutting = true;
+    cutting = true;
 
-  digitalWrite(Settings::CUTTER_BRAKE_PIN, LOW);
-  delay(10);
-  sigmaDeltaWrite(Cutter::CHANNEL, map(constrain(Settings::CUTTER_MAX_SPEED, 0, 100), 0, 100, 0, 255));
+    digitalWrite(Settings::CUTTER_BRAKE_PIN, LOW);
+    delay(10);
+    sigmaDeltaWrite(Cutter::CHANNEL, map(constrain(Settings::CUTTER_MAX_SPEED, 0, 100), 0, 100, 0, 255));
+  }
 }
 
 void Cutter::stop(bool brake) {
-  sigmaDeltaWrite(Cutter::CHANNEL, 0);
+  if (cutting) {
+    sigmaDeltaWrite(Cutter::CHANNEL, 0);
 
-  cutting = false;
+    cutting = false;
 
-  if (brake) {
-    delay(10);
-    digitalWrite(Settings::CUTTER_BRAKE_PIN, HIGH);
-  } else {
-    digitalWrite(Settings::CUTTER_BRAKE_PIN, LOW);
+    if (brake) {
+      delay(10);
+      digitalWrite(Settings::CUTTER_BRAKE_PIN, HIGH);
+    } else {
+      digitalWrite(Settings::CUTTER_BRAKE_PIN, LOW);
+    }
+
+    senseLoadTimer.unschedule(senseLoadTimerId);
   }
-
-  senseLoadTimer.unschedule(senseLoadTimerId);
 }
 
 bool Cutter::isCutting() {

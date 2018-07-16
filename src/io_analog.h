@@ -12,7 +12,6 @@ class IO_Analog {
 
     /**
     * Get the voltage readings from the specified channel.
-    * There is a 8 ms delay built into this method, so calling this method too often will limit the speed of your program!
     */
     float getChannelVoltage(uint8_t channel);
 

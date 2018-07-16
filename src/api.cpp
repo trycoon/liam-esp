@@ -178,7 +178,7 @@ void Api::setupApi(AsyncWebServer& web_server) {
     orientation orient = resources.accelerometer.getOrientation();
     root["pitch"] = orient.pitch;
     root["roll"] = orient.roll;
-    root["yaw"] = orient.heading;
+    root["yaw"] = orient.yaw;
 
     root.printTo(*response);
     request->send(response);
@@ -198,10 +198,9 @@ void Api::setupApi(AsyncWebServer& web_server) {
     JsonObject& self = links.createNestedObject("self");
     self["href"] = "/api/v1/system";
     self["method"] = "GET";
-
     root["name"] = Definitions::APP_NAME;
     root["version"] = Definitions::APP_VERSION;
-    root["uptime"] = 1; // TODO: implement.
+    root["uptime"] = (uint32_t)(esp_timer_get_time() / 1000000); // uptime in microseconds so we divide.
     root["cpuFreq"] = ESP.getCpuFreqMHz();
     root["flashChipSize"] = ESP.getFlashChipSize();
     root["freeHeap"] = ESP.getFreeHeap();
@@ -474,7 +473,8 @@ void Api::setupApi(AsyncWebServer& web_server) {
 
     resources.cutter.stop(true);
     resources.wheelController.stop(false);
-    //TODO: presenent.clear();
+    Configuration::wipe();
+    
     Serial.println("Factory reset by API request");
     request->send(200);
     delay(1000);

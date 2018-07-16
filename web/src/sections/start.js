@@ -119,16 +119,16 @@ function updatedStatus() {
   
   let text;
   switch (liam.data.status.state) {
-    case 'DOCKED': text = 'PARKERAD'; break;
-    case 'LAUNCHING': text = 'PÅBÖRJAR KLIPPNING'; break;
-    case 'MOWING': text = 'KLIPPNING PÅGÅR'; break;
-    case 'DOCKING': text = 'PARKERAR'; break;
-    case 'CHARGING': text = 'LADDAR'; break;
-    case 'STUCK': text = 'FASTNAT'; break;
-    case 'FLIPPED': text = 'UPPOCHNED VÄND'; break;
-    case 'MANUAL': text = 'MANUELL KÖRNING'; break;
-    case 'STOP': text = 'STOPPAD'; break;
-    case 'TEST': text = 'TESTKÖRNING'; break;
+    case 'DOCKED': text = 'DOCKED'; break;
+    case 'LAUNCHING': text = 'LAUNCHING'; break;
+    case 'MOWING': text = 'MOWINGR'; break;
+    case 'DOCKING': text = 'DOCKING'; break;
+    case 'CHARGING': text = 'CHARGING'; break;
+    case 'STUCK': text = 'STUCK'; break;
+    case 'FLIPPED': text = 'FLIPPED'; break;
+    case 'MANUAL': text = 'MANUAL'; break;
+    case 'STOP': text = 'STOP'; break;
+    case 'TEST': text = 'TEST'; break;
     default: text = '...';
   }
 

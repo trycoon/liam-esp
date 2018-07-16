@@ -18,7 +18,7 @@ namespace Settings {
       Accelerometer
     */
     const uint8_t IO_ACCELEROMETER_ADDRESS = 0x53; // I2C address, set to "0" if not available.
-    const uint8_t TILT_ANGLE_MAX = 60;    // Max angle (degrees) the mower is allowed to tilt, going above this value will stop mower and enter FLIPPED-state. This is a safety setting!
+    const uint8_t TILT_ANGLE_MAX = 35;    // Max angle (degrees) the mower is allowed to tilt, going above this value will stop mower and enter FLIPPED-state. This is a safety setting!
 
     /*
       Wheel motor settings

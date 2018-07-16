@@ -5,6 +5,7 @@
 * Class handling user configurable parameters of the application. It also takes care of storing and retereiving these from flash memory.
 */
 namespace Configuration {
+  extern void wipe();
   extern void clear(const char* key);
   extern void set(const char* key, String value);
   extern void set(const char* key, int32_t value);

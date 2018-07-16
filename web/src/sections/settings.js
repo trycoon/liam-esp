@@ -28,6 +28,8 @@ export function init() {
       restart();
     });
     sec.find('.js-factoryreset').on('click', function() {
-        factoryreset();
+        if (confirm('Are you sure you want to wipe all settings and return mower to "factory" defaults?')) {
+            factoryreset();
+        }
     });
 }
