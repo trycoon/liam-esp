@@ -7,7 +7,6 @@
 namespace Settings {
   extern const uint8_t SDA_PIN;
   extern const uint8_t SCL_PIN;
-  extern const uint8_t IO_ACCELEROMETER_ADDRESS;
   extern const uint8_t LEFT_WHEEL_MOTOR_PIN;
   extern const uint8_t LEFT_WHEEL_MOTOR_DIRECTION_PIN;
   extern const uint8_t LEFT_WHEEL_MOTOR_SPEED;

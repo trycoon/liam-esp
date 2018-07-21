@@ -175,10 +175,15 @@ void Api::setupApi(AsyncWebServer& web_server) {
     root["lastChargeDuration"] = resources.battery.getLastChargeDuration();
     root["cutterLoad"] = resources.cutter.getLoad();
     root["cutterRotating"] = resources.cutter.isCutting();
-    orientation orient = resources.accelerometer.getOrientation();
+
+    auto stat = resources.wheelController.getStatus();
+    root["leftWheelSpd"] = stat.leftWheelSpeed;
+    root["rightWheelSpd"] = stat.rightWheelSpeed;
+    root["targetHeading"] = stat.targetHeading;
+    auto orient = resources.accelerometer.getOrientation();
     root["pitch"] = orient.pitch;
     root["roll"] = orient.roll;
-    root["yaw"] = orient.yaw;
+    root["heading"] = orient.heading;
 
     root.printTo(*response);
     request->send(response);

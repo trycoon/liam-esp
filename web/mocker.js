@@ -18,9 +18,12 @@ let currentState = {
       lastFullyChargeTime: new Date() - 1000,
       lastChargeDuration: 1000 *60 * 60,
       cutterLoad: Math.random() * 100,
+      leftWheelSpd: 80,
+      rightWheelSpd: 80,
       pitch: 0,
       roll: 0,
-      yaw: 45
+      heading: 45,
+      targetHeading: 45
     },
     batterySamples = function() {
       let samples = [],

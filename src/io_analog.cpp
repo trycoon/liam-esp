@@ -8,6 +8,10 @@
 // http://henrysbench.capnfatz.com/henrys-bench/arduino-voltage-measurements/arduino-ads1115-module-getting-started-tutorial/
 // https://www.spiria.com/en/blog/iot-m2m-embedded-solutions/measuring-small-currents-adc
 
+// http://esp-idf.readthedocs.io/en/latest/api-reference/peripherals/adc.html
+// https://www.esp32.com/viewtopic.php?t=1045
+// https://www.youtube.com/watch?v=RlKMJknsNpo
+// Kör ADC_ATTEN_DB_0 och ADC_WIDTH_BIT_12, med kondensator till jord för att filtrera bort bruset. Max spänning är 1.1V!
 IO_Analog::IO_Analog() {
 
   // The ADC input range (or gain) can be changed via the following

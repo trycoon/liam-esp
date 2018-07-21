@@ -6,6 +6,12 @@
 #include "io_accelerometer/io_accelerometer.h"
 #include "processable.h"
 
+struct status {
+  int16_t leftWheelSpeed;
+  int16_t rightWheelSpeed;
+  int16_t targetHeading;
+};
+
 class WheelController : public Processable {
   public:
     WheelController(Wheel& leftWheel, Wheel& rightWheel, IO_Accelerometer& accelerometer);
@@ -26,15 +32,18 @@ class WheelController : public Processable {
     void backward(int8_t turnrate, uint8_t speed, bool smooth = false);
     /**
      * Turns mower on the spot.
-     * @param direction turns mower to the specified direction. Direction is 0-360 degrees relative current heading.
+     * @param direction turns mower to the specified direction. Direction is -360 -> 360 degrees relative current heading.
      * @param function optional callback that will be executed once mower is facing desired direction.
      */ 
-    void turn(uint16_t direction, std::function<void(void)> fn = nullptr);
+    void turn(int16_t direction, std::function<void(void)> fn = nullptr);
     /**
      * Stop mowers movement.
      * @param smooth smoothly take us to halt.
      */     
     void stop(bool smooth = false);
+
+    status getStatus();
+
     /* Internal use only! */
     void process();
 
@@ -42,6 +51,7 @@ class WheelController : public Processable {
     Wheel& leftWheel;
     Wheel& rightWheel;
     IO_Accelerometer& accelerometer;
+    uint16_t targetHeading;
 };
 
 #endif

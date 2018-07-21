@@ -96,7 +96,7 @@ void IO_Accelerometer::getReadings() {
 
       currentOrientation.roll = roll;
       currentOrientation.pitch = pitch;
-      currentOrientation.yaw = yaw;
+      currentOrientation.heading = yaw;
     }
 
     if (em7180.gotBarometer()) {

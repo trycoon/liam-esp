@@ -6,7 +6,8 @@ Stop::Stop(Definitions::MOWER_STATES myState, StateController& stateController, 
 }
 
 void Stop::selected(Definitions::MOWER_STATES lastState) {
-
+  resources.cutter.stop(true);
+  resources.wheelController.stop(false);
 }
 
 void Stop::process() {

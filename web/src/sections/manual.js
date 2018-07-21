@@ -17,7 +17,9 @@ let joypad = {
  },
  maxLimit = joypad.radius - joyknob.radius,
  joystickSVG,
- sendCommandTimer;
+ sendCommandTimer,
+ startMowerButton,
+ stopMowerButton;
 
 export function selected() {
 }
@@ -219,15 +221,35 @@ function initJoystick(evt) {
   }
 }
 
+function updatedStatus() {
+
+  if (!liam.data.status) {
+    return;
+  }
+
+  if (liam.data.status.cutterRotating) {
+    startMowerButton.hide();
+    stopMowerButton.show();
+  } else {
+    startMowerButton.show();
+    stopMowerButton.hide();
+  }
+}
+
 export function init() {
   
   let sec = $('.js-section-manual');
-  sec.find('.js-startmower').on('click', function() {
+  startMowerButton = sec.find('.js-startmower');
+  startMowerButton.on('click', function() {
     startMowerMotor();
   });
-  sec.find('.js-stopmower').on('click', function() {
+  stopMowerButton = sec.find('.js-stopmower');
+  stopMowerButton.on('click', function() {
     stopMowerMotor();
   });
 
   $('.joystick').on('load', initJoystick);
+
+  window.addEventListener('statusUpdated', updatedStatus);
+  updatedStatus();
 }

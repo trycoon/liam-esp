@@ -1,6 +1,8 @@
 import * as api from '../rest.js';
 
-let sec = $('.js-section-start');
+let sec = $('.js-section-start'),
+    compassSVG,
+    compassArrow;
 
 function setLaunchMowerState() {
   api.selectState("LAUNCHING")
@@ -111,6 +113,19 @@ function toggleStateButtons() {
   }
 }
 
+function updateCompass() {
+  if (compassSVG) {
+    let translate = compassSVG.createSVGTransform();
+    // find center of arrow and rotate around it.
+    let bb = compassArrow.getBBox();
+    let cx = bb.x + bb.width / 2;
+    let cy = bb.y + bb.height / 2;
+    translate.setRotate(liam.data.status.heading, cx, cy);
+    compassArrow.transform.baseVal.clear(); // reset transformation between updates.
+    compassArrow.transform.baseVal.appendItem(translate);
+   }
+}
+
 function updatedStatus() {
 
   if (!liam.data.status) {
@@ -135,6 +150,7 @@ function updatedStatus() {
   sec.find('.js-state').text(text);
 
   toggleStateButtons();
+  updateCompass();
 }
 
 export function selected() {
@@ -159,5 +175,10 @@ export function init() {
   });
   sec.find('.js-stop').on('click', function() {
     setStopState();
+  });
+
+  $('.js-compass').on('load', (evt) => {
+    compassSVG = evt.target;
+    compassArrow = $('.js-compass .js-arrow')[0];
   });
 }

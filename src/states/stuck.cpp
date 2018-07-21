@@ -6,7 +6,8 @@ Stuck::Stuck(Definitions::MOWER_STATES myState, StateController& stateController
 }
 
 void Stuck::selected(Definitions::MOWER_STATES lastState) {
-
+    resources.cutter.stop(true);
+    resources.wheelController.stop(false);
 }
 
 void Stuck::process() {

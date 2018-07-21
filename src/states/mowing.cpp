@@ -6,7 +6,8 @@ Mowing::Mowing(Definitions::MOWER_STATES myState, StateController& stateControll
 }
 
 void Mowing::selected(Definitions::MOWER_STATES lastState) {
-
+    resources.cutter.start();
+    resources.wheelController.forward(0, 100, true);
 }
 
 void Mowing::process() {
