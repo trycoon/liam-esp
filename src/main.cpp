@@ -46,7 +46,6 @@ Api api(stateController, resources);
 uint64_t loopDelayWarningTime;
 
 void scan_I2C() {
-  Wire.begin(Settings::SDA_PIN, Settings::SCL_PIN, 400000);
   byte error, address;
   int devices = 0;
 
@@ -88,9 +87,13 @@ void setup() {
   Serial.print(Definitions::APP_NAME);
   Serial.print(" v");
   Serial.println(Definitions::APP_VERSION);
+  // setup I2C
+  Wire.begin(Settings::SDA_PIN, Settings::SCL_PIN);
+  delay(100);
   scan_I2C();
 
   io_accelerometer.start();
+
   wifi.start();
   api.setupApi(wifi.getWebServer());
   //ota.start();
@@ -100,9 +103,7 @@ void setup() {
 void loop() {
   uint64_t loopStartTime = esp_timer_get_time();
   //  ota.handle();
-
-  io_accelerometer.process();
-  
+ 
   // always check if we are flipped.
   if (io_accelerometer.isFlipped() && stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::FLIPPED) {
     stateController.setState(Definitions::MOWER_STATES::FLIPPED);

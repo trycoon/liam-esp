@@ -5,19 +5,18 @@
 
 // https://github.com/kriswiner/EM7180_SENtral_sensor_hub/wiki/A.-A-Short-Survey-of-Sensor-Fusion-Solutions
 // code exmaple from https://github.com/simondlevy/EM7180
-static const uint8_t INTERRUPT_PIN = 23;
 static volatile bool newData;
-
-IO_Accelerometer::IO_Accelerometer(TwoWire& w): _Wire(w) {
-  pinMode(INTERRUPT_PIN, INPUT);
-}
 
 static void interruptHandler() {
   newData = true;
 }
 
+IO_Accelerometer::IO_Accelerometer(TwoWire& w): _Wire(w), em7180(ARES, GRES, MRES, MAG_RATE, ACCEL_RATE, GYRO_RATE, BARO_RATE, Q_RATE_DIVISOR) {
+  pinMode(23, INPUT);
+}
+
 void IO_Accelerometer::start() {
-  attachInterrupt(INTERRUPT_PIN, interruptHandler, RISING);
+  attachInterrupt(23, interruptHandler, RISING);
   available = em7180.begin();
 
   if (!available) {
@@ -25,9 +24,9 @@ void IO_Accelerometer::start() {
   } else {
     Serial.println("Gyro/accelerometer/compass init success.");
 
-    sensorReadingTimer.schedule([this]() {
-      getReadings();
-    }, 100, true);
+    sensorReadingTicker.attach_ms<IO_Accelerometer*>(500, [](IO_Accelerometer* instance) {
+      instance->getReadings();
+    }, this);
   }
 }
 
@@ -48,7 +47,8 @@ bool IO_Accelerometer::isFlipped() {
 }
 
 void IO_Accelerometer::getReadings() {
-  if (available && newData) {
+  Serial.print("r");
+  if (available /*&& newData*/) {
     newData = false;
 
     em7180.checkEventStatus(); // this also clears the interrupt
@@ -76,7 +76,6 @@ void IO_Accelerometer::getReadings() {
       more see http://en.wikipedia.org/wiki/Conversion_between_q_and_Euler_angles 
       which has additional links.
     */
-
     if (em7180.gotQuaternion()) {
 
       float qw, qx, qy, qz;
@@ -97,13 +96,15 @@ void IO_Accelerometer::getReadings() {
       currentOrientation.roll = roll;
       currentOrientation.pitch = pitch;
       currentOrientation.heading = yaw;
+      char str[16];
+      snprintf(str, sizeof(str), "%.2f", yaw);
+      Serial.println(str);
     }
 
     if (em7180.gotBarometer()) {
       float temperature, pressure;
 
       em7180.readBarometer(pressure, temperature);
-
       /*
       // TODO: implement weather support later.
       Serial.println("Barometer:");
@@ -121,6 +122,3 @@ void IO_Accelerometer::getReadings() {
   }
 }
 
-void IO_Accelerometer::process() {
-  sensorReadingTimer.process();
-}

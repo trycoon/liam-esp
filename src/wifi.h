@@ -4,7 +4,7 @@
 
 #include <string>
 #include <queue>
-#include <ESP32Ticker.h>
+#include <Ticker.h>
 #include <Arduino.h>
 #include <AsyncMqttClient.h>
 #include <FS.h>

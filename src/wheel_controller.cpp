@@ -49,7 +49,7 @@ void WheelController::turn(int16_t direction, std::function<void(void)> fn) {
     auto currentHeading = accelerometer.getOrientation().heading;
     targetHeading = currentHeading + direction;
     
-    // keep withing 0-360 degrees
+    // keep within 0-360 degrees
     if (targetHeading < 0) {
       targetHeading += 360;
     } else if (targetHeading > 360) {
@@ -72,12 +72,11 @@ void WheelController::stop(bool smooth) {
 }
 
 status WheelController::getStatus() {
-  status stat;
-  stat.leftWheelSpeed = leftWheel.getSpeed();
-  stat.rightWheelSpeed = rightWheel.getSpeed();
-  stat.targetHeading = targetHeading;
-
-  return stat;
+  return { 
+    leftWheel.getSpeed(), 
+    rightWheel.getSpeed(), 
+    targetHeading
+  };
 }
 
 void WheelController::process() {

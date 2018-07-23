@@ -2,9 +2,8 @@
 #define accelerometer_h
 
 #include <Wire.h>
+#include <Ticker.h>
 #include "EM7180.h"
-#include "processable.h"
-#include "scheduler/scheduler.h"
 
 static const uint8_t ARES = 8;           // Gs
 static const uint16_t GRES = 2000;       // degrees per second
@@ -21,20 +20,19 @@ struct orientation {
   float heading;
 };
 
-class IO_Accelerometer : public Processable {
+class IO_Accelerometer {
   public:
     IO_Accelerometer(TwoWire& w);
     bool isAvailable();
     bool isFlipped();
     orientation getOrientation();
     void start();
-    void process();
 
   private:
     TwoWire& _Wire;
-    EM7180_Master em7180 = EM7180_Master(ARES, GRES, MRES, MAG_RATE, ACCEL_RATE, GYRO_RATE, BARO_RATE, Q_RATE_DIVISOR);
+    Ticker sensorReadingTicker;
+    EM7180_Master em7180;
     orientation currentOrientation;
-    Scheduler sensorReadingTimer;
     void getReadings();
     bool available = false;
 };
