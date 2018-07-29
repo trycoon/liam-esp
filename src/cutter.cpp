@@ -16,9 +16,9 @@ Cutter::~Cutter() {
 
 void Cutter::start() {
   if (!cutting) {
-    senseLoadTimerId = senseLoadTimer.schedule([this]() {
-      senseLoad();
-    }, 100, true);
+    cutterLoadReadingTicker.attach_ms<Cutter*>(100, [](Cutter* instance) {
+      instance->senseLoad();
+    }, this);
 
     cutting = true;
 
@@ -41,7 +41,7 @@ void Cutter::stop(bool brake) {
       digitalWrite(Settings::CUTTER_BRAKE_PIN, LOW);
     }
 
-    senseLoadTimer.unschedule(senseLoadTimerId);
+    cutterLoadReadingTicker.detach();
   }
 }
 
@@ -58,6 +58,3 @@ uint8_t Cutter::getLoad() {
   return load;
 }
 
-void Cutter::process() {
-  senseLoadTimer.process();
-}

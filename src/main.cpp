@@ -89,6 +89,7 @@ void setup() {
   Serial.println(Definitions::APP_VERSION);
   // setup I2C
   Wire.begin(Settings::SDA_PIN, Settings::SCL_PIN);
+  Wire.setTimeout(500); // milliseconds
   delay(100);
   scan_I2C();
 
@@ -111,8 +112,6 @@ void loop() {
 
   stateController.getStateInstance()->process();
   wheelController.process();
-  battery.process();
-  cutter.process();
   //metrics.process();
   
   uint64_t currentTime = esp_timer_get_time();

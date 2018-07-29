@@ -1,5 +1,6 @@
 $.ajaxSetup({
   cache: false,
+  timeout: 5000 // 5 seconds
 });
   
 export function selectState(state) {

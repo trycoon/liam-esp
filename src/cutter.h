@@ -2,14 +2,14 @@
 #define _cutter_h
 
 #include <Arduino.h>
+#include <Ticker.h>
 #include "io_analog.h"
-#include "scheduler/scheduler.h"
-#include "processable.h"
+
 
 /**
 * Class handling the cutter (the motor with knives) of the mower
 */
-class Cutter : public Processable {
+class Cutter {
   public:
     Cutter(IO_Analog& io_analog);
     ~Cutter();
@@ -17,16 +17,14 @@ class Cutter : public Processable {
     void stop(bool brake);
     bool isCutting();
     uint8_t getLoad();
-    void process();
 
   private:
     const uint8_t CHANNEL = 0;
     IO_Analog& io_analog;
     bool cutting;
     uint8_t load;
-    Scheduler senseLoadTimer;
-    uint16_t senseLoadTimerId;
     void senseLoad();
+    Ticker cutterLoadReadingTicker;
 };
 
 #endif

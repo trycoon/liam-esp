@@ -7,9 +7,9 @@ Battery::Battery(IO_Analog& io_analog) : io_analog(io_analog) {
   // Set initial state.
   updateReadings();
   // update readings every 100 ms.
-  pollTimer.schedule([this]() {
-    updateReadings();
-  }, 100, true);
+  batteryReadingTicker.attach_ms<Battery*>(100, [](Battery* instance) {
+    instance->updateReadings();
+  }, this);
 }
 
 void Battery::updateReadings() {
@@ -79,8 +79,4 @@ uint32_t Battery::getLastFullyChargeTime() {
 
 uint32_t Battery::getLastChargeDuration() {
   return Configuration::getInt("LastChargeDuration", 0);
-}
-
-void Battery::process() {
-  pollTimer.process();
 }

@@ -3,11 +3,10 @@
 
 #include <string>
 #include <Arduino.h>
+#include <Ticker.h>
 #include "io_analog.h"
-#include "scheduler/scheduler.h"
-#include "processable.h"
 
-class Battery : public Processable {
+class Battery {
   public:
     Battery(IO_Analog& io_analog);
     float getChargerVoltage();
@@ -18,7 +17,6 @@ class Battery : public Processable {
     bool isCharging();
     bool needRecharge();
     bool isFullyCharged();
-    void process();
 
   private:
     IO_Analog& io_analog;
@@ -27,8 +25,8 @@ class Battery : public Processable {
     bool _isCharging;
     bool _needRecharge;
     bool _isFullyCharged;
-    Scheduler pollTimer;
     void updateReadings();
+    Ticker batteryReadingTicker;
 };
 
 #endif

@@ -47,8 +47,7 @@ bool IO_Accelerometer::isFlipped() {
 }
 
 void IO_Accelerometer::getReadings() {
-  Serial.print("r");
-  if (available /*&& newData*/) {
+  if (available && newData) {
     newData = false;
 
     em7180.checkEventStatus(); // this also clears the interrupt
