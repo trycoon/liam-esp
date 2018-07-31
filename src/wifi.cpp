@@ -131,7 +131,8 @@ void WiFi_Client::start() {
 }
 
 void WiFi_Client::setupWebServer() {
-
+    // Add CORS support, to fix error on iOS. https://github.com/me-no-dev/ESPAsyncWebServer/blob/d7399a7664bce76e9939837fd6cf51bd272ef588/README.md#adding-default-headers
+    DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
     // Start web server.
     web_server.begin();
     Serial.println("Web server initialized");
@@ -186,7 +187,11 @@ void WiFi_Client::setupWebServer() {
     }
 
     web_server.onNotFound([](AsyncWebServerRequest *request){
-      request->send(404);
+      if (request->method() == HTTP_OPTIONS) {
+		    request->send(200); // CORS-support
+	    } else {
+		    request->send(404);
+	    }
     });
 
     // mount SPIFFS filesystem, the files stored in the "data"-directory in the root of this project. Contains the web application files.
