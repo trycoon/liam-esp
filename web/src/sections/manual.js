@@ -71,12 +71,11 @@ function initJoystick(evt) {
   function startDrag(evt) {
     // we can only interact with joystick knob.
     if (evt.target === joyknob.el) {
-      joyknob.isDragging = true;
       joyknob.grabPoint = getMousePosition(evt);
       // Get all the transforms currently on this element
       let transforms = joyknob.el.transform.baseVal;
       // Ensure the first transform is a translate transform
-      if (transforms.length === 0 || transforms.getItem(0).type !== SVGTransform.SVG_TRANSFORM_TRANSLATE) {
+      if (transforms.numberOfItems === 0 || transforms.getItem(0).type !== SVGTransform.SVG_TRANSFORM_TRANSLATE) {
         // Create an transform that translates by (0, 0)
         let translate = joystickSVG.createSVGTransform();
         translate.setTranslate(0, 0);
@@ -88,6 +87,7 @@ function initJoystick(evt) {
       joyknob.transform = transforms.getItem(0);
       joyknob.grabPoint.x -= joyknob.transform.matrix.e;
       joyknob.grabPoint.y -= joyknob.transform.matrix.f;
+      joyknob.isDragging = true;
     }
   }
   

@@ -73,7 +73,7 @@ function startPollingStatus() {
         window.dispatchEvent(new Event('statusUpdated'));
       }
     });
-  }, 2000);
+  }, 2500);
 }
 
 function init() {
