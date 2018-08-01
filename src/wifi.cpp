@@ -327,7 +327,7 @@ void WiFi_Client::flushQueue() {
 }
 
 void WiFi_Client::publish_message(std::string message, std::string subtopic) {
-  /*if (isMQTT_enabled()) {
+  if (isMQTT_enabled()) {
     std::string topic = Configuration::getString("MQTT_TOPIC").c_str();
 
     if (subtopic.length() > 0) {
@@ -346,7 +346,7 @@ void WiFi_Client::publish_message(std::string message, std::string subtopic) {
 
     msgQueue.push({ message, topic });
     flushQueue();
-  }*/
+  }
 }
 
 void WiFi_Client::onMqttPublish(uint16_t packetId) {
