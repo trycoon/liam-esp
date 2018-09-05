@@ -5,6 +5,7 @@ import * as sectionManual from './sections/manual.js';
 import * as sectionMetrics from './sections/metrics.js';
 import * as sectionSettings from './sections/settings.js';
 import * as sectionStart from './sections/start.js';
+import ReconnectingWebSocket from 'reconnecting-websocket';
 
 // store for local state.
 global.liam = {
@@ -22,7 +23,8 @@ global.liam = {
 };
 
 let currentActiveSection,
-    isSmallDisplay = $(window).width() < 480;
+    isSmallDisplay = $(window).width() < 480,
+    socket;
 
 function addClickEffect() {
   // Add click effect on widgets that are clickable
@@ -60,20 +62,21 @@ function showSection(section) {
   currentActiveSection.selected();
 }
 
-function startPollingStatus() {
+function startSubscribingOnStatus() {
   api.getStatus().done(data => {
     liam.data.status = data;
     window.dispatchEvent(new Event('statusUpdated'));
   });
 
-  setInterval(() => {
-    api.getStatus().done(data => {
-      if (JSON.stringify(data) !== JSON.stringify(liam.data.status)) {
-        liam.data.status = data;
-        window.dispatchEvent(new Event('statusUpdated'));
-      }
-    });
-  }, 2500);
+  socket = new ReconnectingWebSocket('ws://' + location.hostname + '/ws');
+
+  // Listen for messages
+  socket.addEventListener('message', function (event) {
+    if (event.data !== JSON.stringify(liam.data.status)) {
+      liam.data.status = JSON.parse(event.data);
+      window.dispatchEvent(new Event('statusUpdated'));
+    }
+  });  
 }
 
 function init() {
@@ -92,7 +95,7 @@ function init() {
   
   showSection('start');
 
-  startPollingStatus();
+  startSubscribingOnStatus();
 }
 
 // Start application.

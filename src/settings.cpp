@@ -5,8 +5,6 @@
 */
 
 namespace Settings {
-    // Max number of messages awaiting to be sent to broker. Higher value consumes more RAM-memory but let us be disconnected from WiFi for a longer period.
-    const uint16_t MQTT_QUEUE_LENGTH = 50;
 
     /*
       I2C pins
@@ -15,9 +13,16 @@ namespace Settings {
     const uint8_t SCL_PIN = 22; // could be any free and suitable pin. We use default 22 here.
 
     /*
-      Accelerometer
+      Generic motor PWM settings
+    */
+    const uint8_t MOTOR_TIMER_13_BIT = 13;  // use 13 bit precission for MOTOR timer
+    const uint16_t MOTOR_BASE_FREQ = 5000;   // use 5000 Hz as a MOTOR base frequency
+
+    /*
+      Accelerometer/Gyro/Compass
     */
     const uint8_t TILT_ANGLE_MAX = 35;    // Max angle (degrees) the mower is allowed to tilt, going above this value will stop mower and enter FLIPPED-state. This is a safety setting!
+    const uint8_t IO_ACCELEROMETER_INT_PIN = 23;  // Interrupt pin signaling when new data is available from Accelerometer/Gyro/Compass
 
     /*
       Wheel motor settings
@@ -32,7 +37,7 @@ namespace Settings {
      const uint8_t RIGHT_WHEEL_MOTOR_SPEED = 100;   // 0-100 (%), used to compensate for drifting motors, lower this value if mower drift to the left.
      const bool RIGHT_WHEEL_MOTOR_INVERTED = true;  // Set to "true" if right wheel runs backward when mower should be running forward.
 
-     const uint8_t WHEEL_MOTOR_MIN_SPEED = 50;    // 0-100 (%), set the minimum speed that the wheel motors should use. This is used in combination with e.g. WHEEL_MOTOR_DECREASE_SPEED_AT_CUTTER_LOAD.
+     const uint8_t WHEEL_MOTOR_MIN_SPEED = 30;    // 0-100 (%), set the minimum speed that the wheel motors should use. This is used in combination with e.g. WHEEL_MOTOR_DECREASE_SPEED_AT_CUTTER_LOAD.
      const uint8_t WHEEL_MOTOR_TURN_SPEED = 50;   // 0-100 (%), speed to use when turning.
      const bool WHEEL_MOTOR_DECREASE_SPEED_AT_CUTTER_LOAD = false;
 
@@ -40,9 +45,10 @@ namespace Settings {
       Cutter settings
     */
      const uint8_t CUTTER_MOTOR_PIN = 0;    // Pin to PWM-control motor.
-     const uint8_t CUTTER_BRAKE_PIN = 4;     // Pin for braking cutter motor.
-     const uint8_t CUTTER_LOAD_CHANNEL = 0;  // Channel on ADC for measuring cutter motor load.
-     const uint8_t CUTTER_MAX_SPEED = 100;   // 0-100 (%), lower this value if cutter spinning too fast.
+     const uint8_t CUTTER_BRAKE_PIN = 4;    // Pin for braking cutter motor.
+     const uint8_t CUTTER_LOAD_PIN = 36;    // Pin on ADC for measuring cutter motor load.
+     const float CUTTER_LOAD_RESISTOR_MULTIPLIER = 20.0/170.0;   // Setting of RV3-trim resistor divided by size of RV3-trim resistor, e.g. 20/170 (kilo ohm). This is to read the correct cutter load.
+     const uint8_t CUTTER_MAX_SPEED = 100;  // 0-100 (%), lower this value if cutter spinning too fast.
      // When the load on the cuttor motor surpasses this limit, the cutter is working too hard cutting the grass (and we should reduce speed of wheels to compensate).
      const uint16_t CUTTER_LOAD_THRESHOLD = 1000;
 
@@ -59,14 +65,14 @@ namespace Settings {
     /*
       Battery settings
     */
-     const uint8_t BATTERY_SENSOR_CHANNEL = 1;    // Channel on ADC for measuring battery voltage.
+     const uint8_t BATTERY_SENSOR_PIN = 39;    // Pin on ADC for measuring battery voltage.
 
      // Lithium-ion / LiPo  http://batteryuniversity.com/learn/article/types_of_lithium_ion
      // Normally a fully charged cell is 4.2 volt and quickly drops down to 3.7 volt, as battery is closing depleated it will drop from 3.7 down to 3.0 volt.
      // 3.0 volts should be considered an completely discharged cell, below that will damage the cell.
      const float BATTERY_FULLY_CHARGED = 16.8;        // in volt. e.g. 4.2 volt * 4 cells = 16.8 volt.
      const float BATTERY_EMPTY = 14.00;               // in volt. e.g. 3.0 volt * 4 cells = 12.0 volt and then we add a few volts to give us enough power to get us back to the charger.
-     const float BATTERY_RESISTOR_DIVISOR = 20.0/170.0;   // Setting of RV2-trim resistor divided by size of RV2-trim resistor, e.g. 20/170 (kilo ohm). This is to read the correct battery voltage.
+     const float BATTERY_MULTIPLIER = BATTERY_FULLY_CHARGED / 1.1;   // Battery voltage divided by ADC max value, used to calculate real battery voltage.
 
     // Nickel–metal hydride / NiMH example. http://batteryuniversity.com/learn/article/charging_nickel_metal_hydride
     // const float BATTERY_FULLY_CHARGED = 14.50;
@@ -81,8 +87,8 @@ namespace Settings {
     /*
       Charger Settings
     */
-    const uint8_t CHARGER_SENSOR_CHANNEL = 2;    // Channel on ADC for measuring charger voltage.
-    const float CHARGER_RESISTOR_DIVISOR = 20.0/170.0; // Setting of RV1-trim resistor divided by size of RV1-trim resistor, e.g. 20/170 (kilo ohm). This is to read the correct charge voltage.
+    const uint8_t CHARGER_SENSOR_PIN = 32;    // Pin on ADC for measuring charger voltage.
+    const float CHARGER_MULTIPLIER = 24.0 / 1.1; // Charger voltage divided by ADC max value, used to calculate real charger voltage.
 
     /*
       Bumper sensor
@@ -96,4 +102,7 @@ namespace Settings {
     */
      const uint8_t GPS_RX_PIN = 3;  // GPIO3 (RXD0)
      const uint8_t GPS_TX_PIN = 1;  // GPIO1 (TDX0)
+
+    // Max number of messages awaiting to be sent to broker. Higher value consumes more RAM-memory but let us be disconnected from WiFi for a longer period.
+    const uint16_t MQTT_QUEUE_LENGTH = 50;
 }

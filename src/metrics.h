@@ -10,7 +10,7 @@
 #include "gps.h"
 
 struct metricSample {
-  uint32_t time;
+  uint32_t time;  // TODO: to save memory we could make this the difference in milliseconds since last time, instead of a compleate timestamp.
   float batteryVoltage;
   double lat;
   double lng;

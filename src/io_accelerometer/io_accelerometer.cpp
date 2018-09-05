@@ -7,16 +7,16 @@
 // code exmaple from https://github.com/simondlevy/EM7180
 static volatile bool newData;
 
-static void interruptHandler() {
+void IRAM_ATTR interruptHandler() { // IRAM_ATTR tells the complier, that this code Must always be in the ESP32's IRAM, the limited 128k IRAM. Use it sparingly.
   newData = true;
 }
 
 IO_Accelerometer::IO_Accelerometer(TwoWire& w): _Wire(w), em7180(ARES, GRES, MRES, MAG_RATE, ACCEL_RATE, GYRO_RATE, BARO_RATE, Q_RATE_DIVISOR) {
-  pinMode(23, INPUT);
+  pinMode(Settings::IO_ACCELEROMETER_INT_PIN, INPUT);
 }
 
 void IO_Accelerometer::start() {
-  attachInterrupt(23, interruptHandler, RISING);
+  attachInterrupt(Settings::IO_ACCELEROMETER_INT_PIN, interruptHandler, RISING);
   available = em7180.begin();
 
   if (!available) {
@@ -24,7 +24,7 @@ void IO_Accelerometer::start() {
   } else {
     Serial.println("Gyro/accelerometer/compass init success.");
 
-    sensorReadingTicker.attach_ms<IO_Accelerometer*>(500, [](IO_Accelerometer* instance) {
+    sensorReadingTicker.attach_ms<IO_Accelerometer*>(300, [](IO_Accelerometer* instance) {
       instance->getReadings();
     }, this);
   }
@@ -56,6 +56,8 @@ void IO_Accelerometer::getReadings() {
       Serial.print("IO_accelerometer error: ");
       Serial.println(em7180.getErrorString());
       //TODO: implement some kind of recovery code here!
+
+      return;
     }
 
     /*
@@ -92,12 +94,9 @@ void IO_Accelerometer::getReadings() {
         yaw += 360.0f; // Ensure yaw stays between 0 and 360
       }
 
-      currentOrientation.roll = roll;
-      currentOrientation.pitch = pitch;
-      currentOrientation.heading = yaw;
-      char str[16];
-      snprintf(str, sizeof(str), "%.2f", yaw);
-      Serial.println(str);
+      currentOrientation.roll = roundf(roll);
+      currentOrientation.pitch = roundf(pitch);
+      currentOrientation.heading = roundf(yaw);
     }
 
     if (em7180.gotBarometer()) {

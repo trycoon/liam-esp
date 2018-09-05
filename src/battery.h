@@ -11,7 +11,7 @@ class Battery {
     Battery(IO_Analog& io_analog);
     float getChargerVoltage();
     float getBatteryVoltage();
-    float getBatteryStatus();
+    uint8_t getBatteryStatus();
     uint32_t getLastFullyChargeTime();
     uint32_t getLastChargeDuration();
     bool isCharging();

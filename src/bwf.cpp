@@ -8,6 +8,7 @@ BWF::BWF() {
 }
 
 // USE Remote Controll: https://esp-idf.readthedocs.io/en/v3.0/api-reference/peripherals/rmt.html?highlight=remote%20controll
+// https://github.com/G6EJD/ESP32-8-Octave-Audio-Spectrum-Display
 bool BWF::isLeftInsideFence() {
   return true;
 }

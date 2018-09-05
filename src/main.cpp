@@ -23,14 +23,15 @@
  */
 
 // Give us an warning if main loop is delayed more than this value. This could be an indication of hidden "delay" calls in our code.
-const uint32_t LOOP_DELAY_WARNING = 100000; // 100 ms
+const uint32_t LOOP_DELAY_WARNING = 200000; // 200 ms
 // Don't spam us with warnings, wait this period before issuing a new warning
 const uint32_t LOOP_DELAY_WARNING_COOLDOWN = 10000000; // 10 sec
 
+// Setup references between all classes.
 IO_Analog io_analog;
 IO_Accelerometer io_accelerometer(Wire);
 WiFi_Client wifi;
-//OTA ota(wifi);
+OTA ota(wifi);
 Wheel leftWheel(1, Settings::LEFT_WHEEL_MOTOR_PIN, Settings::LEFT_WHEEL_MOTOR_DIRECTION_PIN, Settings::LEFT_WHEEL_MOTOR_INVERTED, Settings::LEFT_WHEEL_MOTOR_SPEED);
 Wheel rightWheel(2, Settings::RIGHT_WHEEL_MOTOR_PIN, Settings::RIGHT_WHEEL_MOTOR_DIRECTION_PIN, Settings::RIGHT_WHEEL_MOTOR_INVERTED, Settings::RIGHT_WHEEL_MOTOR_SPEED);
 WheelController wheelController(leftWheel, rightWheel, io_accelerometer);
@@ -40,7 +41,7 @@ GPS gps;
 Battery battery(io_analog);
 Metrics metrics(battery, gps);
 Resources resources(wifi, wheelController, cutter, bwf, battery, gps, io_accelerometer, metrics);
-StateController stateController(Definitions::MOWER_STATES::DOCKED, resources);  // initialize state controller, assume we are DOCKED to begin with.
+StateController stateController(resources);
 Api api(stateController, resources);
 
 uint64_t loopDelayWarningTime;
@@ -95,15 +96,18 @@ void setup() {
 
   io_accelerometer.start();
 
+  // initialize state controller, assume we are DOCKED to begin with.
+  stateController.setState(Definitions::MOWER_STATES::DOCKED);
+
   wifi.start();
-  api.setupApi(wifi.getWebServer());
-  //ota.start();
+  api.setupApi(wifi.getWebServer(), wifi.getWebSocketServer());
+  ota.start();
 }
 
 // Main program loop
 void loop() {
   uint64_t loopStartTime = esp_timer_get_time();
-  //  ota.handle();
+  ota.handle();
  
   // always check if we are flipped.
   if (io_accelerometer.isFlipped() && stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::FLIPPED) {
@@ -112,7 +116,7 @@ void loop() {
 
   stateController.getStateInstance()->process();
   wheelController.process();
-  //metrics.process();
+  metrics.process();
   
   uint64_t currentTime = esp_timer_get_time();
   uint32_t loopDelay = currentTime - loopStartTime;

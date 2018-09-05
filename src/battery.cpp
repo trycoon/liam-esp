@@ -15,11 +15,11 @@ Battery::Battery(IO_Analog& io_analog) : io_analog(io_analog) {
 void Battery::updateReadings() {
   time_t now;
 
-  float battery = io_analog.getChannelVoltage(Settings::BATTERY_SENSOR_CHANNEL);
-  batteryVoltage = battery / Settings::BATTERY_RESISTOR_DIVISOR;
+  float battery = io_analog.getVoltage(Settings::BATTERY_SENSOR_PIN);
+  batteryVoltage = roundf((battery / Settings::BATTERY_MULTIPLIER) * 100) / 100;  // adjust reading and round to two decimals.
 
-  float charger = io_analog.getChannelVoltage(Settings::CHARGER_SENSOR_CHANNEL);
-  chargerVoltage = charger / Settings::CHARGER_RESISTOR_DIVISOR;
+  float charger = io_analog.getVoltage(Settings::CHARGER_SENSOR_PIN);
+  chargerVoltage = roundf((charger / Settings::CHARGER_MULTIPLIER) * 100) / 100;  // adjust reading and round to two decimals.
 
   _needRecharge = batteryVoltage <= Settings::BATTERY_EMPTY;
   _isFullyCharged = batteryVoltage >= Settings::BATTERY_FULLY_CHARGED;
@@ -57,7 +57,7 @@ float Battery::getBatteryVoltage() {
 /*
 * Get battery status in percent, 100% = fully charged.
 */
-float Battery::getBatteryStatus() {
+uint8_t Battery::getBatteryStatus() {
   return (batteryVoltage - Settings::BATTERY_EMPTY) / (Settings::BATTERY_FULLY_CHARGED - Settings::BATTERY_EMPTY);
 }
 

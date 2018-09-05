@@ -1,12 +1,11 @@
 #include "cutter.h"
 #include "settings.h"
 
-Cutter::Cutter(IO_Analog& io_analog) : io_analog(io_analog), cutting(false), load(0) {
+Cutter::Cutter(IO_Analog& io_analog) : cutter_id(3), io_analog(io_analog) {
   pinMode(Settings::CUTTER_MOTOR_PIN, OUTPUT);
+  ledcSetup(cutter_id, Settings::MOTOR_BASE_FREQ, Settings::MOTOR_TIMER_13_BIT);
+  ledcAttachPin(Settings::CUTTER_MOTOR_PIN, cutter_id);
 
-  sigmaDeltaSetup(Cutter::CHANNEL, 312500);
-  //attach pin to channel
-  sigmaDeltaAttachPin(Settings::CUTTER_MOTOR_PIN, Cutter::CHANNEL);
   stop(false);
 }
 
@@ -15,24 +14,26 @@ Cutter::~Cutter() {
 }
 
 void Cutter::start() {
-  if (!cutting) {
+  if (cutterSpeed == 0) {
     cutterLoadReadingTicker.attach_ms<Cutter*>(100, [](Cutter* instance) {
       instance->senseLoad();
     }, this);
 
-    cutting = true;
-
     digitalWrite(Settings::CUTTER_BRAKE_PIN, LOW);
+
     delay(10);
-    sigmaDeltaWrite(Cutter::CHANNEL, map(constrain(Settings::CUTTER_MAX_SPEED, 0, 100), 0, 100, 0, 255));
+
+    cutterSpeed = Settings::CUTTER_MAX_SPEED;
+    // calculate duty, 8191 from 2 ^ 13 - 1
+    uint32_t duty = ((pow(2, Settings::MOTOR_TIMER_13_BIT) - 1) / 100) * abs(cutterSpeed);
+    ledcWrite(cutter_id, duty);
   }
 }
 
 void Cutter::stop(bool brake) {
-  if (cutting) {
-    sigmaDeltaWrite(Cutter::CHANNEL, 0);
-
-    cutting = false;
+  if (cutterSpeed > 0) {
+    cutterSpeed = 0;
+    ledcWrite(cutter_id, cutterSpeed);
 
     if (brake) {
       delay(10);
@@ -46,12 +47,12 @@ void Cutter::stop(bool brake) {
 }
 
 bool Cutter::isCutting() {
-    return cutting;
+    return cutterSpeed > 0;
 }
 
 void Cutter::senseLoad() {
   //TODO: convert to percent.
-  load = io_analog.getChannelVoltage(Settings::CUTTER_LOAD_CHANNEL);
+  load = io_analog.getVoltage(Settings::CUTTER_LOAD_PIN);
 }
 
 uint8_t Cutter::getLoad() {

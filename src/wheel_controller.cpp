@@ -56,6 +56,8 @@ void WheelController::turn(int16_t direction, std::function<void(void)> fn) {
       targetHeading -= 360;
     }
 
+    // TODO: if deviation is small then turnspeed should be small to not overshoot target direction. Introduce different constants for this.
+    // TODO: save current wheels speed and the callback function to be used in process-method
     if (direction < 0) {
       leftWheel.setSpeed(-70);
       rightWheel.setSpeed(70);
@@ -81,7 +83,9 @@ status WheelController::getStatus() {
 
 void WheelController::process() {
   // TODO: handle smooth-running.
-
+  // TODO: when we are close to target direction, reduce speed even more to not overshoot target.
+  // TODO: when we are within 2-3 degrees range of target direction then we should concider us having hit the target, the risk is that we enter a endless loop constantly overshooting the target if we are trying to exactly match target direction.
+  // TODO: call upon callback-function and set wheels speed to original value (saved at turn-method) when hitting target.
   auto currentHeading = accelerometer.getOrientation().heading;
   if (currentHeading == targetHeading) {
     leftWheel.setSpeed(0);

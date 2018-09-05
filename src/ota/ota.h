@@ -10,7 +10,7 @@ class OTA {
     void handle();
 
   private:
-    WiFi_Client& wifi;
+    WiFi_Client& mqtt;
 };
 
 #endif

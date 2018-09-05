@@ -1,8 +1,6 @@
 #ifndef io_analog_h
 #define io_analog_h
 
-//#include <Adafruit_ADS1015.h>
-
 /**
 * Analog to Digital converter, used to read battery voltage, charge voltage, cutter motor load, and more.
 */
@@ -11,13 +9,12 @@ class IO_Analog {
     IO_Analog();
 
     /**
-    * Get the voltage readings from the specified channel.
+    * Get the voltage readings from the specified pin.
     */
-    float getChannelVoltage(uint8_t channel);
-
+    float getVoltage(uint8_t pin);
+  
   private:
-    // ANVÄND DENNA Adafruit_ADS1115 adc;
-    //Adafruit_ADS1015 adc;     // Use this for the 12-bit version
+    const float VOLTAGE_CONVERSION = 1.1 / 4095;  // max value 4095=1.1v
 };
 
 #endif

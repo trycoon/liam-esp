@@ -14,7 +14,7 @@ namespace Configuration {
     preferences.clear();
     strConfig.clear();
     intConfig.clear();
-    preferences.end();
+    //preferences.end();
   }
 
   void clear(const char* key) {
@@ -22,14 +22,14 @@ namespace Configuration {
     preferences.remove(key);
     strConfig.erase(key);
     intConfig.erase(key);
-    preferences.end();
+    //preferences.end();
   }
 
   void set(const char* key, String value) {
     preferences.begin("liam-esp", false);
     preferences.putString(key, value);
     strConfig[key] = value;
-    preferences.end();
+    //preferences.end();
   }
 
   String getString(const char* key, const String defaultValue) {
@@ -41,7 +41,7 @@ namespace Configuration {
       preferences.begin("liam-esp", false);
       auto value = preferences.getString(key, defaultValue);
       strConfig[key] = value;
-      preferences.end();
+      //preferences.end();
 
       return value;
     }
@@ -51,7 +51,7 @@ namespace Configuration {
     preferences.begin("liam-esp", false);
     preferences.putInt(key, value);
     intConfig[key] = value;
-    preferences.end();
+    //preferences.end();
   }
 
   int32_t getInt(const char* key, const int32_t defaultValue) {
@@ -63,7 +63,7 @@ namespace Configuration {
       preferences.begin("liam-esp", false);
       auto value = preferences.getInt(key, defaultValue);
       intConfig[key] = value;
-      preferences.end();
+      //preferences.end();
 
       return value;
     }

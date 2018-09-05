@@ -10,8 +10,7 @@
 #include "states/stop.h"
 #include "states/test.h"
 
-
-StateController::StateController(Definitions::MOWER_STATES initialState, Resources& resources) : resources(resources) {
+StateController::StateController(Resources& resources) : resources(resources) {
   stateLookup[Definitions::MOWER_STATES::DOCKED] = new Docked(Definitions::MOWER_STATES::DOCKED, *this, resources);
   stateLookup[Definitions::MOWER_STATES::LAUNCHING] = new Launching(Definitions::MOWER_STATES::LAUNCHING, *this, resources);
   stateLookup[Definitions::MOWER_STATES::MOWING] = new Mowing(Definitions::MOWER_STATES::MOWING, *this, resources);
@@ -22,12 +21,10 @@ StateController::StateController(Definitions::MOWER_STATES initialState, Resourc
   stateLookup[Definitions::MOWER_STATES::MANUAL] = new Manual(Definitions::MOWER_STATES::MANUAL, *this, resources);
   stateLookup[Definitions::MOWER_STATES::STOP] = new Stop(Definitions::MOWER_STATES::STOP, *this, resources);
   stateLookup[Definitions::MOWER_STATES::TEST] = new Test(Definitions::MOWER_STATES::TEST, *this, resources);
-
-  setState(initialState);
 }
 
 void StateController::setState(Definitions::MOWER_STATES newState) {
-  //TODO: only set if not save as previous!
+  //TODO: only set if not same as previous!
   // save reference to previous state before we switching to a new one. We check for nullptr because the first time there will be no previous state.
   Definitions::MOWER_STATES previousState = currentStateInstance == nullptr ? newState : currentStateInstance->getState();
 

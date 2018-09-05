@@ -9,7 +9,7 @@
 
 class StateController {
   public:
-    StateController(Definitions::MOWER_STATES initialState, Resources& resources);
+    StateController(Resources& resources);
 
     /**
     * Set new running state.

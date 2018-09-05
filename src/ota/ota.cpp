@@ -4,18 +4,11 @@
 #include "settings.h"
 #include "ota.h"
 
-OTA::OTA(WiFi_Client& wifiClient) : wifi(wifiClient) {
-
-  // Port defaults to 8266
-  ArduinoOTA.setPort(8266);
-
-  ArduinoOTA.setHostname(Definitions::APP_NAME);
-
-  // authentication string
-  ArduinoOTA.setPassword(Configuration::getString("PASSWORD", "liam").c_str());
+OTA::OTA(WiFi_Client& wifiClient) : mqtt(wifiClient) {
 
   ArduinoOTA.onStart([this]() {
     String type;
+
     if (ArduinoOTA.getCommand() == U_FLASH)
       type = "sketch";
     else // U_SPIFFS
@@ -23,12 +16,12 @@ OTA::OTA(WiFi_Client& wifiClient) : wifi(wifiClient) {
 
     // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
     Serial.println("Start updating " + type);
-    wifi.publish_message("START UPDATING FIRMWARE");
+    mqtt.publish_message("START UPDATING FIRMWARE");
   });
 
   ArduinoOTA.onEnd([this]() {
     Serial.println("\nEnd");
-    wifi.publish_message("DONE UPDATING FIRMWARE");
+    mqtt.publish_message("DONE UPDATING FIRMWARE");
   });
 
   ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
@@ -46,6 +39,15 @@ OTA::OTA(WiFi_Client& wifiClient) : wifi(wifiClient) {
 }
 
 void OTA::start() {
+
+  // Port defaults to 3232
+  ArduinoOTA.setPort(3232);
+
+  ArduinoOTA.setHostname(Definitions::APP_NAME);
+
+  // authentication string
+  ArduinoOTA.setPassword(Configuration::getString("PASSWORD", "liam").c_str());
+
   ArduinoOTA.begin();
   Serial.println("OTA available.");
 }

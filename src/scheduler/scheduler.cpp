@@ -17,6 +17,7 @@ Scheduler::Scheduler(bool inSeries) : in_series(inSeries) { }
 */
 uint16_t Scheduler::schedule(std::function<void(void)> fn, uint32_t delay, bool repeat) {
 
+  // TODO: could this be a inspiration/replacement? https://github.com/espressif/arduino-esp32/pull/1516
   scheduled_fn_t it;
   it.id = ++task_counter;
   it.func = fn;

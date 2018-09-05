@@ -1,7 +1,13 @@
 import * as api from '../rest.js';
-let interval;
+let interval, requestInProgress;
 
 function getInfoAndRender() {
+    if (requestInProgress) {
+        return;
+    }
+
+    requestInProgress = true;
+
     api.getSystem().done(data => {
         $('.js-section-info .appName').text(data.name);
         $('.js-section-info .appVersion').text(data.version);
@@ -10,6 +16,9 @@ function getInfoAndRender() {
         $('.js-section-info .flashChipSize').text(data.flashChipSize);
         $('.js-section-info .freeHeap').text(data.freeHeap);
         $('.js-section-info .wifiSignal').text(data.wifiSignal);
+    })
+    .always(() => {
+        requestInProgress = false;
     });
 }
 
@@ -27,8 +36,6 @@ function uptimeFormat(seconds) {
 }
 
 export function selected() {
-    getInfoAndRender();
-
     interval = setInterval(() => {
         getInfoAndRender();
     }, 5000);
@@ -38,4 +45,6 @@ export function unselected() {
     clearInterval(interval);
 }
 
-export function init() {}
+export function init() {
+    getInfoAndRender();
+}

@@ -1,6 +1,6 @@
 #include "metrics.h"
 
-Metrics::Metrics(Battery& battery, GPS& gps) : metricSamples(MAX_SAMPLES), battery(battery), gps(gps) {
+Metrics::Metrics(Battery& battery, GPS& gps) : battery(battery), gps(gps), metricSamples(MAX_SAMPLES) {
   pollTimer.schedule([this]() {
     getSample();
   }, 5000, true);

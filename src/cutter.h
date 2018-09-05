@@ -19,9 +19,9 @@ class Cutter {
     uint8_t getLoad();
 
   private:
-    const uint8_t CHANNEL = 0;
+    const uint8_t cutter_id;
     IO_Analog& io_analog;
-    bool cutting;
+    uint8_t cutterSpeed;
     uint8_t load;
     void senseLoad();
     Ticker cutterLoadReadingTicker;

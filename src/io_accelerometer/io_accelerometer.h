@@ -15,9 +15,9 @@ static const uint8_t BARO_RATE = 50;     // Hz
 static const uint8_t Q_RATE_DIVISOR = 3; // 1/3 gyro rate
 
 struct orientation {
-  float pitch;
-  float roll;
-  float heading;
+  int16_t pitch;
+  int16_t roll;
+  int16_t heading;
 };
 
 class IO_Accelerometer {

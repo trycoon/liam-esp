@@ -10,8 +10,6 @@
 #include <FS.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
-#include "configuration.h"
-
 
 struct MQTT_Message {
   std::string message;
@@ -24,6 +22,7 @@ class WiFi_Client {
     void start();
     void publish_message(std::string message, std::string subtopic = "");
     AsyncWebServer& getWebServer();  // code-smell, we should think of a better way than to expose this inner reference when we need to register routes!
+    AsyncWebSocket& getWebSocketServer();  // code-smell, we should think of a better way than to expose this inner reference when we need to register routes!
     void checkWifiSettings();
 
   private:
@@ -38,6 +37,7 @@ class WiFi_Client {
     byte mac[6];
     
     AsyncWebServer web_server;
+    AsyncWebSocket ws;
     static void WiFiEvent(system_event_id_t event, system_event_info_t info);
     bool isMQTT_enabled();
     void flushQueue();

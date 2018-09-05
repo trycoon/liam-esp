@@ -2,7 +2,9 @@
 
 #include "io_analog.h"
 #include "settings.h"
+#include "esp32-hal-adc.h"
 
+// ADS1115 external I2C ADC:
 // http://arduinotronics.blogspot.se/2015/05/reading-current-shunt-with-arduino.html
 // https://learn.adafruit.com/adafruit-4-channel-adc-breakouts/programming
 // http://henrysbench.capnfatz.com/henrys-bench/arduino-voltage-measurements/arduino-ads1115-module-getting-started-tutorial/
@@ -11,26 +13,13 @@
 // http://esp-idf.readthedocs.io/en/latest/api-reference/peripherals/adc.html
 // https://www.esp32.com/viewtopic.php?t=1045
 // https://www.youtube.com/watch?v=RlKMJknsNpo
-// Kör ADC_ATTEN_DB_0 och ADC_WIDTH_BIT_12, med kondensator till jord för att filtrera bort bruset. Max spänning är 1.1V!
 IO_Analog::IO_Analog() {
 
-  // The ADC input range (or gain) can be changed via the following
-  // functions, but be careful never to exceed VDD +0.3V max, or to
-  // exceed the upper and lower limits if you adjust the input range!
-  // Setting these values incorrectly may destroy your ADC!
-  //                                                                ADS1015  ADS1115
-  //                                                                -------  -------
-  // adc.setGain(GAIN_TWOTHIRDS);  // 2/3x gain +/- 6.144V  1 bit = 3mV      0.1875mV (default)
-  // adc.setGain(GAIN_ONE);        // 1x gain   +/- 4.096V  1 bit = 2mV      0.125mV
-  // ANVÄND DENNA adc.setGain(GAIN_TWO);           // 2x gain   +/- 2.048V  1 bit = 1mV      0.0625mV
-  // adc.setGain(GAIN_FOUR);       // 4x gain   +/- 1.024V  1 bit = 0.5mV    0.03125mV
-  // adc.setGain(GAIN_EIGHT);      // 8x gain   +/- 0.512V  1 bit = 0.25mV   0.015625mV
-  // adc.setGain(GAIN_SIXTEEN);    // 16x gain  +/- 0.256V  1 bit = 0.125mV  0.0078125mV
-
-  //adc.begin(Settings::SDA_PIN, Settings::SCL_PIN);
+  // gives full-scale voltage 1.1V (100 and 950mV), max voltage is 3.3v everything between 1.1 and 3.3v will give max value.
+  analogSetAttenuation(adc_attenuation_t::ADC_0db);
 }
 
-float IO_Analog::getChannelVoltage(uint8_t channel) {
-  return 1.0;
-  //return adc.readADC_SingleEnded_V(channel);
+float IO_Analog::getVoltage(uint8_t pin) {
+  //TODO: use capacitor to GND to filter noise.
+  return analogRead(pin) * VOLTAGE_CONVERSION;
 }
