@@ -432,9 +432,8 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
       return request->requestAuthentication();
     }*/
 
-    if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
-      stateController.setState(Definitions::MOWER_STATES::MANUAL);
-    }
+    stateController.setState(Definitions::MOWER_STATES::MANUAL);
+
   }, NULL, [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
     DynamicJsonBuffer jsonBuffer(100);
     JsonObject& root = jsonBuffer.parseObject((const char*)data);
@@ -467,9 +466,8 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
       return request->requestAuthentication();
     }*/
 
-    if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
-      stateController.setState(Definitions::MOWER_STATES::MANUAL);
-    }
+    stateController.setState(Definitions::MOWER_STATES::MANUAL);
+
   }, NULL, [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
     DynamicJsonBuffer jsonBuffer(100);
     JsonObject& root = jsonBuffer.parseObject((const char*)data);
@@ -502,9 +500,8 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
       return request->requestAuthentication();
     }*/
 
-    if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
-      stateController.setState(Definitions::MOWER_STATES::MANUAL);
-    }
+    stateController.setState(Definitions::MOWER_STATES::MANUAL);
+
   }, NULL, [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
     DynamicJsonBuffer jsonBuffer(100);
     JsonObject& root = jsonBuffer.parseObject((const char*)data);
@@ -528,9 +525,7 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
       return request->requestAuthentication();
     }*/
 
-    if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
-      stateController.setState(Definitions::MOWER_STATES::MANUAL);
-    }
+    stateController.setState(Definitions::MOWER_STATES::MANUAL);
 
     resources.wheelController.stop(true);
     request->send(200);
@@ -544,9 +539,7 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
       return request->requestAuthentication();
     }*/
 
-    if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
-      stateController.setState(Definitions::MOWER_STATES::MANUAL);
-    }
+    stateController.setState(Definitions::MOWER_STATES::MANUAL);
 
     resources.cutter.start();
     request->send(200);    
@@ -560,9 +553,7 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
       return request->requestAuthentication();
     }*/
 
-    if (stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::MANUAL) {
-      stateController.setState(Definitions::MOWER_STATES::MANUAL);
-    }
+    stateController.setState(Definitions::MOWER_STATES::MANUAL);
 
     resources.cutter.stop(true);
     request->send(200);

@@ -68,4 +68,8 @@ namespace Configuration {
       return value;
     }
   }
+
+  bool isConfigured() {
+    return getInt("FIRSTTIME_RUN", 0);
+  }
 }

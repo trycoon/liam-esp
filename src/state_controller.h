@@ -5,6 +5,7 @@
 #include <vector> // NOTE: needed to fix the following error: "Arduino.h:253:18: error: expected unqualified-id before '(' token".
 #include "definitions.h"
 #include "resources.h"
+#include <string>
 #include "states/abstract_state.h"
 
 class StateController {
@@ -15,6 +16,11 @@ class StateController {
     * Set new running state.
     */
     void setState(Definitions::MOWER_STATES newState);
+
+    /**
+    * Set new running state.
+    */
+    void setState(String newState);
 
     /**
     * Get running state instance.

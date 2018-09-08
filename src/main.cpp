@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <Wire.h>
+#include <rom/rtc.h>
 #include "definitions.h"
 #include "configuration.h"
 #include "settings.h"
@@ -17,6 +18,7 @@
 #include "metrics.h"
 #include "state_controller.h"
 #include "api.h"
+
 
 /*
  * Software to control a LIAM robotmower using a NodeMCU/ESP-32 (or similar ESP32) microcontroller.
@@ -85,9 +87,7 @@ void scan_I2C() {
 
 void setup() {
   Serial.begin(115200);
-  Serial.print(Definitions::APP_NAME);
-  Serial.print(" v");
-  Serial.println(Definitions::APP_VERSION);
+  Serial.printf("\n=== %s v%s ===\n\n", Definitions::APP_NAME, Definitions::APP_VERSION);
   // setup I2C
   Wire.begin(Settings::SDA_PIN, Settings::SCL_PIN);
   Wire.setTimeout(500); // milliseconds
@@ -96,11 +96,21 @@ void setup() {
 
   io_accelerometer.start();
 
-  // initialize state controller, assume we are DOCKED to begin with.
-  stateController.setState(Definitions::MOWER_STATES::DOCKED);
+  auto lastState = Configuration::getString("lastState", "");
+  // initialize state controller, assume we are DOCKED unless there is a saved state.
+  if (rtc_get_reset_reason(0) == SW_CPU_RESET && lastState.length() > 0) {
+    Serial.printf("Returning to last state \"%s\" after software crash!", lastState.c_str());
+    stateController.setState(lastState);
+  } else {
+    stateController.setState(Definitions::MOWER_STATES::DOCKED);
+  }
 
   wifi.start();
-  api.setupApi(wifi.getWebServer(), wifi.getWebSocketServer());
+
+  if (Configuration::isConfigured) {
+    api.setupApi(wifi.getWebServer(), wifi.getWebSocketServer());
+  }
+
   ota.start();
 }
 
@@ -109,15 +119,17 @@ void loop() {
   uint64_t loopStartTime = esp_timer_get_time();
   ota.handle();
  
-  // always check if we are flipped.
-  if (io_accelerometer.isFlipped() && stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::FLIPPED) {
-    stateController.setState(Definitions::MOWER_STATES::FLIPPED);
+  if (Configuration::isConfigured()) {
+    // always check if we are flipped.
+    if (io_accelerometer.isFlipped() && stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::FLIPPED) {
+      stateController.setState(Definitions::MOWER_STATES::FLIPPED);
+    }
+
+    stateController.getStateInstance()->process();
+    wheelController.process();
+    metrics.process();
   }
 
-  stateController.getStateInstance()->process();
-  wheelController.process();
-  metrics.process();
-  
   uint64_t currentTime = esp_timer_get_time();
   uint32_t loopDelay = currentTime - loopStartTime;
 
