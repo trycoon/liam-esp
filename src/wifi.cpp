@@ -3,11 +3,12 @@
 #include <string>
 #include <time.h>
 #include <SPIFFS.h>
+#include <cassert>
 #include <ESPmDNS.h>
+#include <ArduinoLog.h>
 #include "definitions.h"
 #include "configuration.h"
 #include "settings.h"
-#include <cassert>
 
 static const char* MQTT_TOPIC = "home/liam-esp";
 static const char* DEFAULT_NTP = "pool.ntp.org";
@@ -52,7 +53,7 @@ void printLocalTime() {
   struct tm timeinfo;
 
   if(!getLocalTime(&timeinfo)){
-    Serial.println("Failed to obtain time");
+    Log.warning(F("Failed to obtain time" CR));
     return;
   }
 
@@ -76,10 +77,7 @@ void WiFi_Client::WiFiEvent(WiFiEvent_t event, system_event_info_t info) {
         break;
       case SYSTEM_EVENT_AP_STA_GOT_IP6:
         //both interfaces get the same event
-        Serial.print("STA IPv6: ");
-        Serial.println(WiFi.localIPv6());
-        Serial.print("AP IPv6: ");
-        Serial.println(WiFi.softAPIPv6());
+        Log.trace("STA IPv6: %s, AP IPv6: %s" CR, WiFi.localIPv6().toString().c_str(), WiFi.softAPIPv6().toString().c_str());
         break;
       case SYSTEM_EVENT_STA_GOT_IP:
         Instance->onWifiConnect(event, info);
@@ -102,12 +100,7 @@ void WiFi_Client::start() {
   WiFi.onEvent(WiFiEvent);
   WiFi.mode(WIFI_MODE_APSTA);
   WiFi.softAP(Definitions::APP_NAME);
-  Serial.println("AP Started");
-  Serial.print("AP SSID: ");
-  Serial.println(Definitions::APP_NAME);
-  Serial.print("AP IPv4: ");
-  Serial.println(WiFi.softAPIP());
-
+  Log.notice(F("AP Started, AP SSID: \"%s\", AP IPv4: %s" CR), Definitions::APP_NAME, WiFi.softAPIP().toString().c_str());
   connect();
   setupWebServer();
 
@@ -129,10 +122,7 @@ void WiFi_Client::start() {
     auto mqtt_ip = IPAddress(ip[0], ip[1], ip[2], ip[3]);
     auto mqtt_port = Configuration::getInt("MQTT_PORT", 1883);
     
-    Serial.print("using MQTT server IP: ");
-    Serial.print(mqtt_ip.toString());
-    Serial.print(", and port: ");
-    Serial.println(mqtt_port);
+    Log.notice(F("using MQTT server IP: %s, and port: %d" CR), mqtt_ip.toString().c_str(), mqtt_port);
 
     mqttClient.setServer(mqtt_ip, mqtt_port);
     //mqttClient.setCredentials("MQTT_USERNAME", "MQTT_PASSWORD");
@@ -186,7 +176,7 @@ void WiFi_Client::setupWebServer() {
       // Save that the setup wizard has been run
       Configuration::set("FIRSTTIME_RUN", 1);
 
-      Serial.println("Saved configuration.");
+      Log.notice(F("Saved configuration." CR));
       request->redirect("/");
       sleep(100);
       ESP.restart();
@@ -209,7 +199,7 @@ void WiFi_Client::setupWebServer() {
 
     // mount SPIFFS filesystem, the files stored in the "data"-directory in the root of this project. Contains the web application files.
     if (!SPIFFS.begin()) {
-      Serial.println("Failed to mount SPIFFS filesystem.");
+      Log.error(F("Failed to mount SPIFFS filesystem." CR));
       // If we have WiFi settings but web interface is not available, notify user so that they don't think anything is broken.
       if (Configuration::getString("SSID", "").length() > 0) {
         web_server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
@@ -230,7 +220,7 @@ void WiFi_Client::setupWebServer() {
 
     // Start web server.
     web_server.begin();
-    Serial.println("Web server initialized");
+    Log.notice(F("Web server initialized" CR));
 }
 
 bool WiFi_Client::isMQTT_enabled() {
@@ -243,32 +233,16 @@ bool WiFi_Client::isMQTT_enabled() {
 
 // Call upon this method to connect/reconnect WiFi
 void WiFi_Client::connect() {
-  Serial.println("Connecting to WiFi...");
+  Log.trace(F("Connecting to WiFi..." CR));
   WiFi.begin(Configuration::getString("SSID").c_str(), Configuration::getString("WIFI_PASSWORD").c_str());
 }
 
 // Method is called upon when have a WiFi connection with an IP address (note that this method could be called upon several times).
 void WiFi_Client::onWifiConnect(WiFiEvent_t event, system_event_info_t info) {
 
-  Serial.print("Connected to WiFi accesspoint: ");
-  Serial.print(WiFi.SSID());
-  Serial.print(", using IP-address: ");
-  Serial.println(WiFi.localIP());
-
   WiFi.macAddress(mac);
-  Serial.print("MAC: ");
-  Serial.print(mac[0], HEX);
-  Serial.print(":");
-  Serial.print(mac[1], HEX);
-  Serial.print(":");
-  Serial.print(mac[2], HEX);
-  Serial.print(":");
-  Serial.print(mac[3], HEX);
-  Serial.print(":");
-  Serial.print(mac[4], HEX);
-  Serial.print(":");
-  Serial.println(mac[5], HEX);
-  
+  Log.notice(F("Connected to WiFi accesspoint \"%s\", using IP-address: %s and MAC: %x:%x:%x:%x:%x:%x" CR), WiFi.SSID().c_str(), WiFi.localIP().toString().c_str(), mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+
   //close own AP network
   WiFi.mode(WIFI_MODE_STA);
 
@@ -286,7 +260,7 @@ void WiFi_Client::onWifiConnect(WiFiEvent_t event, system_event_info_t info) {
 
 // Method is called upon when WiFi connection is lost, it will try to reconnect.
 void WiFi_Client::onWifiDisconnect(WiFiEvent_t event, system_event_info_t info) {
-  Serial.println("Disconnected from WiFi.");
+  Log.notice(F("Disconnected from WiFi." CR));
 
   mqttReconnectTimer.detach(); // ensure we don't reconnect to MQTT while reconnecting to WiFi
 
@@ -299,15 +273,13 @@ void WiFi_Client::onWifiDisconnect(WiFiEvent_t event, system_event_info_t info) 
 }
 
 void WiFi_Client::connectToMqtt() {
-  Serial.println("Connecting to MQTT broker...");
+  Log.trace(F("Connecting to MQTT broker..." CR));
   mqttClient.connect();
 }
 
 void WiFi_Client::onMqttConnect(bool sessionPresent) {
   mqttClient.publish(Configuration::getString("MQTT_TOPIC", MQTT_TOPIC).c_str(), 1, true, "CONNECTED");
-  Serial.println("Connected to the MQTT broker.");
-  Serial.print("Session present: ");
-  Serial.println(sessionPresent);
+  Log.notice(F("Connected to the MQTT broker." CR));
 
   // Flush any messages waiting in queue now that we are connected to broker.
   flushQueueTimer.once_ms<WiFi_Client*>(1, [](WiFi_Client* instance) {
@@ -316,8 +288,7 @@ void WiFi_Client::onMqttConnect(bool sessionPresent) {
 }
 
 void WiFi_Client::onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
-  Serial.print("Disconnected from the MQTT broker! reason: ");
-  Serial.println(static_cast<uint8_t>(reason));
+  Log.notice(F("Disconnected from the MQTT broker! reason: %d" CR), static_cast<uint8_t>(reason));
 
   if (WiFi.isConnected()) {
     // wait two seconds then try to reconnect.
@@ -369,8 +340,7 @@ void WiFi_Client::publish_message(std::string message, std::string subtopic) {
 }
 
 void WiFi_Client::onMqttPublish(uint16_t packetId) {
-  Serial.print("MQTT Publish acknowledged, packet id: ");
-  Serial.println(packetId);
+  Log.trace(F("MQTT Publish acknowledged, packet id: %d" CR), packetId);
 }
 
 AsyncWebServer& WiFi_Client::getWebServer() {

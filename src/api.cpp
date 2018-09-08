@@ -1,3 +1,4 @@
+#include <ArduinoLog.h>
 #include "api.h"
 #include "esp_log.h"
 #include "definitions.h"
@@ -129,10 +130,8 @@ void Api::collectAndPushNewStatus() {
     statusToJson(currentStatus, root);
 
     sendDataWebSocket(root);
-
     String jsonStr;
     root.printTo(jsonStr);
-    Serial.println(jsonStr);
     resources.mqtt.publish_message(jsonStr.c_str(), "/status");
   }
 }
@@ -569,7 +568,7 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
 
     resources.cutter.stop(true);
     resources.wheelController.stop(false);
-    Serial.println("Rebooting by API request");
+    Log.notice(F("Rebooting by API request"));
     request->send(200);
     delay(1000);
     ESP.restart();
@@ -587,7 +586,7 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
     resources.wheelController.stop(false);
     Configuration::wipe();
     
-    Serial.println("Factory reset by API request");
+    Log.notice(F("Factory reset by API request"));
     request->send(200);
     delay(1000);
     ESP.restart();

@@ -1,3 +1,4 @@
+#include <ArduinoLog.h>
 #include "state_controller.h"
 #include "states/docked.h"
 #include "states/launching.h"
@@ -33,7 +34,7 @@ void StateController::setState(Definitions::MOWER_STATES newState) {
     currentStateInstance = stateLookup[newState];
     currentStateInstance->selected(previousState);
 
-    Serial.print("New state: "); Serial.println(currentStateInstance->getStateName());
+    Log.notice("New state: %s" CR, currentStateInstance->getStateName());
     // save state in case we reboot
     Configuration::set("lastState", currentStateInstance->getStateName());
 
@@ -64,7 +65,7 @@ void StateController::setState(String newState) {
   } else if (newState == "TEST") {
     setState(Definitions::MOWER_STATES::TEST);
   } else {
-    Serial.printf("state \"%s\" unknown, ignoring in setState.", newState);
+    Log.warning("state \"%s\" unknown, ignoring in setState." CR, newState);
   }
 }
 

@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <ArduinoLog.h>
 #include "settings.h"
 #include "io_accelerometer.h"
 #include "configuration.h"
@@ -20,9 +21,9 @@ void IO_Accelerometer::start() {
   available = em7180.begin();
 
   if (!available) {
-    Serial.println(em7180.getErrorString());
+    Log.error(F("Failed to initialize gyro/accelerometer/compass, check connections! Error: %s" CR), em7180.getErrorString());
   } else {
-    Serial.println("Gyro/accelerometer/compass init success.");
+    Log.notice(F("Gyro/accelerometer/compass init success." CR));
 
     sensorReadingTicker.attach_ms<IO_Accelerometer*>(300, [](IO_Accelerometer* instance) {
       instance->getReadings();
@@ -53,8 +54,7 @@ void IO_Accelerometer::getReadings() {
     em7180.checkEventStatus(); // this also clears the interrupt
 
     if (em7180.gotError()){
-      Serial.print("IO_accelerometer error: ");
-      Serial.println(em7180.getErrorString());
+      Log.warning(F("IO_accelerometer error: %s" CR), em7180.getErrorString());
       //TODO: implement some kind of recovery code here!
 
       return;

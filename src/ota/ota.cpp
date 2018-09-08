@@ -1,4 +1,5 @@
 #include <ArduinoOTA.h>
+#include <ArduinoLog.h>
 #include "definitions.h"
 #include "configuration.h"
 #include "settings.h"
@@ -15,26 +16,31 @@ OTA::OTA(WiFi_Client& wifiClient) : mqtt(wifiClient) {
       type = "filesystem";
 
     // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
-    Serial.println("Start updating " + type);
+    Log.notice(F("Start updating %s" CR), type);
     mqtt.publish_message("START UPDATING FIRMWARE");
   });
 
   ArduinoOTA.onEnd([this]() {
-    Serial.println("\nEnd");
+    Log.notice(F(CR "Done updating" CR));
     mqtt.publish_message("DONE UPDATING FIRMWARE");
   });
 
   ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
-    Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+    Log.notice("Progress: %u%%\r", (progress / (total / 100)));
   });
 
   ArduinoOTA.onError([](ota_error_t error) {
-    Serial.printf("Error[%u]: ", error);
-    if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
-    else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
-    else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
-    else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
-    else if (error == OTA_END_ERROR) Serial.println("End Failed");
+    if (error == OTA_AUTH_ERROR) {
+      Log.error("Error[%u]: Auth Failed" CR, error);
+    } else if (error == OTA_BEGIN_ERROR) {
+      Log.error("Error[%u]: Begin Failed" CR, error);
+    } else if (error == OTA_CONNECT_ERROR) {
+      Log.error("Error[%u]: Connect Failed" CR, error);
+    } else if (error == OTA_RECEIVE_ERROR) {
+      Log.error("Error[%u]: Receive Failed" CR, error);
+    } else if (error == OTA_END_ERROR) {
+      Log.error("Error[%u]: End Failed" CR, error);
+    }
   });
 }
 
@@ -49,7 +55,7 @@ void OTA::start() {
   ArduinoOTA.setPassword(Configuration::getString("PASSWORD", "liam").c_str());
 
   ArduinoOTA.begin();
-  Serial.println("OTA available.");
+  Log.notice(F("OTA available."));
 }
 
 void OTA::handle() {

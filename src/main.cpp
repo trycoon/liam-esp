@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <rom/rtc.h>
+#include <ArduinoLog.h>
 #include "definitions.h"
 #include "configuration.h"
 #include "settings.h"
@@ -52,7 +53,7 @@ void scan_I2C() {
   byte error, address;
   int devices = 0;
 
-  Serial.println("Scanning for I2C devices...");
+  Log.trace(F("Scanning for I2C devices..." CR));
 
   for (address = 1; address < 127; address++ ) {
 
@@ -60,34 +61,26 @@ void scan_I2C() {
     error = Wire.endTransmission();
 
     if (error == 0) {
-      Serial.print("I2C device found at address 0x");
-      if (address < 16) {
-        Serial.print("0");
-      }
-
-      Serial.println(address, HEX);
+      Log.trace(F("I2C device found at address %X" CR), address);
       devices++;
-
     } else if (error == 4) {
-      Serial.print("Unknown error at address 0x");
-      if (address < 16) {
-        Serial.print("0");
-      }
-
-      Serial.println(address, HEX);
+      Log.warning(F("Unknown error at address %X" CR), address);
     }
   }
 
   if (devices == 0) {
-    Serial.println("No I2C devices found");
+    Log.warning(F("No I2C devices found"));
   } else {
-    Serial.println("scanning done.");
+    Log.trace(F("scanning done." CR));
   }
 }
 
 void setup() {
   Serial.begin(115200);
+
   Serial.printf("\n=== %s v%s ===\n\n", Definitions::APP_NAME, Definitions::APP_VERSION);
+  Log.begin(Configuration::getInt("logLevel", LOG_LEVEL_TRACE), &Serial, true);
+
   // setup I2C
   Wire.begin(Settings::SDA_PIN, Settings::SCL_PIN);
   Wire.setTimeout(500); // milliseconds
@@ -99,7 +92,7 @@ void setup() {
   auto lastState = Configuration::getString("lastState", "");
   // initialize state controller, assume we are DOCKED unless there is a saved state.
   if (rtc_get_reset_reason(0) == SW_CPU_RESET && lastState.length() > 0) {
-    Serial.printf("Returning to last state \"%s\" after software crash!", lastState.c_str());
+    Log.notice(F("Returning to last state \"%s\" after software crash!" CR), lastState.c_str());
     stateController.setState(lastState);
   } else {
     stateController.setState(Definitions::MOWER_STATES::DOCKED);
@@ -136,8 +129,6 @@ void loop() {
   if (loopDelay > LOOP_DELAY_WARNING && (currentTime - loopDelayWarningTime) > LOOP_DELAY_WARNING_COOLDOWN) {
     loopDelayWarningTime = currentTime;
 
-    Serial.print("Main loop running slow due to long delay(");
-    Serial.print((uint32_t)loopDelay);
-    Serial.println(" us)! Make sure thread is not blocked by delays().");
+    Log.warning(F("Main loop running slow due to long delay(%l us)! Make sure thread is not blocked by delays()." CR), (uint32_t)loopDelay);
   }
 }

@@ -1,3 +1,4 @@
+#include <ArduinoLog.h>
 #include "test.h"
 #include "state_controller.h"
 
@@ -10,47 +11,47 @@ void Test::selected(Definitions::MOWER_STATES lastState) {
   testSequence.clear();
 
   testSequence.schedule([this]() {
-    Serial.println("cutter start");
+    Log.notice(F("cutter start" CR));
     resources.cutter.start();
   }, 4000);
 
   testSequence.schedule([this]() {
-    Serial.println("forward");
+    Log.notice(F("forward" CR));
     resources.wheelController.forward(0, 100, true);
   }, 2000);
 
   testSequence.schedule([this]() {
-    Serial.println("stop");
+    Log.notice(F("stop" CR));
     resources.wheelController.stop(true);
   }, 20000);
 
   testSequence.schedule([this]() {
-    Serial.println("left");
+    Log.notice(F("left" CR));
     resources.wheelController.turn(-90);
   }, 50);
 
   testSequence.schedule([this]() {
-    Serial.println("right");
+    Log.notice(F("right" CR));
     resources.wheelController.turn(90);
   }, 2000);
 
   testSequence.schedule([this]() {
-    Serial.println("stop");
+    Log.notice(F("stop" CR));
     resources.wheelController.stop();
   }, 2000);
 
   testSequence.schedule([this]() {
-    Serial.println("backward");
+    Log.notice(F("backward" CR));
     resources.wheelController.backward(0, 100, true);
   }, 50);
 
   testSequence.schedule([this]() {
-    Serial.println("stop");
+    Log.notice(F("stop" CR));
     resources.wheelController.stop(true);
   }, 10000);
 
   testSequence.schedule([this, lastState]() {
-    Serial.println("cutter stop");
+    Log.notice(F("cutter stop" CR));
     resources.cutter.stop(true);
 
     stateController.setState(lastState);
