@@ -15,7 +15,19 @@ function getInfoAndRender() {
         $('.js-section-info .cpuFreq').text(data.cpuFreq);
         $('.js-section-info .flashChipSize').text(data.flashChipSize);
         $('.js-section-info .freeHeap').text(data.freeHeap);
-        $('.js-section-info .wifiSignal').text(data.wifiSignal);
+        // https://www.metageek.com/training/resources/understanding-rssi.html
+        let wifiQuality = 'Unusable'
+        if(data.wifiSignal > -81) {
+            wifiQuality = 'Poor'
+        } else if (data.wifiSignal > -71) {
+            wifiQuality = 'Good'
+        } else if (data.wifiSignal > -68) {
+            wifiQuality = 'Very good'
+        } else if (data.wifiSignal > -40) {
+            wifiQuality = 'Excellent'
+        }
+
+        $('.js-section-info .wifiSignal').text(`${wifiQuality} (${data.wifiSignal} dBm)`);
     })
     .always(() => {
         requestInProgress = false;
@@ -32,7 +44,7 @@ function uptimeFormat(seconds) {
     day = Math.floor(hour / 24);
     hour = hour % 24;
     
-    return `${day} days, ${hour} hours, ${minute} minutes, ${seconds} seconds`;
+    return `${day} days, ${hour} hours, ${minute} min, ${seconds} sec`;
 }
 
 export function selected() {

@@ -42,6 +42,12 @@ a {
     color: #0066BBFF;
     text-decoration: none;
 }
+label {
+    display:block;
+}
+textarea {
+    display:block;
+}
 
 @mixin no-select {
     -webkit-touch-callout: none;
@@ -136,14 +142,8 @@ p {
             position: relative;
             cursor: pointer;
             opacity: 0.5;
-            .fa {
-                font-weight: 500;
-                letter-spacing: 0.04rem;
-                padding: 0.75rem 0.5rem;
-                text-transform: uppercase;
-                position: relative;
-                display: inline-block;
-                margin: 0 auto 0.5rem auto;
+            .fa-fw {
+                margin: 1rem auto 1rem auto;
             }
         }
         .active {
@@ -256,21 +256,6 @@ p {
         opacity: 0.5;
     }
 }
-.icons.md-18 {
-    font-size: 18px
-}
-.fa.md-24 {
-    font-size: 24px
-}
-.fa.md-36 {
-    font-size: 36px
-}
-.fa.md-48 {
-    font-size: 48px
-}
-.fa.md-64 {
-    font-size: 64px
-}
 .state-control {
     .state {
         color: red;
@@ -307,4 +292,8 @@ p {
   stroke: #008000;
   stroke-width: 2px;
   stroke-linecap: round;
+}
+
+#syslog {
+  width: 100%;
 }

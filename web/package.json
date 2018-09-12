@@ -36,15 +36,16 @@
     "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "file-loader": "^1.1.11",
     "html-webpack-plugin": "^3.2.0",
-    "mock-socket": "^8.0.2",
     "node-sass": "^4.9.3",
     "rimraf": "^2.6.2",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.20.3",
     "url-loader": "^1.1.1",
     "webpack": "^4.17.2",
-    "webpack-api-mocker": "^1.5.12",
+    "webpack-api-mocker": "^1.5.15",
     "webpack-cli": "^2.1.5",
-    "webpack-dev-server": "^3.1.7"
+    "webpack-dev-server": "^3.1.8",
+    "my-local-ip": "^1.0.0",
+    "sockjs": "^0.3.19"
   }
 }

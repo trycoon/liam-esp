@@ -4,6 +4,7 @@ import * as sectionInfo from './sections/info.js';
 import * as sectionManual from './sections/manual.js';
 import * as sectionMetrics from './sections/metrics.js';
 import * as sectionSettings from './sections/settings.js';
+import * as sectionSchedule from './sections/schedule.js';
 import * as sectionStart from './sections/start.js';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 
@@ -18,6 +19,7 @@ global.liam = {
     manual: sectionManual,
     metrics: sectionMetrics,
     settings: sectionSettings,
+    schedule: sectionSchedule,
     info: sectionInfo
   }
 };
@@ -68,7 +70,7 @@ function startSubscribingOnStatus() {
     window.dispatchEvent(new Event('statusUpdated'));
   });
 
-  socket = new ReconnectingWebSocket('ws://' + location.hostname + '/ws');
+  socket = new ReconnectingWebSocket('ws://' + location.host + '/ws');
 
   // Listen for messages
   socket.addEventListener('message', function (event) {

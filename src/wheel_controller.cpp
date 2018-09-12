@@ -1,3 +1,4 @@
+#include <ArduinoLog.h>
 #include "wheel_controller.h"
 #include "settings.h"
 
@@ -14,6 +15,8 @@ void WheelController::forward(int8_t turnrate, uint8_t speed, bool smooth) {
   turnrate = constrain(turnrate, -100, 100);
   speed = constrain(speed, 0, 100);
 
+  Log.trace(F("WheelController-forward, speed: %d, turnrate: %d, smooth: %d" CR), speed, turnrate, smooth);
+
   if (turnrate < 0) {
     leftWheel.setSpeed(speed + turnrate);
     rightWheel.setSpeed(speed);
@@ -29,6 +32,8 @@ void WheelController::forward(int8_t turnrate, uint8_t speed, bool smooth) {
 void WheelController::backward(int8_t turnrate, uint8_t speed, bool smooth) {
   turnrate = constrain(turnrate, -100, 100);
   speed = constrain(speed, 0, 100);
+
+  Log.trace(F("WheelController-backward, speed: %d, turnrate: %d, smooth: %d" CR), speed, turnrate, smooth);
 
   if (turnrate < 0) {
     leftWheel.setSpeed(-speed - turnrate);
@@ -56,6 +61,8 @@ void WheelController::turn(int16_t direction, std::function<void(void)> fn) {
       targetHeading -= 360;
     }
 
+    Log.trace(F("WheelController-turn, direction: %d, currentHeading: %d, targetHeading: %d" CR), direction, currentHeading, targetHeading);
+
     // TODO: if deviation is small then turnspeed should be small to not overshoot target direction. Introduce different constants for this.
     // TODO: save current wheels speed and the callback function to be used in process-method
     if (direction < 0) {
@@ -71,6 +78,8 @@ void WheelController::turn(int16_t direction, std::function<void(void)> fn) {
 void WheelController::stop(bool smooth) {
   leftWheel.setSpeed(0);
   rightWheel.setSpeed(0);
+
+  Log.trace(F("WheelController-stop, smooth: %d" CR), smooth);
 }
 
 status WheelController::getStatus() {

@@ -12,11 +12,12 @@
     <div class="all-wrapper">
       <nav class="main-nav js-main-nav">
         <ul class="js-main-nav-list">
-          <li class="js-main-nav-item js-nav-section-start" data-section="start"><span class="fa fa-home fa-2x"></span></li>
-          <li class="js-main-nav-item js-nav-section-manual" data-section="manual"><span class="fa fa-gamepad fa-2x"></span></li>
-          <li class="js-main-nav-item js-nav-section-metrics" data-section="metrics"><span class="fa fa-bar-chart fa-2x"></span></li>
-          <li class="js-main-nav-item js-nav-section-settings" data-section="settings"><span class="fa fa-cogs fa-2x"></span></li>
-          <li class="js-main-nav-item js-nav-section-info" data-section="info"><span class="fa fa-info-circle fa-2x"></span></li>
+          <li class="js-main-nav-item js-nav-section-start" data-section="start"><span class="fas fa-home fa-fw fa-2x"></span></li>
+          <li class="js-main-nav-item js-nav-section-manual" data-section="manual"><span class="fas fa-gamepad fa-fw fa-2x"></span></li>
+          <li class="js-main-nav-item js-nav-section-metrics" data-section="metrics"><span class="fas fa-chart-bar fa-fw fa-2x"></span></li>
+          <li class="js-main-nav-item js-nav-section-settings" data-section="settings"><span class="fas fa-cogs fa-fw fa-2x"></span></li>
+          <li class="js-main-nav-item js-nav-section-schedule" data-section="schedule"><span class="far fa-clock fa-fw fa-2x"></span></li>
+          <li class="js-main-nav-item js-nav-section-info" data-section="info"><span class="fas fa-info-circle fa-fw fa-2x"></span></li>
         </ul>
       </nav>
       <div class="main js-main">
@@ -67,23 +68,31 @@
             <span class="js-restart button">Reboot</span>
             <span class="js-factoryreset button">Factory reset</span>
         </section>
+        <section class="section js-section js-section-schedule" style="display: none">
+        </section>
         <section class="section js-section js-section-info" style="display: none">
           <div>
             <p>
-              Application:&nbsp;<i class="appName"></i><br>
-              Version:&nbsp;<i class="appVersion"></i><br>
-              Uptime:&nbsp;<i class="uptime"></i><br>
-              CPU frequency:&nbsp;<i class="cpuFreq"></i>&nbsp;MHz<br>
-              Flash chipsize:&nbsp;<i class="flashChipSize"></i>&nbsp;Bytes<br>
-              Free heap memory:&nbsp;<i class="freeHeap"></i>&nbsp;Bytes<br>
-              WiFi signal:&nbsp;<i class="wifiSignal"></i>&nbsp;dBm
-            </p>
+              Application:&nbsp;<span class="appName"></span><br>
+              Version:&nbsp;<span class="appVersion"></span><br>
+              Uptime:&nbsp;<span class="uptime"></span><br>
+              CPU frequency:&nbsp;<span class="cpuFreq"></span>&nbsp;MHz<br>
+              Flash chipsize:&nbsp;<span class="flashChipSize"></span>&nbsp;Bytes<br>
+              Free heap memory:&nbsp;<span class="freeHeap"></span>&nbsp;Bytes<br>
+              WiFi signal:&nbsp;<span class="wifiSignal"></span>
+            </p>            
+          </div>
+          <div>
+            <label for="syslog">System log:</label>
+            <textarea id="syslog" name="syslog" rows="10"readonly>hejsan</textarea>
+          </div>
+          <div>
             <a href="/swagger.html" target="_blank">REST API</a>
           </div>
         </section>
       </div>
     </div>
-    <script src="//use.fontawesome.com/7690b4446d.js"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js" integrity="sha384-kW+oWsYx3YpxvjtZjFXqazFpA7UP/MbiY4jvs+RWZo2+N94PFZ36T6TFkc9O3qoB" crossorigin="anonymous"></script>
     <script src="//code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartist@0.11.0/dist/chartist.min.js" integrity="sha256-UzffRueYhyZDw8Cj39UCnnggvBfa1fPcDQ0auvCbvCc=" crossorigin="anonymous"></script>
   </body>

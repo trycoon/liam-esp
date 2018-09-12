@@ -8,6 +8,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const apiMocker = require('webpack-api-mocker');
 const CleanWebpackPlugin = require('clean-webpack-plugin')
+const myIp = require('my-local-ip');
 
 const config = {
 
@@ -111,8 +112,18 @@ if (!isProd) {
     hot: true,
     publicPath: '/',
     historyApiFallback: true,
-    before(app){
-      apiMocker(app, resolve(__dirname, '..', 'mocker.js'));
+    proxy: {
+      '/ws': {
+        target: `ws://localhost:8081/websocket`,
+        pathRewrite: {'^/ws' : ''},
+        ws: true,
+        secure: false,
+        logLevel: 'debug',
+      },
+    },
+    before(app) {
+      apiMocker(app, resolve(__dirname, '..', 'mock', 'api-mocker.js'));
+      require(resolve(__dirname, '..', 'mock', 'socket-mocker.js'))(8081);
     }
   };
 } else {

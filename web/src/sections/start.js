@@ -6,28 +6,28 @@ let sec = $('.js-section-start'),
 
 function setLaunchMowerState() {
   api.selectState("LAUNCHING")
-  .fail(function() {
+  .fail(function(e) {
     console.error(e);
   });
 }
 
 function setMowingState() {
   api.selectState("MOWING")
-  .fail(function() {
+  .fail(function(e) {
     console.error(e);
   });
 }
 
 function setDockingState() {
   api.selectState("DOCKING")
-  .fail(function() {
+  .fail(function(e) {
     console.error(e);
   });
 }
 
 function setStopState() {
   api.selectState("STOP")
-  .fail(function() {
+  .fail(function(e) {
     console.error(e);
   });
 }

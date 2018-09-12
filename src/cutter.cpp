@@ -1,12 +1,16 @@
+#include <ArduinoLog.h>
 #include "cutter.h"
 #include "settings.h"
 
-Cutter::Cutter(IO_Analog& io_analog) : cutter_id(3), io_analog(io_analog) {
+Cutter::Cutter(IO_Analog& io_analog) : cutter_id(3), io_analog(io_analog), cutterSpeed(0) {
   pinMode(Settings::CUTTER_MOTOR_PIN, OUTPUT);
+  pinMode(Settings::CUTTER_BRAKE_PIN, OUTPUT);
+  digitalWrite(Settings::CUTTER_BRAKE_PIN, LOW);
+  
   ledcSetup(cutter_id, Settings::MOTOR_BASE_FREQ, Settings::MOTOR_TIMER_13_BIT);
   ledcAttachPin(Settings::CUTTER_MOTOR_PIN, cutter_id);
 
-  stop(false);
+  ledcWrite(cutter_id, cutterSpeed);
 }
 
 Cutter::~Cutter() {
@@ -27,6 +31,8 @@ void Cutter::start() {
     // calculate duty, 8191 from 2 ^ 13 - 1
     uint32_t duty = ((pow(2, Settings::MOTOR_TIMER_13_BIT) - 1) / 100) * abs(cutterSpeed);
     ledcWrite(cutter_id, duty);
+
+    Log.trace(F("Cutter-start, speed: %d, dutyCycle: %d" CR), cutterSpeed, duty);
   }
 }
 
@@ -43,6 +49,8 @@ void Cutter::stop(bool brake) {
     }
 
     cutterLoadReadingTicker.detach();
+
+    Log.trace(F("Cutter-stop, brake: %d" CR), brake);
   }
 }
 
@@ -58,4 +66,3 @@ void Cutter::senseLoad() {
 uint8_t Cutter::getLoad() {
   return load;
 }
-
