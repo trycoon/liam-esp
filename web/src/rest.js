@@ -56,3 +56,20 @@ export function factoryreset() {
     data: '{}'
   });
 }
+
+export function getLoglevel(level) {
+  return $.getJSON('/api/v1/loglevel');
+}
+
+export function setLoglevel(level) {
+  return $.ajax({
+    url: `/api/v1/loglevel`,
+    method: 'PUT',
+    headers: {
+      'content-type': 'application/json',
+    },
+    data: JSON.stringify({
+      level: level
+    })
+  });
+}

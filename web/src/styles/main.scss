@@ -42,11 +42,15 @@ a {
     color: #0066BBFF;
     text-decoration: none;
 }
-label {
+label,select, textarea {
+    font-family : inherit;
+    font-size   : 100%;
     display:block;
 }
-textarea {
-    display:block;
+select {
+    width: 100%;
+    max-width: 200px;
+    border-radius: 4px;
 }
 
 @mixin no-select {

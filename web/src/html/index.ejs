@@ -55,18 +55,27 @@
           </div>
         </section>
         <section class="section js-section js-section-metrics" style="display: none">
-            <h3>Battery voltage</h3>
+            <h3>Battery voltage (V)</h3>
             <div id="battery-chart" class="ct-chart ct-minor-seventh"></div>
-            <h3>WiFi reception</h3>
+            <h3>WiFi reception (dBm)</h3>
             <div id="wifi-chart" class="ct-chart ct-minor-seventh"></div>
             <h3>Cuttermotor load (%)</h3>
             <div id="cutterload-chart" class="ct-chart ct-minor-seventh"></div>
         </section>
         <section class="section js-section js-section-settings" style="display: none">
           <div class="buttons center">
-            <a href="/setup" class="button">Installations wizard</a>
+            <a href="/setup" class="button">Installation wizard</a>
             <span class="js-restart button">Reboot</span>
             <span class="js-factoryreset button">Factory reset</span>
+          </div>
+          <label for="loglever" class="center">Choose loglevel:</label>
+          <select id="loglever" class="center">
+            <option value="0">None</option>
+            <option value="2">Error</option>
+            <option value="3">Warning</option>
+            <option value="4" selected="selected">Notice</option>
+            <option value="6">Verbose</option>
+          </select>
         </section>
         <section class="section js-section js-section-schedule" style="display: none">
         </section>

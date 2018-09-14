@@ -146,13 +146,13 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
   }, this);
 
   //HTTP Authenticate before switch to Websocket protocol
-  //websocket_server.setAuthentication(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str());
+  websocket_server.setAuthentication(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str());
 
   // HTTP basic authentication
   web_server.on("/api/v1/login", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    /*if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
       return request->requestAuthentication();
-    }*/
+    }
 
     auto *response = request->beginResponse(200, "text/plain", "Login Success!");
     response->addHeader("Cache-Control", "no-store, must-revalidate");
@@ -161,9 +161,9 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
 
   // respond to GET requests on URL /api/v1/history/battery
   web_server.on("/api/v1/history/battery", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    /*if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
       return request->requestAuthentication();
-    }*/
+    }
 
     auto *response = request->beginResponseStream("application/json");
     response->addHeader("Cache-Control", "no-store, must-revalidate");
@@ -171,14 +171,15 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
     JsonObject& self = links.createNestedObject("self");
-    self["href"] = "/api/v1/history/battery";
+    self["href"] = "http://" + WiFi.localIP().toString() + "/api/v1/history/battery";
     self["method"] = "GET";
 
-    JsonArray& samples = root.createNestedArray("samples");
+    JsonObject& samples = root.createNestedObject("samples");
+    JsonArray& time = samples.createNestedArray("time");
+    JsonArray& value = samples.createNestedArray("value");
     for (auto &s: resources.metrics.getBatteryHistory()) {
-        JsonObject& sample = samples.createNestedObject();
-        sample["t"] = s.time;
-        sample["v"] = s.batteryVoltage;
+      time.add(s.time);
+      value.add(s.batteryVoltage);
     }
 
     root.printTo(*response);
@@ -187,9 +188,9 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
 
   // respond to GET requests on URL /api/v1/history/position
   web_server.on("/api/v1/history/position", HTTP_GET, [this](AsyncWebServerRequest *request) {
-   /*if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
       return request->requestAuthentication();
-    }*/
+    }
 
     auto *response = request->beginResponseStream("application/json");
     response->addHeader("Cache-Control", "no-store, must-revalidate");    
@@ -197,7 +198,7 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
     JsonObject& self = links.createNestedObject("self");
-    self["href"] = "/api/v1/history/position";
+    self["href"] = "http://" + WiFi.localIP().toString() + "/api/v1/history/position";
     self["method"] = "GET";
 
     JsonArray& samples = root.createNestedArray("samples");
@@ -214,25 +215,26 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
 
   // respond to GET requests on URL /api/v1/history
   web_server.on("/api/v1/history", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    /*if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
       return request->requestAuthentication();
-    }*/
-
+    }
+    
+    const String host = "http://" + WiFi.localIP().toString();
     auto *response = request->beginResponseStream("application/json");
     DynamicJsonBuffer jsonBuffer(350);
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
 
     JsonObject& self = links.createNestedObject("self");
-    self["href"] = "/api/v1/history";
+    self["href"] = host + "/api/v1/history";
     self["method"] = "GET";
 
     JsonObject& battery = links.createNestedObject("battery");
-    battery["href"] = "/api/v1/history/battery";
+    battery["href"] = host + "/api/v1/history/battery";
     battery["method"] = "GET";
 
     JsonObject& position = links.createNestedObject("position");
-    position["href"] = "/api/v1/history/position";
+    position["href"] = host + "/api/v1/history/position";
     position["method"] = "GET";
 
     root.printTo(*response);
@@ -241,41 +243,42 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
 
   // respond to GET requests on URL /api/v1/manual
   web_server.on("/api/v1/manual", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    /*if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
       return request->requestAuthentication();
-    }*/
+    }
 
+    const String host = "http://" + WiFi.localIP().toString();
     auto *response = request->beginResponseStream("application/json");
     DynamicJsonBuffer jsonBuffer(750);
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
 
     JsonObject& self = links.createNestedObject("self");
-    self["href"] = "/api/v1/manual";
+    self["href"] = host + "/api/v1/manual";
     self["method"] = "GET";
 
     JsonObject& forward = links.createNestedObject("forward");
-    forward["href"] = "/api/v1/manual/forward";
+    forward["href"] = host + "/api/v1/manual/forward";
     forward["method"] = "PUT";
 
     JsonObject& backward = links.createNestedObject("backward");
-    backward["href"] = "/api/v1/manual/backward";
+    backward["href"] = host + "/api/v1/manual/backward";
     backward["method"] = "PUT";
 
     JsonObject& left = links.createNestedObject("turn");
-    left["href"] = "/api/v1/manual/turn";
+    left["href"] = host + "/api/v1/manual/turn";
     left["method"] = "PUT";
 
     JsonObject& stop = links.createNestedObject("stop");
-    stop["href"] = "/api/v1/manual/stop";
+    stop["href"] = host + "/api/v1/manual/stop";
     stop["method"] = "PUT";
 
     JsonObject& cutter_on = links.createNestedObject("cutter_on");
-    cutter_on["href"] = "/api/v1/manual/cutter_on";
+    cutter_on["href"] = host + "/api/v1/manual/cutter_on";
     cutter_on["method"] = "PUT";
 
     JsonObject& cutter_off = links.createNestedObject("cutter_off");
-    cutter_off["href"] = "/api/v1/manual/cutter_off";
+    cutter_off["href"] = host + "/api/v1/manual/cutter_off";
     cutter_off["method"] = "PUT";
 
     root.printTo(*response);
@@ -284,21 +287,21 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
 
   // respond to GET requests on URL /api/v1/status
   web_server.on("/api/v1/status", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    /*if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
       return request->requestAuthentication();
-    }*/
+    }
 
     auto *response = request->beginResponseStream("application/json");
     response->addHeader("Cache-Control", "no-store, must-revalidate");
     
     DynamicJsonBuffer jsonBuffer(600);
     JsonObject& root = jsonBuffer.createObject();
-    statusToJson(currentStatus, root);
-
     JsonObject& links = root.createNestedObject("_links");
     JsonObject& self = links.createNestedObject("self");
-    self["href"] = "/api/v1/status";
+    self["href"] = "http://" + WiFi.localIP().toString() + "/api/v1/status";
     self["method"] = "GET";
+
+    statusToJson(currentStatus, root);
 
     root.printTo(*response);
     request->send(response);
@@ -306,9 +309,9 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
 
   // respond to GET requests on URL /api/v1/system
   web_server.on("/api/v1/system", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    /*if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
       return request->requestAuthentication();
-    }*/
+    }
 
     auto *response = request->beginResponseStream("application/json");
     response->addHeader("Cache-Control", "no-store, must-revalidate");    
@@ -316,7 +319,7 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
     JsonObject& self = links.createNestedObject("self");
-    self["href"] = "/api/v1/system";
+    self["href"] = "http://" + WiFi.localIP().toString() + "/api/v1/system";
     self["method"] = "GET";
     root["name"] = Definitions::APP_NAME;
     root["version"] = Definitions::APP_VERSION;
@@ -330,50 +333,81 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
     request->send(response);
   });
 
+
+  // respond to GET requests on URL /api/v1/loglevel
+  web_server.on("/api/v1/loglevel", HTTP_GET, [this](AsyncWebServerRequest *request) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+      return request->requestAuthentication();
+    }
+
+    auto *response = request->beginResponseStream("application/json");
+    response->addHeader("Cache-Control", "no-store, must-revalidate");
+    DynamicJsonBuffer jsonBuffer(50);
+    JsonObject& root = jsonBuffer.createObject();
+    JsonObject& links = root.createNestedObject("_links");
+    JsonObject& self = links.createNestedObject("self");
+    self["href"] = "http://" + WiFi.localIP().toString() + "/api/v1/loglevel";
+    self["method"] = "GET";
+
+    root["level"] = Configuration::getInt("logLevel", LOG_LEVEL_NOTICE);
+
+    root.printTo(*response);
+    request->send(response);
+  });
+
+  //
+  // THE FOLLOWING REST-ENDPOINT SHOULD ALWAYS BE THE LAST ONE REGISTERED OF THE GET-ENDPOINTS !!!
+  // As it's the least specific one it will otherwise catch the others requests.
+  //
+
   // respond to GET requests on URL /api/v1
   web_server.on("/api/v1", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    /*if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
       return request->requestAuthentication();
-    }*/
-
+    }
+    const String host = "http://" + WiFi.localIP().toString();
     AsyncResponseStream *response = request->beginResponseStream("application/json");
     DynamicJsonBuffer jsonBuffer(860);
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
 
     JsonObject& self = links.createNestedObject("self");
-    self["href"] = "/api/v1";
+    self["href"] = host + "/api/v1";
     self["method"] = "GET";
 
     JsonObject& history = links.createNestedObject("history");
-    history["href"] = "/api/v1/history";
+    history["href"] = host + "/api/v1/history";
     history["method"] = "GET";
 
     JsonObject& login = links.createNestedObject("login");
-    login["href"] = "/api/v1/login";
+    login["href"] = host + "/api/v1/login";
 
     JsonObject& manual = links.createNestedObject("manual");
-    manual["href"] = "/api/v1/manual";
+    manual["href"] = host + "/api/v1/manual";
     manual["method"] = "GET";
 
     JsonObject& reboot = links.createNestedObject("reboot");
-    reboot["href"] = "/api/v1/reboot";
+    reboot["href"] = host + "/api/v1/reboot";
     reboot["method"] = "PUT";
 
     JsonObject& factoryreset = links.createNestedObject("factoryreset");
-    factoryreset["href"] = "/api/v1/factoryreset";
+    factoryreset["href"] = host + "/api/v1/factoryreset";
     factoryreset["method"] = "PUT";
 
+    JsonObject& setloglevel = links.createNestedObject("loglevel");
+    setloglevel["href"] = host + "/api/v1/loglevel";
+    setloglevel["method"] = "GET|PUT";
+
     JsonObject& state = links.createNestedObject("state");
-    state["href"] = "/api/v1/state";
+    state["href"] = host + "/api/v1/state";
     state["method"] = "PUT";
 
     JsonObject& status = links.createNestedObject("status");
-    status["href"] = "/api/v1/status";
+    status["href"] = host + "/api/v1/status";
     status["method"] = "GET";
 
     JsonObject& system = links.createNestedObject("system");
-    system["href"] = "/api/v1/system";
+    system["href"] = host + "/api/v1/system";
     system["method"] = "GET";
 
     root.printTo(*response);
@@ -387,9 +421,9 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
   // respond to PUT requests on URL /api/v1/state, change state of mower.
   // example body: {"state": "TEST"}
   web_server.on("/api/v1/state", HTTP_PUT, [this](AsyncWebServerRequest *request) {
-    /*if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
       return request->requestAuthentication();
-    }*/
+    }
   }, NULL, [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
     DynamicJsonBuffer jsonBuffer(100);
     JsonObject& root = jsonBuffer.parseObject((const char*)data);
@@ -427,9 +461,9 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
   // respond to PUT requests on URL /api/v1/manual/forward, drive mower forward.
   // example body: {"speed": 50, "turnrate": 0, "smooth": false}
   web_server.on("/api/v1/manual/forward", HTTP_PUT, [this](AsyncWebServerRequest *request) {
-    /*if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
       return request->requestAuthentication();
-    }*/
+    }
 
     stateController.setState(Definitions::MOWER_STATES::MANUAL);
 
@@ -461,9 +495,9 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
   // respond to PUT requests on URL /api/v1/manual/backward, drive mower backward.
   // example body: {"speed": 50, "turnrate": 0, "smooth": false}
   web_server.on("/api/v1/manual/backward", HTTP_PUT, [this](AsyncWebServerRequest *request) {
-    /*if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
       return request->requestAuthentication();
-    }*/
+    }
 
     stateController.setState(Definitions::MOWER_STATES::MANUAL);
 
@@ -495,9 +529,9 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
   // respond to PUT requests on URL /api/v1/manual/turn, turn mower to specified direction (degrees 0-360).
   // example body: {"direction": 180}
   web_server.on("/api/v1/manual/turn", HTTP_PUT, [this](AsyncWebServerRequest *request) {
-    /*if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
       return request->requestAuthentication();
-    }*/
+    }
 
     stateController.setState(Definitions::MOWER_STATES::MANUAL);
 
@@ -520,9 +554,9 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
 
   // respond to PUT requests on URL /api/v1/manual/stop, stop mower movement.
   web_server.on("/api/v1/manual/stop", HTTP_PUT, [this](AsyncWebServerRequest *request) {
-    /*if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
       return request->requestAuthentication();
-    }*/
+    }
 
     stateController.setState(Definitions::MOWER_STATES::MANUAL);
 
@@ -534,9 +568,9 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
 
   // respond to PUT requests on URL /api/v1/manual/cutter_on, start mower cutter.
   web_server.on("/api/v1/manual/cutter_on", HTTP_PUT, [this](AsyncWebServerRequest *request) {
-    /*if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
       return request->requestAuthentication();
-    }*/
+    }
 
     stateController.setState(Definitions::MOWER_STATES::MANUAL);
 
@@ -548,9 +582,9 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
 
   // respond to PUT requests on URL /api/v1/manual/cutter_off, stop mower cutter.
   web_server.on("/api/v1/manual/cutter_off", HTTP_PUT, [this](AsyncWebServerRequest *request) {
-    /*if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
       return request->requestAuthentication();
-    }*/
+    }
 
     stateController.setState(Definitions::MOWER_STATES::MANUAL);
 
@@ -562,13 +596,13 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
 
   // respond to PUT requests on URL /api/v1/reboot, restart mower.
   web_server.on("/api/v1/reboot", HTTP_PUT, [this](AsyncWebServerRequest *request) {
-    /*if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
       return request->requestAuthentication();
-    }*/
+    }
 
     resources.cutter.stop(true);
     resources.wheelController.stop(false);
-    Log.notice(F("Rebooting by API request"));
+    Log.notice(F("Rebooting by API request" CR));
     request->send(200);
     delay(1000);
     ESP.restart();
@@ -578,19 +612,43 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
 
   // respond to PUT requests on URL /api/v1/factoryreset, reset all setting and restart mower.
   web_server.on("/api/v1/factoryreset", HTTP_PUT, [this](AsyncWebServerRequest *request) {
-    /*if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
       return request->requestAuthentication();
-    }*/
+    }
 
     resources.cutter.stop(true);
     resources.wheelController.stop(false);
     Configuration::wipe();
     
-    Log.notice(F("Factory reset by API request"));
+    Log.notice(F("Factory reset by API request" CR));
     request->send(200);
     delay(1000);
     ESP.restart();
   }, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
     // nothing.
   }); 
+
+  // respond to PUT requests on URL /api/v1/loglevel, set loglevel for mower (useful for fault finding).
+  web_server.on("/api/v1/loglevel", HTTP_PUT, [this](AsyncWebServerRequest *request) {
+    if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
+      return request->requestAuthentication();
+    }
+  }, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+    DynamicJsonBuffer jsonBuffer(30);
+    JsonObject& root = jsonBuffer.parseObject((const char*)data);
+
+    if (root.success()) {
+      if (!root.containsKey("level")) {
+        request->send(400, "text/plain", "Bad Request - missing 'level' property");
+        return;
+      }
+
+      Configuration::set("logLevel", atoi(root["level"]));
+      Log.notice(F("Set loglevel to %d" CR), root["level"]);
+
+      request->send(200);
+    } else {
+      request->send(400, "text/plain", "Bad Request");
+    }
+  });
 }

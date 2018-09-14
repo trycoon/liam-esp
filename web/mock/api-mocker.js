@@ -49,6 +49,16 @@ let proxy = {
       },
       'PUT /api/v1/reboot': (req, res) => {
         res.sendStatus(200);
+      },
+      'PUT /api/v1/factoryreset': (req, res) => {
+        res.sendStatus(200);
+      },
+      'GET /api/v1/loglevel': (req, res) => {
+        return res.json(data.getLoglevel());
+      },
+      'PUT /api/v1/loglevel': (req, res) => {
+        data.setLoglevel(req.body.level);
+        res.sendStatus(200);
       }
     };
 

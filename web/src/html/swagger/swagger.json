@@ -9,7 +9,6 @@
       "url": "http://github.com/gruntjs/grunt/blob/master/LICENSE-MIT"
     }
   },
-  "host": "{DefaultParameterValue}",
   "basePath": "/api/v1",
   "securityDefinitions": {
     "auth": {
@@ -17,9 +16,6 @@
       "x-testValue": []
     }
   },
-  "schemes": [
-    "http"
-  ],
   "consumes": [
     "application/json"
   ],

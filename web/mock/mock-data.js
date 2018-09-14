@@ -1,4 +1,5 @@
 let uptime = new Date(),
+    loglevel = 4,
     currentState = {
         state: 'DOCKED',
         isCharging: false,
@@ -62,6 +63,12 @@ let uptime = new Date(),
     },
     setState: (state) => {
         currentState.state = state;
+    },
+    getLoglevel: () => {
+        return loglevel;
+    },
+    setLoglevel: (level) => {
+        loglevel = level;
     }
   }
   

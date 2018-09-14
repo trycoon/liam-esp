@@ -62,6 +62,7 @@ TODO: logging library: https://esp-idf.readthedocs.io/en/v1.0/api/log.html
 TODO: check if we could use a PID-library to tune BWF readings when docking. https://github.com/br3ttb/Arduino-PID-Library
 TODO: Multithreading on ESP32, processable.h-interface and let each class use this one instead: https://github.com/copercini/esp32-iot-examples/blob/master/multiloop/multiloop.ino, if not working then look at this: https://www.arduino.cc/en/Reference/Scheduler or this (works even in Arduino-mode): http://www.freertos.org/a00125.html
 TODO: see this for inspiration: https://bitbucket.org/xoseperez/espurna/src
+TODO: create login page: https://www.youtube.com/watch?v=OWNxUVnY3pg
 
 ## License & Author
 

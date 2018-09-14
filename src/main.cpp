@@ -79,7 +79,7 @@ void setup() {
   Serial.begin(115200);
 
   Serial.printf("\n=== %s v%s ===\n\n", Definitions::APP_NAME, Definitions::APP_VERSION);
-  Log.begin(Configuration::getInt("logLevel", LOG_LEVEL_TRACE), &Serial, true);
+  Log.begin(Configuration::getInt("logLevel", LOG_LEVEL_NOTICE), &Serial, true);
 
   // setup I2C
   Wire.begin(Settings::SDA_PIN, Settings::SCL_PIN);
