@@ -101,7 +101,7 @@ void setup() {
   wifi.start();
 
   if (Configuration::isConfigured) {
-    api.setupApi(wifi.getWebServer(), wifi.getWebSocketServer());
+    api.setupApi();
   }
 
   ota.start();

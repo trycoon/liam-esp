@@ -1,1123 +1,446 @@
 {
-  "swagger": "2.0",
-  "info": {
-    "version": "1.0",
-    "title": "liam-esp",
-    "description": "REST-API for Liam-ESP robot mower",
-    "license": {
-      "name": "MIT",
-      "url": "http://github.com/gruntjs/grunt/blob/master/LICENSE-MIT"
-    }
+  "openapi" : "3.0.0",
+  "info" : {
+    "version" : "1.0",
+    "title" : "liam-esp",
+    "description" : "REST-API for liam-esp mower"
   },
-  "basePath": "/api/v1",
-  "securityDefinitions": {
-    "auth": {
-      "type": "basic",
-      "x-testValue": []
-    }
-  },
-  "consumes": [
-    "application/json"
-  ],
-  "produces": [
-    "application/json"
-  ],
-  "paths": {
-    "/manual/forward": {
-      "put": {
-        "description": "TODO: Add Description",
-        "summary": "forward",
-        "tags": [
-          "manual"
-        ],
-        "operationId": "forward",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "Body",
-            "in": "body",
-            "required": true,
-            "description": "",
-            "schema": {
-              "type": "object"
-            }
-          },
-          {
-            "name": "Content-Type",
-            "in": "header",
-            "required": true,
-            "type": "string",
-            "description": ""
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [],
-        "x-unitTests": [
-          {
-            "request": {
-              "method": "PUT",
-              "uri": "/manual/forward",
-              "headers": {
-                "Content-Type": "application/json"
-              },
-              "body": "{}"
-            },
-            "expectedResponse": {
-              "x-allowExtraHeaders": true,
-              "x-bodyMatchMode": "NONE",
-              "x-arrayOrderedMatching": false,
-              "x-arrayCheckCount": false,
-              "x-matchResponseSchema": true,
-              "headers": {}
-            },
-            "x-testShouldPass": true,
-            "x-testEnabled": true,
-            "x-testName": "forward",
-            "x-testDescription": "TODO: Add Description"
-          }
-        ],
-        "x-operation-settings": {
-          "CollectParameters": false,
-          "AllowDynamicQueryParameters": false,
-          "AllowDynamicFormParameters": false,
-          "IsMultiContentStreaming": false
-        }
-      }
-    },
-    "/manual/backward": {
-      "put": {
-        "description": "TODO: Add Description",
-        "summary": "backward",
-        "tags": [
-          "manual"
-        ],
-        "operationId": "backward",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "Body",
-            "in": "body",
-            "required": true,
-            "description": "",
-            "schema": {
-              "type": "object"
-            }
-          },
-          {
-            "name": "Content-Type",
-            "in": "header",
-            "required": true,
-            "type": "string",
-            "description": ""
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [],
-        "x-unitTests": [
-          {
-            "request": {
-              "method": "PUT",
-              "uri": "/manual/backward",
-              "headers": {
-                "Content-Type": "application/json"
-              },
-              "body": "{}"
-            },
-            "expectedResponse": {
-              "x-allowExtraHeaders": true,
-              "x-bodyMatchMode": "NONE",
-              "x-arrayOrderedMatching": false,
-              "x-arrayCheckCount": false,
-              "x-matchResponseSchema": true,
-              "headers": {}
-            },
-            "x-testShouldPass": true,
-            "x-testEnabled": true,
-            "x-testName": "backward",
-            "x-testDescription": "TODO: Add Description"
-          }
-        ],
-        "x-operation-settings": {
-          "CollectParameters": false,
-          "AllowDynamicQueryParameters": false,
-          "AllowDynamicFormParameters": false,
-          "IsMultiContentStreaming": false
-        }
-      }
-    },
-    "/manual/left": {
-      "put": {
-        "description": "TODO: Add Description",
-        "summary": "left",
-        "tags": [
-          "manual"
-        ],
-        "operationId": "left",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "Body",
-            "in": "body",
-            "required": true,
-            "description": "",
-            "schema": {
-              "type": "object"
-            }
-          },
-          {
-            "name": "Content-Type",
-            "in": "header",
-            "required": true,
-            "type": "string",
-            "description": ""
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [],
-        "x-unitTests": [
-          {
-            "request": {
-              "method": "PUT",
-              "uri": "/manual/left",
-              "headers": {
-                "Content-Type": "application/json"
-              },
-              "body": "{}"
-            },
-            "expectedResponse": {
-              "x-allowExtraHeaders": true,
-              "x-bodyMatchMode": "NONE",
-              "x-arrayOrderedMatching": false,
-              "x-arrayCheckCount": false,
-              "x-matchResponseSchema": true,
-              "headers": {}
-            },
-            "x-testShouldPass": true,
-            "x-testEnabled": true,
-            "x-testName": "left",
-            "x-testDescription": "TODO: Add Description"
-          }
-        ],
-        "x-operation-settings": {
-          "CollectParameters": false,
-          "AllowDynamicQueryParameters": false,
-          "AllowDynamicFormParameters": false,
-          "IsMultiContentStreaming": false
-        }
-      }
-    },
-    "/manual/right": {
-      "put": {
-        "description": "TODO: Add Description",
-        "summary": "right",
-        "tags": [
-          "manual"
-        ],
-        "operationId": "right",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "Body",
-            "in": "body",
-            "required": true,
-            "description": "",
-            "schema": {
-              "type": "object"
-            }
-          },
-          {
-            "name": "Content-Type",
-            "in": "header",
-            "required": true,
-            "type": "string",
-            "description": ""
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [],
-        "x-unitTests": [
-          {
-            "request": {
-              "method": "PUT",
-              "uri": "/manual/right",
-              "headers": {
-                "Content-Type": "application/json"
-              },
-              "body": "{}"
-            },
-            "expectedResponse": {
-              "x-allowExtraHeaders": true,
-              "x-bodyMatchMode": "NONE",
-              "x-arrayOrderedMatching": false,
-              "x-arrayCheckCount": false,
-              "x-matchResponseSchema": true,
-              "headers": {}
-            },
-            "x-testShouldPass": true,
-            "x-testEnabled": true,
-            "x-testName": "right",
-            "x-testDescription": "TODO: Add Description"
-          }
-        ],
-        "x-operation-settings": {
-          "CollectParameters": false,
-          "AllowDynamicQueryParameters": false,
-          "AllowDynamicFormParameters": false,
-          "IsMultiContentStreaming": false
-        }
-      }
-    },
-    "/manual/stop": {
-      "put": {
-        "description": "TODO: Add Description",
-        "summary": "stop",
-        "tags": [
-          "manual"
-        ],
-        "operationId": "stop",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "Body",
-            "in": "body",
-            "required": true,
-            "description": "",
-            "schema": {
-              "type": "object"
-            }
-          },
-          {
-            "name": "Content-Type",
-            "in": "header",
-            "required": true,
-            "type": "string",
-            "description": ""
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [],
-        "x-unitTests": [
-          {
-            "request": {
-              "method": "PUT",
-              "uri": "/manual/stop",
-              "headers": {
-                "Content-Type": "application/json"
-              },
-              "body": "{}"
-            },
-            "expectedResponse": {
-              "x-allowExtraHeaders": true,
-              "x-bodyMatchMode": "NONE",
-              "x-arrayOrderedMatching": false,
-              "x-arrayCheckCount": false,
-              "x-matchResponseSchema": true,
-              "headers": {}
-            },
-            "x-testShouldPass": true,
-            "x-testEnabled": true,
-            "x-testName": "stop",
-            "x-testDescription": "TODO: Add Description"
-          }
-        ],
-        "x-operation-settings": {
-          "CollectParameters": false,
-          "AllowDynamicQueryParameters": false,
-          "AllowDynamicFormParameters": false,
-          "IsMultiContentStreaming": false
-        }
-      }
-    },
-    "/manual/cutter_on": {
-      "put": {
-        "description": "TODO: Add Description",
-        "summary": "cutter on",
-        "tags": [
-          "manual"
-        ],
-        "operationId": "cutter on",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "Body",
-            "in": "body",
-            "required": true,
-            "description": "",
-            "schema": {
-              "type": "object"
-            }
-          },
-          {
-            "name": "Content-Type",
-            "in": "header",
-            "required": true,
-            "type": "string",
-            "description": ""
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [],
-        "x-unitTests": [
-          {
-            "request": {
-              "method": "PUT",
-              "uri": "/manual/cutter_on",
-              "headers": {
-                "Content-Type": "application/json"
-              },
-              "body": "{}"
-            },
-            "expectedResponse": {
-              "x-allowExtraHeaders": true,
-              "x-bodyMatchMode": "NONE",
-              "x-arrayOrderedMatching": false,
-              "x-arrayCheckCount": false,
-              "x-matchResponseSchema": true,
-              "headers": {}
-            },
-            "x-testShouldPass": true,
-            "x-testEnabled": true,
-            "x-testName": "cutter on",
-            "x-testDescription": "TODO: Add Description"
-          }
-        ],
-        "x-operation-settings": {
-          "CollectParameters": false,
-          "AllowDynamicQueryParameters": false,
-          "AllowDynamicFormParameters": false,
-          "IsMultiContentStreaming": false
-        }
-      }
-    },
-    "/manual/cutter_off": {
-      "put": {
-        "description": "TODO: Add Description",
-        "summary": "cutter off",
-        "tags": [
-          "manual"
-        ],
-        "operationId": "cutter off",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "Body",
-            "in": "body",
-            "required": true,
-            "description": "",
-            "schema": {
-              "type": "object"
-            }
-          },
-          {
-            "name": "Content-Type",
-            "in": "header",
-            "required": true,
-            "type": "string",
-            "description": ""
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [],
-        "x-unitTests": [
-          {
-            "request": {
-              "method": "PUT",
-              "uri": "/manual/cutter_off",
-              "headers": {
-                "Content-Type": "application/json"
-              },
-              "body": "{}"
-            },
-            "expectedResponse": {
-              "x-allowExtraHeaders": true,
-              "x-bodyMatchMode": "NONE",
-              "x-arrayOrderedMatching": false,
-              "x-arrayCheckCount": false,
-              "x-matchResponseSchema": true,
-              "headers": {}
-            },
-            "x-testShouldPass": true,
-            "x-testEnabled": true,
-            "x-testName": "cutter off",
-            "x-testDescription": "TODO: Add Description"
-          }
-        ],
-        "x-operation-settings": {
-          "CollectParameters": false,
-          "AllowDynamicQueryParameters": false,
-          "AllowDynamicFormParameters": false,
-          "IsMultiContentStreaming": false
-        }
-      }
-    },
-    "/history/battery": {
-      "get": {
-        "description": "TODO: Add Description",
-        "summary": "battery",
-        "tags": [
-          "history"
-        ],
-        "operationId": "battery",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "Content-Type",
-            "in": "header",
-            "required": true,
-            "type": "string",
-            "description": ""
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [],
-        "x-unitTests": [
-          {
-            "request": {
-              "method": "GET",
-              "uri": "/history/battery",
-              "headers": {
-                "Content-Type": "application/json"
+  "paths" : {
+    "/status" : {
+      "get" : {
+        "tags" : [ "System" ],
+        "description" : "returns current status of mower with the most useful information",
+        "operationId" : "getStatus",
+        "responses" : {
+          "200" : {
+            "description" : "Current status",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Status"
+                }
               }
-            },
-            "expectedResponse": {
-              "x-allowExtraHeaders": true,
-              "x-bodyMatchMode": "NONE",
-              "x-arrayOrderedMatching": false,
-              "x-arrayCheckCount": false,
-              "x-matchResponseSchema": true,
-              "headers": {}
-            },
-            "x-testShouldPass": true,
-            "x-testEnabled": true,
-            "x-testName": "battery",
-            "x-testDescription": "TODO: Add Description"
-          }
-        ],
-        "x-operation-settings": {
-          "CollectParameters": false,
-          "AllowDynamicQueryParameters": false,
-          "AllowDynamicFormParameters": false,
-          "IsMultiContentStreaming": false
-        }
-      }
-    },
-    "/history/cutter_load": {
-      "get": {
-        "description": "TODO: Add Description",
-        "summary": "cutter load",
-        "tags": [
-          "history"
-        ],
-        "operationId": "cutter load",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "Content-Type",
-            "in": "header",
-            "required": true,
-            "type": "string",
-            "description": ""
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [],
-        "x-unitTests": [
-          {
-            "request": {
-              "method": "GET",
-              "uri": "/history/cutter_load",
-              "headers": {
-                "Content-Type": "application/json"
-              }
-            },
-            "expectedResponse": {
-              "x-allowExtraHeaders": true,
-              "x-bodyMatchMode": "NONE",
-              "x-arrayOrderedMatching": false,
-              "x-arrayCheckCount": false,
-              "x-matchResponseSchema": true,
-              "headers": {}
-            },
-            "x-testShouldPass": true,
-            "x-testEnabled": true,
-            "x-testName": "cutter load",
-            "x-testDescription": "TODO: Add Description"
-          }
-        ],
-        "x-operation-settings": {
-          "CollectParameters": false,
-          "AllowDynamicQueryParameters": false,
-          "AllowDynamicFormParameters": false,
-          "IsMultiContentStreaming": false
-        }
-      }
-    },
-    "/history/position": {
-      "get": {
-        "description": "TODO: Add Description",
-        "summary": "position",
-        "tags": [
-          "history"
-        ],
-        "operationId": "position",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "Content-Type",
-            "in": "header",
-            "required": true,
-            "type": "string",
-            "description": ""
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [],
-        "x-unitTests": [
-          {
-            "request": {
-              "method": "GET",
-              "uri": "/history/position",
-              "headers": {
-                "Content-Type": "application/json"
-              }
-            },
-            "expectedResponse": {
-              "x-allowExtraHeaders": true,
-              "x-bodyMatchMode": "NONE",
-              "x-arrayOrderedMatching": false,
-              "x-arrayCheckCount": false,
-              "x-matchResponseSchema": true,
-              "headers": {}
-            },
-            "x-testShouldPass": true,
-            "x-testEnabled": true,
-            "x-testName": "position",
-            "x-testDescription": "TODO: Add Description"
-          }
-        ],
-        "x-operation-settings": {
-          "CollectParameters": false,
-          "AllowDynamicQueryParameters": false,
-          "AllowDynamicFormParameters": false,
-          "IsMultiContentStreaming": false
-        }
-      }
-    },
-    "/history/memory": {
-      "get": {
-        "description": "TODO: Add Description",
-        "summary": "memory",
-        "tags": [
-          "history"
-        ],
-        "operationId": "memory",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "Content-Type",
-            "in": "header",
-            "required": true,
-            "type": "string",
-            "description": ""
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [],
-        "x-unitTests": [
-          {
-            "request": {
-              "method": "GET",
-              "uri": "/history/memory",
-              "headers": {
-                "Content-Type": "application/json"
-              }
-            },
-            "expectedResponse": {
-              "x-allowExtraHeaders": true,
-              "x-bodyMatchMode": "NONE",
-              "x-arrayOrderedMatching": false,
-              "x-arrayCheckCount": false,
-              "x-matchResponseSchema": true,
-              "headers": {}
-            },
-            "x-testShouldPass": true,
-            "x-testEnabled": true,
-            "x-testName": "memory",
-            "x-testDescription": "TODO: Add Description"
-          }
-        ],
-        "x-operation-settings": {
-          "CollectParameters": false,
-          "AllowDynamicQueryParameters": false,
-          "AllowDynamicFormParameters": false,
-          "IsMultiContentStreaming": false
-        }
-      }
-    },
-    "/state": {
-      "put": {
-        "description": "TODO: Add Description",
-        "summary": "test",
-        "tags": [
-          "state"
-        ],
-        "operationId": "test",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "Body",
-            "in": "body",
-            "required": true,
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/TestRequest"
             }
-          },
-          {
-            "name": "Content-Type",
-            "in": "header",
-            "required": true,
-            "type": "string",
-            "description": ""
           }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [],
-        "x-unitTests": [
-          {
-            "request": {
-              "method": "PUT",
-              "uri": "/state",
-              "headers": {
-                "Content-Type": "application/json"
-              },
-              "body": "{\n\t\"state\": \"TEST\"\n}"
-            },
-            "expectedResponse": {
-              "x-allowExtraHeaders": true,
-              "x-bodyMatchMode": "NONE",
-              "x-arrayOrderedMatching": false,
-              "x-arrayCheckCount": false,
-              "x-matchResponseSchema": true,
-              "headers": {}
-            },
-            "x-testShouldPass": true,
-            "x-testEnabled": true,
-            "x-testName": "test",
-            "x-testDescription": "TODO: Add Description"
-          }
-        ],
-        "x-operation-settings": {
-          "CollectParameters": false,
-          "AllowDynamicQueryParameters": false,
-          "AllowDynamicFormParameters": false,
-          "IsMultiContentStreaming": false
         }
       }
     },
-    "/login": {
-      "put": {
-        "description": "TODO: Add Description",
-        "summary": "login",
-        "tags": [
-          "Misc"
-        ],
-        "operationId": "login",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "Content-Type",
-            "in": "header",
-            "required": true,
-            "type": "string",
-            "description": ""
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": true,
-            "type": "string",
-            "description": ""
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "auth": []
-          }
-        ],
-        "x-unitTests": [
-          {
-            "request": {
-              "method": "PUT",
-              "uri": "/login",
-              "headers": {
-                "Content-Type": "application/json",
-                "Authorization": "Basic YWRtaW46b2Fzcw=="
+    "/system" : {
+      "get" : {
+        "tags" : [ "System" ],
+        "description" : "returns current system information of mower",
+        "operationId" : "getSystem",
+        "responses" : {
+          "200" : {
+            "description" : "Current system information",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/System"
+                }
               }
-            },
-            "expectedResponse": {
-              "x-allowExtraHeaders": true,
-              "x-bodyMatchMode": "NONE",
-              "x-arrayOrderedMatching": false,
-              "x-arrayCheckCount": false,
-              "x-matchResponseSchema": true,
-              "headers": {}
-            },
-            "x-testShouldPass": true,
-            "x-testEnabled": true,
-            "x-testName": "login",
-            "x-testDescription": "TODO: Add Description"
-          }
-        ],
-        "x-operation-settings": {
-          "CollectParameters": false,
-          "AllowDynamicQueryParameters": false,
-          "AllowDynamicFormParameters": false,
-          "IsMultiContentStreaming": false
-        }
-      }
-    },
-    "/status": {
-      "get": {
-        "description": "TODO: Add Description",
-        "summary": "status",
-        "tags": [
-          "Misc"
-        ],
-        "operationId": "status",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "Content-Type",
-            "in": "header",
-            "required": true,
-            "type": "string",
-            "description": ""
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [],
-        "x-unitTests": [
-          {
-            "request": {
-              "method": "GET",
-              "uri": "/status",
-              "headers": {
-                "Content-Type": "application/json"
-              }
-            },
-            "expectedResponse": {
-              "x-allowExtraHeaders": true,
-              "x-bodyMatchMode": "NONE",
-              "x-arrayOrderedMatching": false,
-              "x-arrayCheckCount": false,
-              "x-matchResponseSchema": true,
-              "headers": {}
-            },
-            "x-testShouldPass": true,
-            "x-testEnabled": true,
-            "x-testName": "status",
-            "x-testDescription": "TODO: Add Description"
-          }
-        ],
-        "x-operation-settings": {
-          "CollectParameters": false,
-          "AllowDynamicQueryParameters": false,
-          "AllowDynamicFormParameters": false,
-          "IsMultiContentStreaming": false
-        }
-      }
-    },
-    "/system": {
-      "get": {
-        "description": "TODO: Add Description",
-        "summary": "system",
-        "tags": [
-          "Misc"
-        ],
-        "operationId": "system",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "Content-Type",
-            "in": "header",
-            "required": true,
-            "type": "string",
-            "description": ""
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [],
-        "x-unitTests": [
-          {
-            "request": {
-              "method": "GET",
-              "uri": "/system",
-              "headers": {
-                "Content-Type": "application/json"
-              }
-            },
-            "expectedResponse": {
-              "x-allowExtraHeaders": true,
-              "x-bodyMatchMode": "NONE",
-              "x-arrayOrderedMatching": false,
-              "x-arrayCheckCount": false,
-              "x-matchResponseSchema": true,
-              "headers": {}
-            },
-            "x-testShouldPass": true,
-            "x-testEnabled": true,
-            "x-testName": "system",
-            "x-testDescription": "TODO: Add Description"
-          }
-        ],
-        "x-operation-settings": {
-          "CollectParameters": false,
-          "AllowDynamicQueryParameters": false,
-          "AllowDynamicFormParameters": false,
-          "IsMultiContentStreaming": false
-        }
-      }
-    },
-    "/reboot": {
-      "put": {
-        "description": "TODO: Add Description",
-        "summary": "reboot",
-        "tags": [
-          "Misc"
-        ],
-        "operationId": "reboot",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "Body",
-            "in": "body",
-            "required": true,
-            "description": "",
-            "schema": {
-              "type": "object"
             }
-          },
-          {
-            "name": "Content-Type",
-            "in": "header",
-            "required": true,
-            "type": "string",
-            "description": ""
           }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
+        }
+      }
+    },
+    "/state" : {
+      "put" : {
+        "tags" : [ "State" ],
+        "description" : "set mowers current state, e.g. command it to start cutting, or go back to charge station.",
+        "operationId" : "setState",
+        "responses" : {
+          "200" : {
+            "description" : "successfully changed to new state"
+          },
+          "400" : {
+            "description" : "Bad request (missformed JSON)"
+          },
+          "422" : {
+            "description" : "unknown state requested"
           }
         },
-        "security": [],
-        "x-unitTests": [
-          {
-            "request": {
-              "method": "PUT",
-              "uri": "/reboot",
-              "headers": {
-                "Content-Type": "application/json"
-              },
-              "body": "{}"
-            },
-            "expectedResponse": {
-              "x-allowExtraHeaders": true,
-              "x-bodyMatchMode": "NONE",
-              "x-arrayOrderedMatching": false,
-              "x-arrayCheckCount": false,
-              "x-matchResponseSchema": true,
-              "headers": {}
-            },
-            "x-testShouldPass": true,
-            "x-testEnabled": true,
-            "x-testName": "reboot",
-            "x-testDescription": "TODO: Add Description"
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SetState"
+              }
+            }
           }
-        ],
-        "x-operation-settings": {
-          "CollectParameters": false,
-          "AllowDynamicQueryParameters": false,
-          "AllowDynamicFormParameters": false,
-          "IsMultiContentStreaming": false
+        }
+      }
+    },
+    "/loglevel" : {
+      "get" : {
+        "tags" : [ "Debugging" ],
+        "description" : "get current loglevel for debugging and faultfinding",
+        "operationId" : "getLoglevel",
+        "responses" : {
+          "200" : {
+            "description" : "returns current loglevel",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Loglevel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "Debugging" ],
+        "description" : "set loglevel for debugging and faultfinding. 0=none, 1=fatal, 2=error, 3=warning, 4=notice, 5=debug, 6=verbose",
+        "operationId" : "setLoglevel",
+        "responses" : {
+          "200" : {
+            "description" : "successfully set loglevel"
+          }
+        },
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Loglevel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/factoryreset" : {
+      "put" : {
+        "tags" : [ "System" ],
+        "description" : "clear all settings and restart mower as brand new. (ALL SETTING WILL BE LOST!)",
+        "operationId" : "factoryreset",
+        "responses" : {
+          "200" : {
+            "description" : "successfully factory reset mower"
+          }
+        }
+      }
+    },
+    "/reboot" : {
+      "put" : {
+        "tags" : [ "System" ],
+        "description" : "reboot mower, application will restart but all settings will be left unaffected",
+        "operationId" : "reboot",
+        "responses" : {
+          "200" : {
+            "description" : "successfully begun rebooting mower"
+          }
+        }
+      }
+    },
+    "/manual/forward" : {
+      "put" : {
+        "tags" : [ "Manual" ],
+        "description" : "manually drive mower forward, set speed and turnrate",
+        "operationId" : "manualForward",
+        "responses" : {
+          "200" : {
+            "description" : "successfully set mower to forward motion"
+          }
+        },
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ForwardBackwardMotion"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/manual/backward" : {
+      "put" : {
+        "tags" : [ "Manual" ],
+        "description" : "manually drive mower backward, set speed and turnrate",
+        "operationId" : "manualBackward",
+        "responses" : {
+          "200" : {
+            "description" : "successfully set mower to backward motion"
+          }
+        },
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ForwardBackwardMotion"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/manual/stop" : {
+      "put" : {
+        "tags" : [ "Manual" ],
+        "description" : "stop mower when driving manually",
+        "operationId" : "manualStop",
+        "responses" : {
+          "200" : {
+            "description" : "successfully stopped mower"
+          }
+        }
+      }
+    },
+    "/manual/cutter_on" : {
+      "put" : {
+        "tags" : [ "Manual" ],
+        "description" : "start cutter on mower",
+        "operationId" : "manualStartCutter",
+        "responses" : {
+          "200" : {
+            "description" : "successfully started cutter"
+          }
+        }
+      }
+    },
+    "/manual/cutter_off" : {
+      "put" : {
+        "tags" : [ "Manual" ],
+        "description" : "stop cutter on mower",
+        "operationId" : "manualStopCutter",
+        "responses" : {
+          "200" : {
+            "description" : "successfully stopped cutter"
+          }
+        }
+      }
+    },
+    "/history/battery" : {
+      "get" : {
+        "tags" : [ "History" ],
+        "description" : "returns battery level over the past time.",
+        "operationId" : "getBatteryHistory",
+        "responses" : {
+          "200" : {
+            "description" : "battery level history",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BatteryHistory"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/history/position" : {
+      "get" : {
+        "tags" : [ "History" ],
+        "description" : "returns mower GPS-position over the past time.",
+        "operationId" : "getPositionHistory",
+        "responses" : {
+          "200" : {
+            "description" : "GPS-position history",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PositionHistory"
+                }
+              }
+            }
+          }
         }
       }
     }
   },
-  "definitions": {
-    "DockingRequest": {
-      "title": "dockingRequest",
-      "example": {
-        "state": "DOCKING"
-      },
-      "type": "object",
-      "properties": {
-        "state": {
-          "description": "",
-          "type": "string"
+  "components" : {
+    "schemas" : {
+      "Status" : {
+        "type" : "object",
+        "properties" : {
+          "state" : {
+            "type" : "string",
+            "enum" : [ "DOCKED", "LAUNCHING", "MOWING", "DOCKING", "CHARGING", "STUCK", "FLIPPED", "MANUAL", "STOP", "TEST" ]
+          },
+          "batteryVoltage" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "batteryLevel" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "isCharging" : {
+            "type" : "boolean"
+          },
+          "lastFullyChargeTime" : {
+            "type" : "integer",
+            "format" : "unit32"
+          },
+          "lastChargeDuration" : {
+            "type" : "integer",
+            "format" : "unit32"
+          },
+          "cutterLoad" : {
+            "type" : "integer",
+            "format" : "uint8"
+          },
+          "cutterRotating" : {
+            "type" : "boolean"
+          },
+          "leftWheelSpd" : {
+            "type" : "integer",
+            "format" : "int16"
+          },
+          "rightWheelSpd" : {
+            "type" : "integer",
+            "format" : "int16"
+          },
+          "targetHeading" : {
+            "type" : "integer",
+            "format" : "uint16"
+          },
+          "pitch" : {
+            "type" : "integer",
+            "format" : "int16"
+          },
+          "roll" : {
+            "type" : "integer",
+            "format" : "int16"
+          },
+          "heading" : {
+            "type" : "integer",
+            "format" : "uint16"
+          }
         }
       },
-      "required": [
-        "state"
-      ]
-    },
-    "LaunchingRequest": {
-      "title": "launchingRequest",
-      "example": {
-        "state": "LAUNCHING"
-      },
-      "type": "object",
-      "properties": {
-        "state": {
-          "description": "",
-          "type": "string"
+      "System" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "version" : {
+            "type" : "string"
+          },
+          "uptime" : {
+            "type" : "integer",
+            "format" : "uint32"
+          },
+          "cpuFreq" : {
+            "type" : "integer",
+            "format" : "uint8"
+          },
+          "flashChipSize" : {
+            "type" : "integer",
+            "format" : "uint32"
+          },
+          "freeHeap" : {
+            "type" : "integer",
+            "format" : "uint32"
+          },
+          "wifiSignal" : {
+            "type" : "integer",
+            "format" : "uint8"
+          }
         }
       },
-      "required": [
-        "state"
-      ]
-    },
-    "MowingRequest": {
-      "title": "mowingRequest",
-      "example": {
-        "state": "MOWING"
-      },
-      "type": "object",
-      "properties": {
-        "state": {
-          "description": "",
-          "type": "string"
+      "SetState" : {
+        "type" : "object",
+        "properties" : {
+          "state" : {
+            "type" : "string",
+            "enum" : [ "DOCKED", "LAUNCHING", "MOWING", "DOCKING", "CHARGING", "STUCK", "FLIPPED", "MANUAL", "STOP", "TEST" ]
+          }
         }
       },
-      "required": [
-        "state"
-      ]
-    },
-    "StopRequest": {
-      "title": "stopRequest",
-      "example": {
-        "state": "STOP"
-      },
-      "type": "object",
-      "properties": {
-        "state": {
-          "description": "",
-          "type": "string"
+      "Loglevel" : {
+        "type" : "object",
+        "properties" : {
+          "level" : {
+            "type" : "integer",
+            "format" : "unit8",
+            "enum" : [ 0, 1, 2, 3, 4, 5, 6 ]
+          }
         }
       },
-      "required": [
-        "state"
-      ]
-    },
-    "TestRequest": {
-      "title": "testRequest",
-      "example": {
-        "state": "TEST"
-      },
-      "type": "object",
-      "properties": {
-        "state": {
-          "description": "",
-          "type": "string"
+      "ForwardBackwardMotion" : {
+        "type" : "object",
+        "properties" : {
+          "speed" : {
+            "type" : "integer",
+            "format" : "int8",
+            "description" : "0-100%"
+          },
+          "turnrate" : {
+            "type" : "integer",
+            "format" : "int8",
+            "description" : "-1=>-100 left, 1=>100 right. 0 = don't turn."
+          },
+          "smooth" : {
+            "type" : "boolean",
+            "description" : "smoothly take us to target speed"
+          }
         }
       },
-      "required": [
-        "state"
-      ]
+      "BatteryHistory" : {
+        "type" : "object",
+        "properties" : {
+          "samples" : {
+            "type" : "object",
+            "properties" : {
+              "time" : {
+                "type" : "array",
+                "description" : "time in milliseconds since the last reboot",
+                "items" : {
+                  "type" : "integer",
+                  "format" : "uint32"
+                }
+              },
+              "value" : {
+                "type" : "array",
+                "description" : "in volt",
+                "items" : {
+                  "type" : "number",
+                  "format" : "float"
+                }
+              }
+            }
+          }
+        }
+      },
+      "PositionHistory" : {
+        "type" : "object",
+        "properties" : {
+          "samples" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "properties" : {
+                "t" : {
+                  "type" : "integer",
+                  "format" : "uint32",
+                  "description" : "time in milliseconds since the last reboot"
+                },
+                "lt" : {
+                  "type" : "number",
+                  "format" : "double",
+                  "description" : "GPS-latitude"
+                },
+                "lg" : {
+                  "type" : "number",
+                  "format" : "double",
+                  "description" : "GPS-longitude"
+                }
+              }
+            }
+          }
+        }
+      }
     }
-  }
+  },
+  "servers" : [ {
+    "description" : "SwaggerHub API Auto Mocking",
+    "url" : "https://virtserver.swaggerhub.com/liquidbytes.se/liam-esp/1.0"
+  }, {
+    "description" : "Running local moc",
+    "url" : "http://localhost:8080/api/v1"
+  } ]
 }

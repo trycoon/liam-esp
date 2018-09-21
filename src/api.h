@@ -17,28 +17,26 @@ struct statusResponse {
   uint32_t lastChargeDuration;
   uint8_t cutterLoad;
   bool cutterRotating;
-  uint16_t leftWheelSpd;
-  uint16_t rightWheelSpd;
+  int16_t leftWheelSpd;
+  int16_t rightWheelSpd;
   uint16_t targetHeading;
   int16_t pitch;
   int16_t roll;
-  int16_t heading;
+  uint16_t heading;
 };
 
 class Api {
   public:
     Api(StateController& stateController, Resources& resources);
-    void setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server);
+    void setupApi();
 
   private:
     StateController& stateController;
     Resources& resources;
-    AsyncWebSocket* websockeServer;
     Ticker pushNewInfoTicker;
     statusResponse currentStatus;
     void collectAndPushNewStatus();
     void statusToJson(statusResponse obj, JsonObject& json);
-    void sendDataWebSocket(JsonObject& json, AsyncWebSocketClient* client = nullptr);
 };
 
 #endif

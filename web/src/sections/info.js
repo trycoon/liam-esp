@@ -11,20 +11,23 @@ function getInfoAndRender() {
     api.getSystem().done(data => {
         $('.js-section-info .appName').text(data.name);
         $('.js-section-info .appVersion').text(data.version);
-        $('.js-section-info .uptime').text(uptimeFormat(data.uptime));
+        $('.js-section-info .uptime').html(uptimeFormat(data.uptime));
         $('.js-section-info .cpuFreq').text(data.cpuFreq);
         $('.js-section-info .flashChipSize').text(data.flashChipSize);
         $('.js-section-info .freeHeap').text(data.freeHeap);
         // https://www.metageek.com/training/resources/understanding-rssi.html
-        let wifiQuality = 'Unusable'
-        if(data.wifiSignal > -81) {
-            wifiQuality = 'Poor'
-        } else if (data.wifiSignal > -71) {
-            wifiQuality = 'Good'
+
+        let wifiQuality = '';
+        if (data.wifiSignal > -40) {
+            wifiQuality = 'Excellent';
         } else if (data.wifiSignal > -68) {
-            wifiQuality = 'Very good'
-        } else if (data.wifiSignal > -40) {
-            wifiQuality = 'Excellent'
+            wifiQuality = 'Very good';
+        } else if (data.wifiSignal > -71) {
+            wifiQuality = 'Good';
+        } else if (data.wifiSignal > -81) {
+            wifiQuality = 'Poor';
+        } else {
+            wifiQuality = 'Unusable';
         }
 
         $('.js-section-info .wifiSignal').text(`${wifiQuality} (${data.wifiSignal} dBm)`);
@@ -44,7 +47,7 @@ function uptimeFormat(seconds) {
     day = Math.floor(hour / 24);
     hour = hour % 24;
     
-    return `${day} days, ${hour} hours, ${minute} min, ${seconds} sec`;
+    return `<strong>${day}</strong> days, <strong>${hour}</strong> hours, <strong>${minute}</strong> min, <strong>${seconds}</strong> sec`;
 }
 
 export function selected() {

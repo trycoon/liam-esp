@@ -26,7 +26,10 @@ module.exports = (port) => {
 
   setInterval(() => {
     clients.forEach((client, id) => {
-      client.write(JSON.stringify(data.getCurrentState()));
+      client.write(JSON.stringify({
+        type: "status",
+        payload: data.getCurrentState()
+      }));
     });
   }, 2000);
 }

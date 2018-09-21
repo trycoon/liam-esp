@@ -57,7 +57,7 @@ void printLocalTime() {
     return;
   }
 
-  Serial.println(&timeinfo, "Time: %A, %d %B %Y, %H:%M:%S");
+  Serial.println(&timeinfo, "Time: %Y-%m-%d, %H:%M:%S%z");
 }
 
 // WiFi status eventhandler, called upon when WiFi connection change status.
@@ -118,7 +118,7 @@ void WiFi_Client::start() {
     });
 
     uint8_t ip[4];
-    sscanf(Configuration::getString("MQTT_SERVER").c_str(), "%u.%u.%u.%u", &ip[0], &ip[1], &ip[2], &ip[3]);
+    sscanf(Configuration::getString("MQTT_SERVER").c_str(), "%hhu.%hhu.%hhu.%hhu", &ip[0], &ip[1], &ip[2], &ip[3]);
     auto mqtt_ip = IPAddress(ip[0], ip[1], ip[2], ip[3]);
     auto mqtt_port = Configuration::getInt("MQTT_PORT", 1883);
     
@@ -140,6 +140,9 @@ void WiFi_Client::setupWebServer() {
     web_server.reset();
 
     web_server.addHandler(&ws);
+
+    //HTTP Authenticate before switch to Websocket protocol
+    //ws.setAuthentication(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str());
 
     web_server.on("/setup", HTTP_GET, [](AsyncWebServerRequest *request) {
       request->send_P(200, "text/html", SETUP_HTML, renderPlaceholder);
@@ -248,7 +251,7 @@ void WiFi_Client::onWifiConnect(WiFiEvent_t event, system_event_info_t info) {
 
   // Annonce us on WiFi network using Multicast DNS.
   MDNS.begin(Definitions::APP_NAME);
-  MDNS.addService("http","tcp",80);
+  MDNS.addService("_http", "_tcp", 80);
   // Get time from NTP server.
   configTime(atol(Configuration::getString("GMT", "0").c_str()) * 3600, 3600, Configuration::getString("NTP_SERVER", DEFAULT_NTP).c_str()); // sencond parameter is daylight offset (3600 = summertime)
   printLocalTime();
@@ -345,6 +348,35 @@ void WiFi_Client::onMqttPublish(uint16_t packetId) {
 
 AsyncWebServer& WiFi_Client::getWebServer() {
   return web_server;
+}
+
+/**
+ * Method for sending information over WebSocket.
+ * @param msgType type of payload being sent
+ * @param json message to be sent
+ * @param client [optional] client to send to, if none specified then we broadcast to everybody
+ */
+void WiFi_Client::sendDataWebSocket(String msgType, JsonObject& json, AsyncWebSocketClient* client) {
+  DynamicJsonBuffer jsonBuffer(400);
+  JsonObject& root = jsonBuffer.createObject();
+  root["type"] = msgType;
+  root["payload"] = json;
+
+  auto len = root.measureLength();
+  AsyncWebSocketMessageBuffer* buffer = ws.makeBuffer(len); // creates a buffer (len + 1) for you.
+
+  if (buffer) {
+      root.printTo((char*)buffer->get(), len + 1);
+      String jsonStr;
+      root.printTo(jsonStr);
+      Log.trace("WS pushed: %s" CR, jsonStr.c_str());
+
+      if (client) {
+        client->text(buffer);
+      } else {
+        ws.textAll(buffer);
+      }
+  }
 }
 
 AsyncWebSocket& WiFi_Client::getWebSocketServer() {

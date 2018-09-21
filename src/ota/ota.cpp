@@ -55,7 +55,7 @@ void OTA::start() {
   ArduinoOTA.setPassword(Configuration::getString("PASSWORD", "liam").c_str());
 
   ArduinoOTA.begin();
-  Log.notice(F("OTA available."));
+  Log.notice(F("OTA available." CR));
 }
 
 void OTA::handle() {

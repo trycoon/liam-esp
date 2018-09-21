@@ -74,9 +74,14 @@ function startSubscribingOnStatus() {
 
   // Listen for messages
   socket.addEventListener('message', function (event) {
-    if (event.data !== JSON.stringify(liam.data.status)) {
-      liam.data.status = JSON.parse(event.data);
-      window.dispatchEvent(new Event('statusUpdated'));
+    let message = JSON.parse(event.data);
+
+    if (message.type === 'status') {
+      let status = message.payload;
+      if (JSON.stringify(status) !== JSON.stringify(liam.data.status)) {
+        liam.data.status = status;
+        window.dispatchEvent(new Event('statusUpdated'));
+      }
     }
   });  
 }

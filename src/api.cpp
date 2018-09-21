@@ -4,8 +4,6 @@
 #include "definitions.h"
 #include "io_accelerometer/io_accelerometer.h"
 
-static const char *TAG = "API";
-
 /**
 * REST-API class defining all the endpoints.
 * We are aiming for a self explaining API that resembles the HATEOAS specification.
@@ -18,26 +16,6 @@ static const char *TAG = "API";
 Api::Api(StateController& stateController, Resources& resources) :
   stateController(stateController),
   resources(resources) {}
-
-/**
- * Method for sending information over WebSocket.
- * @param json message to be sent
- * @param client [optional] client to send to, if none specified then we broadcast to everybody
- */
-void Api::sendDataWebSocket(JsonObject& json, AsyncWebSocketClient* client) {
-  auto len = json.measureLength();
-  AsyncWebSocketMessageBuffer* buffer = websockeServer->makeBuffer(len); // creates a buffer (len + 1) for you.
-
-  if (buffer) {
-      json.printTo((char*)buffer->get(), len + 1);
-
-      if (client) {
-        client->text(buffer);
-      } else {
-        websockeServer->textAll(buffer);
-      }
-  }
-}
 
 void Api::statusToJson(statusResponse obj, JsonObject& json) {
     json["state"] = obj.state;
@@ -125,28 +103,25 @@ void Api::collectAndPushNewStatus() {
   }
 
   if (statusChanged) {
-    DynamicJsonBuffer jsonBuffer(512);
+    DynamicJsonBuffer jsonBuffer(380);
     JsonObject& root = jsonBuffer.createObject();
     statusToJson(currentStatus, root);
 
-    sendDataWebSocket(root);
+    resources.mqtt.sendDataWebSocket("status", root);
     String jsonStr;
     root.printTo(jsonStr);
     resources.mqtt.publish_message(jsonStr.c_str(), "/status");
   }
 }
 
-void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server) {
+void Api::setupApi() {
 
-  websockeServer = &websocket_server;
+  AsyncWebServer& web_server = resources.mqtt.getWebServer();
 
-    // collect and check if new status should be pushed every XXX ms.
+  // collect and check if new status should be pushed every XXX ms.
   pushNewInfoTicker.attach_ms<Api*>(400, [](Api* instance) {
     instance->collectAndPushNewStatus();     
   }, this);
-
-  //HTTP Authenticate before switch to Websocket protocol
-  websocket_server.setAuthentication(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str());
 
   // HTTP basic authentication
   web_server.on("/api/v1/login", HTTP_GET, [this](AsyncWebServerRequest *request) {
@@ -265,9 +240,9 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
     backward["href"] = host + "/api/v1/manual/backward";
     backward["method"] = "PUT";
 
-    JsonObject& left = links.createNestedObject("turn");
+    /*JsonObject& left = links.createNestedObject("turn");
     left["href"] = host + "/api/v1/manual/turn";
-    left["method"] = "PUT";
+    left["method"] = "PUT";*/
 
     JsonObject& stop = links.createNestedObject("stop");
     stop["href"] = host + "/api/v1/manual/stop";
@@ -528,7 +503,7 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
 
   // respond to PUT requests on URL /api/v1/manual/turn, turn mower to specified direction (degrees 0-360).
   // example body: {"direction": 180}
-  web_server.on("/api/v1/manual/turn", HTTP_PUT, [this](AsyncWebServerRequest *request) {
+ /* web_server.on("/api/v1/manual/turn", HTTP_PUT, [this](AsyncWebServerRequest *request) {
     if (!request->authenticate(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str())) {
       return request->requestAuthentication();
     }
@@ -550,7 +525,7 @@ void Api::setupApi(AsyncWebServer& web_server, AsyncWebSocket& websocket_server)
     } else {
       request->send(400, "text/plain", "Bad Request");
     }
-  });
+  });*/
 
   // respond to PUT requests on URL /api/v1/manual/stop, stop mower movement.
   web_server.on("/api/v1/manual/stop", HTTP_PUT, [this](AsyncWebServerRequest *request) {

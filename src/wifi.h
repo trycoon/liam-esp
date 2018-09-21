@@ -10,6 +10,8 @@
 #include <FS.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
+#include <ArduinoJson.h>
+
 
 struct MQTT_Message {
   std::string message;
@@ -24,6 +26,7 @@ class WiFi_Client {
     AsyncWebServer& getWebServer();  // code-smell, we should think of a better way than to expose this inner reference when we need to register routes!
     AsyncWebSocket& getWebSocketServer();  // code-smell, we should think of a better way than to expose this inner reference when we need to register routes!
     void checkWifiSettings();
+    void sendDataWebSocket(String msgType, JsonObject& json, AsyncWebSocketClient* client = nullptr);
 
   private:
     static WiFi_Client* Instance;

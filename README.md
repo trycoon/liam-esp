@@ -56,6 +56,10 @@ Then exit back to the project root directory and run:
 
 Press the "Reset" button on the ESP32 board and you should now be able to visit the mowers [user interface](http://liam-esp.local) using a webbrowser.
 
+## Error decoding
+
+xtensa-esp32-elf-addr2line -pfiaC -e build/PROJECT.elf ADDRESS
+
 ## TODO
 
 TODO: logging library: https://esp-idf.readthedocs.io/en/v1.0/api/log.html

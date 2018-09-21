@@ -15,11 +15,11 @@ Battery::Battery(IO_Analog& io_analog) : io_analog(io_analog) {
 void Battery::updateReadings() {
   time_t now;
 
-  float battery = io_analog.getVoltage(Settings::BATTERY_SENSOR_PIN);
-  batteryVoltage = roundf((battery / Settings::BATTERY_MULTIPLIER) * 100) / 100;  // adjust reading and round to two decimals.
+  float adc_reading = io_analog.getVoltage(Settings::BATTERY_SENSOR_PIN);
+  batteryVoltage = roundf((adc_reading * Settings::BATTERY_MULTIPLIER) * 100) / 100;  // adjust reading and round to two decimals.
 
-  float charger = io_analog.getVoltage(Settings::CHARGER_SENSOR_PIN);
-  chargerVoltage = roundf((charger / Settings::CHARGER_MULTIPLIER) * 100) / 100;  // adjust reading and round to two decimals.
+  adc_reading = io_analog.getVoltage(Settings::CHARGER_SENSOR_PIN);
+  chargerVoltage = roundf((adc_reading * Settings::CHARGER_MULTIPLIER) * 100) / 100;  // adjust reading and round to two decimals.
 
   _needRecharge = batteryVoltage <= Settings::BATTERY_EMPTY;
   _isFullyCharged = batteryVoltage >= Settings::BATTERY_FULLY_CHARGED;
