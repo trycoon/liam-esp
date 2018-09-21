@@ -1,7 +1,5 @@
 @import url(https://fonts.googleapis.com/css?family=Lato:400,300,300italic,400italic,700,700italic);
 
-/* Navigation width in percent of viewport */
-$nav_width: 15vw;
 
 /* UNIVERSAL */
 html, body {
@@ -108,17 +106,26 @@ p {
 .justify {
   text-align: justify;
 }
-/* Theme - light */
-.theme-light {
-    .all-wrapper {
-        background: #e3e3e3;
-        color: #555555
-    }
+/* Themes */
+.theme-default {
+    background: #1a2126;
+    color: #fff;
     .main-nav {
-        background: #e3e3e3;
+        background: #101519;
+        border-right: 1px solid #1a2126;
+        box-shadow: none;
+    }
+    .clickable-active {
+        background: #d8d8d8
+    }
+}
+.theme-light {
+    background: #e3e3e3;
+    color: #111;
+    .main-nav {
+        background: #555555;
         border-right: 1px solid #999;
         box-shadow: none;
-        color: #111
     }
     .clickable-active {
         background: #d8d8d8
@@ -128,18 +135,18 @@ p {
 .all-wrapper {
     height: 100%;
     display: grid;
-    grid-template-columns: $nav_width 100vw - $nav_width;
-    background: #1a2126;
-    color: white;
+    /* Navigation width in percent of viewport */
+    grid-template-columns: 15vw 100vw - 15vw;
+    @media (min-width: 1280px) {
+    grid-template-columns: 4vw 100vw - 4vw;
+    }
 }
 /* Navigation menu */
 .main-nav {
     text-align: center;
     position: relative;
     z-index: 30;
-    background: #101519;
     padding: 1rem 0 0 0;
-    border-right: 1px solid #1a2126;
     display: block;
     >ul {
         >li {

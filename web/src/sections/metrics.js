@@ -22,11 +22,11 @@ function getInfoAndRender() {
     });
 
     batteryChart.update({
-            series: [batteryData],
+        series: [batteryData],
     });
 
     cutterLoadChart.update({
-            series: [cutterLoadData],
+        series: [cutterLoadData],
     });
 }
 
@@ -65,6 +65,9 @@ export function init() {
         },
         axisY: {
             showLabel: true,
+            labelInterpolationFnc: function(value) {
+                return value.toFixed(1);
+            },
         },
         showPoint: false,
     });
@@ -91,6 +94,9 @@ export function init() {
         },
         axisY: {
             showLabel: true,
+            labelInterpolationFnc: function(value) {
+                return Math.round(value);
+            },
         },
         showPoint: false,
         high: 100,
