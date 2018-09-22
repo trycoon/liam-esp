@@ -1,8 +1,6 @@
 import * as api from '../rest.js';
 
-let sec = $('.js-section-start'),
-    compassSVG,
-    compassArrow;
+let sec = $('.js-section-start');
 
 function setLaunchMowerState() {
   api.selectState("LAUNCHING")
@@ -114,16 +112,12 @@ function toggleStateButtons() {
 }
 
 function updateCompass() {
-  if (compassSVG) {
-    let translate = compassSVG.createSVGTransform();
-    // find center of arrow and rotate around it.
-    let bb = compassArrow.getBBox();
-    let cx = bb.x + bb.width / 2;
-    let cy = bb.y + bb.height / 2;
-    translate.setRotate(liam.data.status.heading, cx, cy);
-    compassArrow.transform.baseVal.clear(); // reset transformation between updates.
-    compassArrow.transform.baseVal.appendItem(translate);
-   }
+  if (liam.data.status && liam.data.status.heading) {
+    let currentHeadingArrow = document.querySelector('.js-currentHeadingArrow');
+    let targetHeadingArrow = document.querySelector('.js-targetHeadingArrow');
+    currentHeadingArrow.setAttribute('transform', `rotate(${liam.data.status.heading}, 50, 50)`);
+    targetHeadingArrow.setAttribute('transform', `rotate(${liam.data.status.targetHeading}, 50, 50)`);
+  }
 }
 
 function updatedStatus() {
@@ -175,10 +169,5 @@ export function init() {
   });
   sec.find('.js-stop').on('click', function() {
     setStopState();
-  });
-
-  $('.js-compass').on('load', (evt) => {
-    compassSVG = evt.target;
-    compassArrow = $('.js-compass .js-arrow')[0];
   });
 }

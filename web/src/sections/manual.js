@@ -22,9 +22,21 @@ let joypad = {
  stopMowerButton;
 
 export function selected() {
+  stop();
 }
 
 export function unselected() {
+  stop();
+}
+
+function stop() {
+  api.manual("stop")
+  .fail(() => {
+    // keep on trying if we failed
+    setTimeout(() => {
+      stop();
+    }, 10);
+  });
 }
 
 function startMowerMotor() {
@@ -36,8 +48,11 @@ function startMowerMotor() {
 
 function stopMowerMotor() {
   api.manual("cutter_off")
-  .fail(function(e) {
-    console.error(e);
+  .fail(() => {
+    // keep on trying if we failed
+    setTimeout(() => {
+      stopMowerMotor();
+    }, 10);
   });
 }
 
@@ -182,7 +197,7 @@ function initJoystick(evt) {
         clearTimeout(sendCommandTimer);
       }
 
-      api.manual("stop");
+      stop();
 
       centerJoystickAtInactivity();
     }
@@ -240,11 +255,11 @@ export function init() {
   
   let sec = $('.js-section-manual');
   startMowerButton = sec.find('.js-startmower');
-  startMowerButton.on('click', function() {
+  startMowerButton.on('click', () => {
     startMowerMotor();
   });
   stopMowerButton = sec.find('.js-stopmower');
-  stopMowerButton.on('click', function() {
+  stopMowerButton.on('click', () => {
     stopMowerMotor();
   });
 

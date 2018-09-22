@@ -298,12 +298,27 @@ p {
   stroke-dasharray: 2px;
   shape-rendering: crispEdges;
 }
-
 .ct-chart .ct-series.ct-series-a .ct-line {
   stroke: #008000;
   stroke-width: 2px;
   stroke-linecap: round;
 }
+
+.compass {
+  width: 20vw;
+  height: 20vw;
+  stroke-linecap: round;
+  .currentHeadingArrow {
+    stroke:rgb(0, 255, 0);
+    stroke-width: 2
+  }
+  .targetHeadingArrow {
+    stroke:rgb(255, 255, 0);
+    stroke-dasharray: 4;
+    stroke-width: 2
+  }
+}
+
 
 #syslog {
   width: 100%;

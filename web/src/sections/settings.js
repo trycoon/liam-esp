@@ -3,8 +3,8 @@ let sec = $('.js-section-settings');
 
 export function selected() {
     api.getLoglevel()
-    .then(function(level) {
-        $(`#loglever option[value="${level}"]`).prop('selected', true)
+    .then(function(data) {
+        $(`#loglever option[value="${data.level}"]`).prop('selected', true)
     })
     .fail(function() {
         console.error(e);

@@ -65,7 +65,9 @@ let uptime = new Date(),
         currentState.state = state;
     },
     getLoglevel: () => {
-        return loglevel;
+        return {
+            level: loglevel
+        };
     },
     setLoglevel: (level) => {
         loglevel = level;
