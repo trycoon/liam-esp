@@ -103,6 +103,16 @@ p {
   margin-left: auto;
   margin-right: auto;
 }
+.vertical-center {
+  position: relative;
+  top: 50%;
+  -webkit-transform: perspective(1px) translateY(-50%) translateZ(0);
+  -ms-transform: perspective(1px) translateY(-50%) translateZ(0);
+  transform: perspective(1px) translateY(-50%) translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  /* TODO: fix blurry Chrome text when using "transform: translateY(-50%)" */
+}
 .justify {
   text-align: justify;
 }
@@ -335,6 +345,7 @@ p {
   svg {
     height: 30vw;
   }
+  -webkit-flex: 0 0 35%;
   flex: 0 0 35%;
   .battery-value {
     float: right;

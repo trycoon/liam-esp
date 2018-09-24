@@ -619,7 +619,7 @@ void Api::setupApi() {
       }
 
       Configuration::set("logLevel", atoi(root["level"]));
-      Log.notice(F("Set loglevel to %d" CR), root["level"]);
+      Log.notice(F("Set loglevel to %s" CR), root["level"]);
 
       request->send(200);
     } else {
