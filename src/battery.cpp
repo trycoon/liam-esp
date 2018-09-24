@@ -1,7 +1,8 @@
+#include <math.h>
+#include <time.h>
 #include "battery.h"
 #include "settings.h"
 #include "configuration.h"
-#include "time.h"
 
 Battery::Battery(IO_Analog& io_analog) : io_analog(io_analog) {
   // Set initial state.
@@ -58,7 +59,7 @@ float Battery::getBatteryVoltage() {
 * Get battery status in percent, 100% = fully charged.
 */
 uint8_t Battery::getBatteryStatus() {
-  return (batteryVoltage - Settings::BATTERY_EMPTY) / (Settings::BATTERY_FULLY_CHARGED - Settings::BATTERY_EMPTY);
+  return round((batteryVoltage - Settings::BATTERY_EMPTY) / (Settings::BATTERY_FULLY_CHARGED - Settings::BATTERY_EMPTY) * 100);
 }
 
 bool Battery::isCharging() {

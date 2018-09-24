@@ -305,8 +305,7 @@ p {
 }
 
 .compass {
-  width: 20vw;
-  height: 20vw;
+  height: 30vw;
   stroke-linecap: round;
   .currentHeadingArrow {
     stroke:rgb(0, 255, 0);
@@ -318,7 +317,18 @@ p {
     stroke-width: 2
   }
 }
-
+.battery {
+  svg {
+    height: 30vw;
+  }
+  flex: 0 0 35%;
+  .battery-value {
+    float: right;
+    font-size: 5vw;
+    line-height: 30vw;
+    width: 2em;
+  }
+}
 
 #syslog {
   width: 100%;

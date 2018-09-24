@@ -70,6 +70,6 @@ namespace Configuration {
   }
 
   bool isConfigured() {
-    return getInt("FIRSTTIME_RUN", 0);
+    return getInt("FIRSTTIME_RUN", 0) > 0;
   }
 }

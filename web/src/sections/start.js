@@ -120,6 +120,26 @@ function updateCompass() {
   }
 }
 
+function updateBattery() {
+  if (liam.data.status && liam.data.status.batteryLevel) {
+    document.querySelector('.js-battery-value').textContent = liam.data.status.batteryLevel + '%';
+    let batteryTicks = document.querySelectorAll('.js-battery .js-tick');
+
+    batteryTicks[0].style.fill = liam.data.status.batteryLevel >= 100 ? "#080" : "#b3b3b3";
+    batteryTicks[1].style.fill = liam.data.status.batteryLevel > 90 ? "#080" : "#b3b3b3";
+    batteryTicks[2].style.fill = liam.data.status.batteryLevel > 80 ? "#080" : "#b3b3b3";
+    batteryTicks[3].style.fill = liam.data.status.batteryLevel > 70 ? "#080" : "#b3b3b3";
+    batteryTicks[4].style.fill = liam.data.status.batteryLevel > 60 ? "#080" : "#b3b3b3";
+    batteryTicks[5].style.fill = liam.data.status.batteryLevel >= 50 ? "#080" : "#b3b3b3";
+
+    batteryTicks[6].style.fill = liam.data.status.batteryLevel >= 50 ? "#080" : liam.data.status.batteryLevel > 40 ? "#880" : "#b3b3b3";
+    batteryTicks[7].style.fill = liam.data.status.batteryLevel >= 50 ? "#080" : liam.data.status.batteryLevel > 30 ? "#880" : "#b3b3b3";
+
+    batteryTicks[8].style.fill = liam.data.status.batteryLevel >= 50 ? "#080" : liam.data.status.batteryLevel > 20 ? "#880" : liam.data.status.batteryLevel > 10 ? "#800" : "#b3b3b3";
+    batteryTicks[9].style.fill = liam.data.status.batteryLevel >= 50 ? "#080" : liam.data.status.batteryLevel > 20 ? "#880" : liam.data.status.batteryLevel > 0 ? "#800" : "#b3b3b3";
+  }
+}
+
 function updatedStatus() {
 
   if (!liam.data.status) {
@@ -145,6 +165,7 @@ function updatedStatus() {
 
   toggleStateButtons();
   updateCompass();
+  updateBattery();
 }
 
 export function selected() {
@@ -170,4 +191,24 @@ export function init() {
   sec.find('.js-stop').on('click', function() {
     setStopState();
   });
+
+
+  //https://github.com/mentos1386/webpack-obj-loader
+  //https://www.youtube.com/watch?v=kB0ZVUrI4Aw
+
+  let mower3dCanvas = document.querySelector('.js-3dmodel');
+  let gl = mower3dCanvas.getContext('webgl');
+
+  if (!gl) {
+    gl = mower3dCanvas.getContext('experimental-webgl');
+  }
+
+  if (!gl) {
+    console.error('Browser does not support WebGL, 3D preview of mower will not be available.');
+    return;
+  }
+
+  gl.clearColor(0.5, 0.5, 0.5, 1.0);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
 }

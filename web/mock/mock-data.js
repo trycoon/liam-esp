@@ -5,10 +5,10 @@ let uptime = new Date(),
         isCharging: false,
         cutterRotating: false,
         batteryVoltage: Math.floor(Math.random() * (10 - 16 + 1)) + 16,
-        batteryLevel: Math.random() * 100,
+        batteryLevel: Math.round(Math.random() * 100),
         lastFullyChargeTime: new Date() - 1000,
         lastChargeDuration: 1000 *60 * 60,
-        cutterLoad: Math.random() * 100,
+        cutterLoad: Math.round(Math.random() * 100),
         leftWheelSpd: 80,
         rightWheelSpd: 80,
         pitch: 0,
@@ -30,8 +30,8 @@ let uptime = new Date(),
     getCurrentState: () => {
         let state = JSON.parse(JSON.stringify(currentState));   // deep copy, don't affect original.
         state.batteryVoltage = Math.floor(Math.random() * (10 - 16 + 1)) + 16;
-        state.batteryLevel  = Math.random() * 100;
-        state.cutterLoad = Math.random() * 100;
+        state.batteryLevel  = Math.round(Math.random() * 100);
+        state.cutterLoad = Math.round(Math.random() * 100);
         state.heading = Math.floor(Math.random() * 90) - 45;
 
         return state;
