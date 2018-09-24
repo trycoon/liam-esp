@@ -245,6 +245,18 @@ p {
     animation: pulsate 3s ease-out infinite;
     opacity: 0.5;
 }
+#modal {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    overflow: auto;
+    background-color: rgb(0, 0, 0); /* fallback color */
+    background-color: rgba(0, 0, 0, 0.8);
+}
 @-webkit-keyframes pulsate {
     0% {
         opacity: 0.5;
@@ -278,7 +290,8 @@ p {
         text-transform: uppercase;
         text-align: center;
     }
-} 
+}
+/* Manual driving joystick */
 .joystick {
     display: block;
     max-width: 600px;
@@ -303,7 +316,7 @@ p {
   stroke-width: 2px;
   stroke-linecap: round;
 }
-
+/* Compass */
 .compass {
   height: 30vw;
   stroke-linecap: round;
@@ -317,6 +330,7 @@ p {
     stroke-width: 2
   }
 }
+/* Battery indicator */
 .battery {
   svg {
     height: 30vw;
@@ -329,7 +343,7 @@ p {
     width: 2em;
   }
 }
-
+/* Log messages box */
 #syslog {
   width: 100%;
 }

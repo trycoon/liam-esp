@@ -26,7 +26,8 @@ global.liam = {
 
 let currentActiveSection,
     isSmallDisplay = $(window).width() < 480,
-    socket;
+    socket,
+    socketDisconnectedTimeout;
 
 function addClickEffect() {
   // Add click effect on widgets that are clickable
@@ -64,6 +65,14 @@ function showSection(section) {
   currentActiveSection.selected();
 }
 
+function showLostConnectionModal() {
+  document.getElementById('modal').style.display = 'block';
+}
+
+function hideLostConnectionModal() {
+  document.getElementById('modal').style.display = 'none';
+}
+
 function startSubscribingOnStatus() {
   api.getStatus().done(data => {
     liam.data.status = data;
@@ -71,6 +80,27 @@ function startSubscribingOnStatus() {
   });
 
   socket = new ReconnectingWebSocket('ws://' + location.host + '/ws');
+
+  socket.addEventListener('open', () => {
+    console.info('Got WS connection.');
+    if (socketDisconnectedTimeout) {
+      clearTimeout(socketDisconnectedTimeout);
+      socketDisconnectedTimeout = undefined;
+    }
+    hideLostConnectionModal();
+  });
+
+  socket.addEventListener('close', () => {
+    console.info('Lost WS connection.');
+    // show lost connection modal if we have not been able to reconnect within 2 seconds.
+    socketDisconnectedTimeout = setTimeout(() => {
+      showLostConnectionModal();
+    }, 2000);    
+  });
+
+  socket.addEventListener('error', (error) => {
+    console.warn(`Got WS error: ${error}`);
+  });
 
   // Listen for messages
   socket.addEventListener('message', function (event) {
@@ -101,7 +131,7 @@ function init() {
   }
   
   showSection('start');
-
+  showLostConnectionModal();
   startSubscribingOnStatus();
 }
 
