@@ -278,12 +278,20 @@
             "type" : "integer",
             "format" : "unit32"
           },
+          "wifiSignal" : {
+            "type" : "integer",
+            "format" : "uint8"
+          },
           "cutterLoad" : {
             "type" : "integer",
             "format" : "uint8"
           },
           "cutterRotating" : {
             "type" : "boolean"
+          },
+          "uptime" : {
+            "type" : "integer",
+            "format" : "uint32"
           },
           "leftWheelSpd" : {
             "type" : "integer",
@@ -320,10 +328,6 @@
           "version" : {
             "type" : "string"
           },
-          "uptime" : {
-            "type" : "integer",
-            "format" : "uint32"
-          },
           "cpuFreq" : {
             "type" : "integer",
             "format" : "uint8"
@@ -336,9 +340,13 @@
             "type" : "integer",
             "format" : "uint32"
           },
-          "wifiSignal" : {
-            "type" : "integer",
-            "format" : "uint8"
+          "batteryFullVoltage" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "batteryEmptyVoltage" : {
+            "type" : "number",
+            "format" : "float"
           }
         }
       },

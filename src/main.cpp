@@ -100,7 +100,7 @@ void setup() {
 
   wifi.start();
 
-  if (Configuration::isConfigured) {
+  if (Configuration::isConfigured()) {
     api.setupApi();
   }
 

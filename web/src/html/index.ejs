@@ -39,12 +39,12 @@
               </div>
             </div>
             <div>
-              <canvas class="js-3dmodel"></canvas>
+              <canvas class="gl3dmodel js-gl3dmodel"></canvas>
             </div>
             <div style="display:-webkit-flex;display:flex">
               <div class="center" style="-webkit-flex: 0 0 40%;flex: 0 0 40%;">
                 <svg class="compass" viewBox="0 0 100 100" preserveAspectRatio="xMaxYMax meet">
-                    <circle cx="50" cy="50" r="45" stroke="#B0E0E6" stroke-width="1" fill="#0000"></circle>
+                    <circle cx="50" cy="50" r="45" stroke="#B0E0E6" stroke-width="2" fill="#0000"></circle>
                     <line class="targetHeadingArrow js-targetHeadingArrow" x1="50" y1="50" x2="50" y2="8"></line>
                     <line class="currentHeadingArrow js-currentHeadingArrow" x1="50" y1="50" x2="50" y2="8"></line>
                 </svg>
@@ -66,7 +66,8 @@
                       <path class="js-tick" d="m -139.25081,250.00407 v 130 h 40 40 v -130 -130 h -40 -40 z" style="fill:#b3b3b3;" />
                     </g>
                 </svg>
-                <span class="battery-value js-battery-value">100%</span>
+                <span class="battery-value js-battery-value" style="display: none">100%</span>
+                <i class="fas fa-plug fa-2x js-charging"></i>
               </div>
             </div>
         </section>

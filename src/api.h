@@ -15,6 +15,8 @@ struct statusResponse {
   bool isCharging;
   uint32_t lastFullyChargeTime;
   uint32_t lastChargeDuration;
+  uint32_t uptime;    // in seconds since start.
+  int8_t wifiSignal;
   uint8_t cutterLoad;
   bool cutterRotating;
   int16_t leftWheelSpd;
@@ -35,6 +37,7 @@ class Api {
     Resources& resources;
     Ticker pushNewInfoTicker;
     statusResponse currentStatus;
+    uint32_t lastMQTT_push;
     void collectAndPushNewStatus();
     void statusToJson(statusResponse obj, JsonObject& json);
 };

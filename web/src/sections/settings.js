@@ -34,7 +34,7 @@ export function init() {
       restart();
     });
     sec.find('.js-factoryreset').on('click', function() {
-        if (confirm('Are you sure you want to wipe all settings and return mower to "factory" defaults?')) {
+        if (confirm('Are you sure you want to wipe ALL settings and return mower to "factory" defaults?')) {
             factoryreset();
         }
     });

@@ -2,6 +2,7 @@
 #include "api.h"
 #include "esp_log.h"
 #include "definitions.h"
+#include "settings.h"
 #include "io_accelerometer/io_accelerometer.h"
 
 /**
@@ -26,7 +27,8 @@ void Api::statusToJson(statusResponse obj, JsonObject& json) {
     json["lastChargeDuration"] = obj.lastChargeDuration;
     json["cutterLoad"] = obj.cutterLoad;
     json["cutterRotating"] = obj.cutterRotating;
-
+    json["uptime"] = obj.uptime;
+    json["wifiSignal"] = obj.wifiSignal;
     json["leftWheelSpd"] = obj.leftWheelSpd;
     json["rightWheelSpd"] = obj.rightWheelSpd;
     json["targetHeading"] = obj.targetHeading;
@@ -87,7 +89,12 @@ void Api::collectAndPushNewStatus() {
     currentStatus.targetHeading = stat.targetHeading;
     statusChanged = true;
   }
-  
+  auto wifiSignal = WiFi.RSSI();
+  if (currentStatus.wifiSignal != wifiSignal) {
+    currentStatus.wifiSignal = wifiSignal;
+    statusChanged = true;
+  }
+
   auto orient = resources.accelerometer.getOrientation();
   if (currentStatus.pitch != orient.pitch) {
     currentStatus.pitch = orient.pitch;
@@ -102,15 +109,23 @@ void Api::collectAndPushNewStatus() {
     statusChanged = true;
   }
 
+  // These change so often that we don't set statusChanged for these, otherwise we would push everytime.
+  currentStatus.uptime = (uint32_t)(esp_timer_get_time() / 1000000); // uptime in microseconds so we divide to seconds.
+
   if (statusChanged) {
     DynamicJsonBuffer jsonBuffer(380);
     JsonObject& root = jsonBuffer.createObject();
     statusToJson(currentStatus, root);
 
     resources.mqtt.sendDataWebSocket("status", root);
-    String jsonStr;
-    root.printTo(jsonStr);
-    resources.mqtt.publish_message(jsonStr.c_str(), "/status");
+
+    // MQTT updates don't have to be "realtime", we can settle with an update every 10 sec to not spam server.
+    if (lastMQTT_push < currentStatus.uptime - 10) {
+      String jsonStr;
+      root.printTo(jsonStr);
+      resources.mqtt.publish_message(jsonStr.c_str(), "/status");
+      lastMQTT_push = currentStatus.uptime;
+    }
   }
 }
 
@@ -296,13 +311,16 @@ void Api::setupApi() {
     JsonObject& self = links.createNestedObject("self");
     self["href"] = "http://" + WiFi.localIP().toString() + "/api/v1/system";
     self["method"] = "GET";
+    
     root["name"] = Definitions::APP_NAME;
     root["version"] = Definitions::APP_VERSION;
-    root["uptime"] = (uint32_t)(esp_timer_get_time() / 1000000); // uptime in microseconds so we divide.
     root["cpuFreq"] = ESP.getCpuFreqMHz();
     root["flashChipSize"] = ESP.getFlashChipSize();
     root["freeHeap"] = ESP.getFreeHeap();
-    root["wifiSignal"] = WiFi.RSSI();
+    
+    JsonObject& settings = root.createNestedObject("settings");
+    settings["batteryFullVoltage"] = Settings::BATTERY_FULLY_CHARGED;
+    settings["batteryEmptyVoltage"] = Settings::BATTERY_EMPTY;
 
     root.printTo(*response);
     request->send(response);

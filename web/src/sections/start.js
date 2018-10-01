@@ -122,7 +122,6 @@ function updateCompass() {
 
 function updateBattery() {
   if (liam.data.status && liam.data.status.batteryLevel) {
-    document.querySelector('.js-battery-value').textContent = liam.data.status.batteryLevel + '%';
     let batteryTicks = document.querySelectorAll('.js-battery .js-tick');
 
     batteryTicks[0].style.fill = liam.data.status.batteryLevel >= 100 ? "#080" : "#b3b3b3";
@@ -137,6 +136,16 @@ function updateBattery() {
 
     batteryTicks[8].style.fill = liam.data.status.batteryLevel >= 50 ? "#080" : liam.data.status.batteryLevel > 20 ? "#880" : liam.data.status.batteryLevel > 10 ? "#800" : "#b3b3b3";
     batteryTicks[9].style.fill = liam.data.status.batteryLevel >= 50 ? "#080" : liam.data.status.batteryLevel > 20 ? "#880" : liam.data.status.batteryLevel > 0 ? "#800" : "#b3b3b3";
+  
+    if (liam.data.status.isCharging) {
+      document.querySelector('.js-charging').style.visibility = 'inline-block';
+      document.querySelector('.js-battery-value').style.visibility = 'hidden';
+    } else {
+      document.querySelector('.js-charging').style.visibility = 'hidden';
+      let batteryValueEl = document.querySelector('.js-battery-value');
+      batteryValueEl.textContent = liam.data.status.batteryLevel + '%';
+      batteryValueEl.style.visibility = 'inline-block';
+    }
   }
 }
 
@@ -193,10 +202,10 @@ export function init() {
   });
 
 
-  //https://github.com/mentos1386/webpack-obj-loader
+  //https://github.com/kchapelier/PRWM
   //https://www.youtube.com/watch?v=kB0ZVUrI4Aw
 
-  let mower3dCanvas = document.querySelector('.js-3dmodel');
+  let mower3dCanvas = document.querySelector('.js-gl3dmodel');
   let gl = mower3dCanvas.getContext('webgl');
 
   if (!gl) {
@@ -207,8 +216,8 @@ export function init() {
     console.error('Browser does not support WebGL, 3D preview of mower will not be available.');
     return;
   }
-
-  gl.clearColor(0.5, 0.5, 0.5, 1.0);
+  
+  gl.clearColor(0.1, 0.13, 0.15, 1.0);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 }
