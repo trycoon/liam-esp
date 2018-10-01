@@ -340,14 +340,19 @@
             "type" : "integer",
             "format" : "uint32"
           },
-          "batteryFullVoltage" : {
-            "type" : "number",
-            "format" : "float"
-          },
-          "batteryEmptyVoltage" : {
-            "type" : "number",
-            "format" : "float"
-          }
+          "settings" : {
+            "type" : "object",
+            "properties" : {
+              "batteryFullVoltage" : {
+                "type" : "number",
+                "format" : "float"
+              },
+              "batteryEmptyVoltage" : {
+                "type" : "number",
+                "format" : "float"
+              }
+            }
+          }          
         }
       },
       "SetState" : {

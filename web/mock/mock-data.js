@@ -24,8 +24,10 @@ let uptime = new Date(),
         cpuFreq: 240,
         flashChipSize: 4194304,
         freeHeap: 109608,
-        batteryFullVoltage: 16.8,
-        batteryEmptyVoltage: 14.0,
+        settings: {
+            batteryFullVoltage: 16.8,
+            batteryEmptyVoltage: 14.0,
+        }
     };
 
   module.exports = {
