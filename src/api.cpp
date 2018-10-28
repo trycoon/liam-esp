@@ -424,15 +424,20 @@ void Api::setupApi() {
 
     auto *response = request->beginResponseStream("application/json");
     response->addHeader("Cache-Control", "no-store, must-revalidate");
-    DynamicJsonBuffer jsonBuffer(Settings::LOGMESSAGES_LENGTH + 30);
+    DynamicJsonBuffer jsonBuffer(Settings::MAX_LOGMESSAGES * 50 + 20);  // just best guess.
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
     JsonObject& self = links.createNestedObject("self");
     self["href"] = "http://" + WiFi.localIP().toString() + "/api/v1/logmessages";
     self["method"] = "GET";
 
-    //root["messages"] = String(log_messages.size());
-    root["messages"] = resources.logStore.getLogMessages();
+    JsonArray& loggmessages = root.createNestedArray("messages");
+    for (auto &line: resources.logStore.getLogMessages()) {
+      // ignore empty lines
+      if (line.length() > 0) {
+        loggmessages.add(line.c_str());
+      }
+    }
 
     root.printTo(*response);
     request->send(response);

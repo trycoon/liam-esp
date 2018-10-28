@@ -2,7 +2,7 @@
 #define _log_store_h
 
 #include <Arduino.h>
-#include <deque.h>
+#include <deque>
 #include "HardwareSerial.h"
 #include "settings.h"
 
@@ -10,11 +10,13 @@ class LogStore : public HardwareSerial {
   public:
     LogStore();
     size_t write(uint8_t) override;
-    size_t write(const uint8_t *buffer, size_t size) override;
-    String getLogMessages();
+    size_t write(const uint8_t* buffer, size_t size) override;
+    std::deque<String> getLogMessages();
 
   private:
-    etl::deque<uint8_t, 2000> log_messages;
+    std::deque<String> log_messages;
+    uint32_t current_linenumber;
+    String current_line;
 };
 
 extern LogStore LoggingSerial;

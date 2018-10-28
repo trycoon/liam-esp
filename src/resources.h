@@ -26,7 +26,7 @@ class Resources {
                            GPS& gps,
                            IO_Accelerometer& accelerometer,
                            Metrics& metrics,
-                           LogStore logStore)
+                           LogStore& logStore)
                            : wifi(wifi),
                              wheelController(wheelController),
                              cutter(cutter),
