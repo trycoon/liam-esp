@@ -99,7 +99,7 @@ void setup() {
   auto lastState = Configuration::config.lastState;
   // initialize state controller, assume we are DOCKED unless there is a saved state.
   if (rtc_get_reset_reason(0) == SW_CPU_RESET && lastState.length() > 0) {
-    Log.notice(F("Returning to last state \"%s\" after software crash!" CR), lastState);
+    Log.notice(F("Returning to last state \"%s\" after software crash!" CR), lastState.c_str());
     stateController.setState(lastState);
   } else {
     stateController.setState(Definitions::MOWER_STATES::DOCKED);
