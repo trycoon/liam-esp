@@ -2,7 +2,6 @@
 #include <ArduinoLog.h>
 #include "definitions.h"
 #include "configuration.h"
-#include "settings.h"
 #include "ota.h"
 
 OTA::OTA(WiFi_Client& wifiClient) : mqtt(wifiClient) {

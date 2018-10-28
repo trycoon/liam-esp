@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <deque>
 #include "HardwareSerial.h"
-#include "settings.h"
+#include "definitions.h"
 
 class LogStore : public HardwareSerial {
   public:

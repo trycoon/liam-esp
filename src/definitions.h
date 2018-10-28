@@ -3,26 +3,63 @@
 
 #include <Arduino.h>
 
-/*
-  Constants and other global stuff that you should probably never need to touch.
-*/
-
 namespace Definitions {
-    extern const char* const APP_NAME;
-    extern const char* const APP_VERSION;
 
-    enum class MOWER_STATES {
-                              DOCKED,     // mower is docked in its charging station and is fully charged
-                              LAUNCHING,  // mower is leaving its charging station to head out for mowing
-                              MOWING,     // mower is currently mowing
-                              DOCKING,    // mower has stopped mowing and is heading back to its charging station (battery may be running low)
-                              CHARGING,   // mower is docked in its charging station and is currently charging
-                              STUCK,      // mower is stuck somewhere and have shutdown (it may be stuck in a hole, the cutter may be stuck, or some other hardware issue...)
-                              FLIPPED,    // mower is flipped upside down or tiled too much, stopp mowing and wait to be unflipped.
-                              MANUAL,     // mower is in manual drive mode and controlled by user from REST-API.
-                              STOP,       // mower is stopped from it's normal operation, this happens when user press the physical stopbutton or UI button.
-                              TEST        // mower is in test mode.
-                            };
+  /*
+  Constants and other global stuff that you should probably never need to touch.
+  */
+  extern const char* const APP_NAME;
+  extern const char* const APP_VERSION;
+
+  enum class MOWER_STATES {
+                            DOCKED,     // mower is docked in its charging station and is fully charged
+                            LAUNCHING,  // mower is leaving its charging station to head out for mowing
+                            MOWING,     // mower is currently mowing
+                            DOCKING,    // mower has stopped mowing and is heading back to its charging station (battery may be running low)
+                            CHARGING,   // mower is docked in its charging station and is currently charging
+                            STUCK,      // mower is stuck somewhere and have shutdown (it may be stuck in a hole, the cutter may be stuck, or some other hardware issue...)
+                            FLIPPED,    // mower is flipped upside down or tiled too much, stopp mowing and wait to be unflipped.
+                            MANUAL,     // mower is in manual drive mode and controlled by user from REST-API.
+                            STOP,       // mower is stopped from it's normal operation, this happens when user press the physical stopbutton or UI button.
+                            TEST        // mower is in test mode.
+                          };
+
+  extern const uint8_t SDA_PIN;
+  extern const uint8_t SCL_PIN;
+  extern const uint8_t MOTOR_TIMER_13_BIT;
+  extern const uint16_t MOTOR_BASE_FREQ;
+  extern const uint8_t LEFT_WHEEL_MOTOR_PIN;
+  extern const uint8_t LEFT_WHEEL_MOTOR_DIRECTION_PIN;
+  extern const uint8_t LEFT_WHEEL_MOTOR_SPEED;
+  extern const bool LEFT_WHEEL_MOTOR_INVERTED;
+  extern const uint8_t RIGHT_WHEEL_MOTOR_PIN;
+  extern const uint8_t RIGHT_WHEEL_MOTOR_DIRECTION_PIN;
+  extern const uint8_t RIGHT_WHEEL_MOTOR_SPEED;
+  extern const bool RIGHT_WHEEL_MOTOR_INVERTED;
+  extern const uint8_t WHEEL_MOTOR_MIN_SPEED;
+  extern const uint8_t WHEEL_MOTOR_TURN_SPEED;
+  extern const bool WHEEL_MOTOR_DECREASE_SPEED_AT_CUTTER_LOAD;
+  extern const uint8_t CUTTER_MOTOR_PIN;
+  extern const uint8_t CUTTER_BRAKE_PIN;
+  extern const uint8_t CUTTER_LOAD_PIN;
+  extern const float CUTTER_LOAD_RESISTOR_MULTIPLIER;
+  extern const uint8_t CUTTER_MAX_SPEED;
+  extern const uint8_t LEFT_BWF_PIN;
+  extern const uint8_t RIGHT_BWF_PIN;
+  extern const uint32_t BWF_SENSE_TIMEOUT;
+  extern const uint8_t BATTERY_SENSOR_PIN;
+  extern const float BATTERY_FULLY_CHARGED;
+  extern const float BATTERY_EMPTY;
+  extern const float BATTERY_MULTIPLIER;
+  extern const uint8_t CHARGER_SENSOR_PIN;
+  extern const float CHARGER_MULTIPLIER;
+  extern const uint8_t TILT_ANGLE_MAX;
+  extern const uint8_t IO_ACCELEROMETER_INT_PIN;
+  extern const uint8_t FACTORY_RESET_PIN;
+  extern const uint8_t GPS_RX_PIN;
+  extern const uint8_t GPS_TX_PIN;
+  extern const uint16_t MQTT_QUEUE_LENGTH;
+  extern const uint16_t MAX_LOGMESSAGES;
 };
 
 #endif

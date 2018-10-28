@@ -1,7 +1,7 @@
 #include <Wire.h>
 
 #include "io_analog.h"
-#include "settings.h"
+#include "definitions.h"
 #include "esp32-hal-adc.h"
 
 // ADS1115 external I2C ADC:

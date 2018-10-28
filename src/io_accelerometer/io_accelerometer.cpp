@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <ArduinoLog.h>
-#include "settings.h"
+#include "definitions.h"
 #include "io_accelerometer.h"
 
 // https://github.com/kriswiner/EM7180_SENtral_sensor_hub/wiki/A.-A-Short-Survey-of-Sensor-Fusion-Solutions
@@ -12,11 +12,11 @@ void IRAM_ATTR interruptHandler() { // IRAM_ATTR tells the complier, that this c
 }
 
 IO_Accelerometer::IO_Accelerometer(TwoWire& w): _Wire(w), em7180(ARES, GRES, MRES, MAG_RATE, ACCEL_RATE, GYRO_RATE, BARO_RATE, Q_RATE_DIVISOR) {
-  pinMode(Settings::IO_ACCELEROMETER_INT_PIN, INPUT);
+  pinMode(Definitions::IO_ACCELEROMETER_INT_PIN, INPUT);
 }
 
 void IO_Accelerometer::start() {
-  attachInterrupt(Settings::IO_ACCELEROMETER_INT_PIN, interruptHandler, RISING);
+  attachInterrupt(Definitions::IO_ACCELEROMETER_INT_PIN, interruptHandler, RISING);
   available = em7180.begin();
 
   if (!available) {
@@ -42,7 +42,7 @@ bool IO_Accelerometer::isFlipped() {
   if (available == false) {
     return false;
   } else {    
-    return (abs(currentOrientation.pitch) > Settings::TILT_ANGLE_MAX || abs(currentOrientation.roll) > Settings::TILT_ANGLE_MAX);
+    return (abs(currentOrientation.pitch) > Definitions::TILT_ANGLE_MAX || abs(currentOrientation.roll) > Definitions::TILT_ANGLE_MAX);
   }
 }
 

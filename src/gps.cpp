@@ -1,5 +1,5 @@
 #include "gps.h"
-#include "settings.h"
+#include "definitions.h"
 
 //TODO: read this: https://github.com/SlashDevin/NeoGPS/issues/8
 // implement the async ISR version using this example: https://github.com/SlashDevin/NeoGPS/blob/master/examples/NMEA_isr/NMEA_isr.ino
@@ -15,7 +15,7 @@ GPS::GPS() {
 }
 
 bool GPS::isEnabled() {
-  return Settings::GPS_RX_PIN > 0 && Settings::GPS_TX_PIN > 0;
+  return Definitions::GPS_RX_PIN > 0 && Definitions::GPS_TX_PIN > 0;
 }
 
 void GPS::GPS_isr(uint8_t c) {

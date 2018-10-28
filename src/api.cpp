@@ -2,7 +2,6 @@
 #include "api.h"
 #include "esp_log.h"
 #include "definitions.h"
-#include "settings.h"
 #include "io_accelerometer/io_accelerometer.h"
 
 /**
@@ -382,8 +381,8 @@ void Api::setupApi() {
     root["apiKey"] = Configuration::config.apiKey.c_str();
     
     JsonObject& settings = root.createNestedObject("settings");
-    settings["batteryFullVoltage"] = Settings::BATTERY_FULLY_CHARGED;
-    settings["batteryEmptyVoltage"] = Settings::BATTERY_EMPTY;
+    settings["batteryFullVoltage"] = Definitions::BATTERY_FULLY_CHARGED;
+    settings["batteryEmptyVoltage"] = Definitions::BATTERY_EMPTY;
 
     root.printTo(*response);
     request->send(response);
@@ -424,7 +423,7 @@ void Api::setupApi() {
 
     auto *response = request->beginResponseStream("application/json");
     response->addHeader("Cache-Control", "no-store, must-revalidate");
-    DynamicJsonBuffer jsonBuffer(Settings::MAX_LOGMESSAGES * 50 + 20);  // just best guess.
+    DynamicJsonBuffer jsonBuffer(Definitions::MAX_LOGMESSAGES * 50 + 20);  // just best guess.
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
     JsonObject& self = links.createNestedObject("self");

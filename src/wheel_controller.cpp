@@ -1,6 +1,5 @@
 #include <ArduinoLog.h>
 #include "wheel_controller.h"
-#include "settings.h"
 
 WheelController::WheelController(Wheel& leftWheel, Wheel& rightWheel, IO_Accelerometer& accelerometer) :
             leftWheel(leftWheel),

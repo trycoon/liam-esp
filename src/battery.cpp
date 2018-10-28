@@ -2,7 +2,7 @@
 #include <sys/time.h>
 #include <Preferences.h>
 #include "battery.h"
-#include "settings.h"
+#include "definitions.h"
 #include "configuration.h"
 
 Battery::Battery(IO_Analog& io_analog) : io_analog(io_analog) {
@@ -21,14 +21,14 @@ int64_t Battery::getEpocTime() {
 }
 
 void Battery::updateReadings() {
-  float adc_reading = io_analog.getVoltage(Settings::BATTERY_SENSOR_PIN);
-  batteryVoltage = roundf((adc_reading * Settings::BATTERY_MULTIPLIER) * 100) / 100;  // adjust reading and round to two decimals.
+  float adc_reading = io_analog.getVoltage(Definitions::BATTERY_SENSOR_PIN);
+  batteryVoltage = roundf((adc_reading * Definitions::BATTERY_MULTIPLIER) * 100) / 100;  // adjust reading and round to two decimals.
 
-  adc_reading = io_analog.getVoltage(Settings::CHARGER_SENSOR_PIN);
-  chargerVoltage = roundf((adc_reading * Settings::CHARGER_MULTIPLIER) * 100) / 100;  // adjust reading and round to two decimals.
+  adc_reading = io_analog.getVoltage(Definitions::CHARGER_SENSOR_PIN);
+  chargerVoltage = roundf((adc_reading * Definitions::CHARGER_MULTIPLIER) * 100) / 100;  // adjust reading and round to two decimals.
 
-  _needRecharge = batteryVoltage <= Settings::BATTERY_EMPTY;
-  _isFullyCharged = batteryVoltage >= Settings::BATTERY_FULLY_CHARGED;
+  _needRecharge = batteryVoltage <= Definitions::BATTERY_EMPTY;
+  _isFullyCharged = batteryVoltage >= Definitions::BATTERY_FULLY_CHARGED;
 
   // if we detect more than 10 volts on charge pins then assume we are charging.
   if (!_isCharging && !_isFullyCharged && chargerVoltage >= 10.0) {
@@ -68,7 +68,7 @@ float Battery::getBatteryVoltage() {
 * Get battery status in percent, 100% = fully charged.
 */
 uint8_t Battery::getBatteryStatus() {
-  return round((batteryVoltage - Settings::BATTERY_EMPTY) / (Settings::BATTERY_FULLY_CHARGED - Settings::BATTERY_EMPTY) * 100);
+  return round((batteryVoltage - Definitions::BATTERY_EMPTY) / (Definitions::BATTERY_FULLY_CHARGED - Definitions::BATTERY_EMPTY) * 100);
 }
 
 bool Battery::isCharging() {

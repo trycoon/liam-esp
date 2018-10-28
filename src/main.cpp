@@ -4,7 +4,6 @@
 #include <ArduinoLog.h>
 #include "definitions.h"
 #include "configuration.h"
-#include "settings.h"
 #include "log_store.h"
 #include "resources.h"
 #include "io_analog.h"
@@ -38,8 +37,8 @@ IO_Analog io_analog;
 IO_Accelerometer io_accelerometer(Wire);
 WiFi_Client wifi;
 OTA ota(wifi);
-Wheel leftWheel(1, Settings::LEFT_WHEEL_MOTOR_PIN, Settings::LEFT_WHEEL_MOTOR_DIRECTION_PIN, Settings::LEFT_WHEEL_MOTOR_INVERTED, Settings::LEFT_WHEEL_MOTOR_SPEED);
-Wheel rightWheel(2, Settings::RIGHT_WHEEL_MOTOR_PIN, Settings::RIGHT_WHEEL_MOTOR_DIRECTION_PIN, Settings::RIGHT_WHEEL_MOTOR_INVERTED, Settings::RIGHT_WHEEL_MOTOR_SPEED);
+Wheel leftWheel(1, Definitions::LEFT_WHEEL_MOTOR_PIN, Definitions::LEFT_WHEEL_MOTOR_DIRECTION_PIN, Definitions::LEFT_WHEEL_MOTOR_INVERTED, Definitions::LEFT_WHEEL_MOTOR_SPEED);
+Wheel rightWheel(2, Definitions::RIGHT_WHEEL_MOTOR_PIN, Definitions::RIGHT_WHEEL_MOTOR_DIRECTION_PIN, Definitions::RIGHT_WHEEL_MOTOR_INVERTED, Definitions::RIGHT_WHEEL_MOTOR_SPEED);
 WheelController wheelController(leftWheel, rightWheel, io_accelerometer);
 Cutter cutter(io_analog);
 BWF bwf;
@@ -89,7 +88,7 @@ void setup() {
   Log.begin(Configuration::config.logLevel, &logstore, true);
 
   // setup I2C
-  Wire.begin(Settings::SDA_PIN, Settings::SCL_PIN);
+  Wire.begin(Definitions::SDA_PIN, Definitions::SCL_PIN);
   Wire.setTimeout(500); // milliseconds
   delay(100);
   scan_I2C();
