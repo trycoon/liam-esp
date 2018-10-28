@@ -57,8 +57,23 @@ export function factoryreset() {
   });
 }
 
-export function getLoglevel(level) {
+export function generateNewApiKey() {
+  return $.ajax({
+    url: `/api/v1/apikey`,
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+    },
+    data: '{}'
+  });
+}
+
+export function getLoglevel() {
   return $.getJSON('/api/v1/loglevel');
+}
+
+export function getLogmessages() {
+  return $.getJSON('/api/v1/logmessages');
 }
 
 export function setLoglevel(level) {

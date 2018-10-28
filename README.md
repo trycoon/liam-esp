@@ -1,8 +1,5 @@
 # liam-esp
-[![GitHub release](https://img.shields.io/github/release/trycoon/liam-esp.svg?maxAge=3600)][GitHub release]
-[![Travis](https://img.shields.io/travis/trycoon/liam-esp.svg?maxAge=3600)][Travis]
-[![license](https://img.shields.io/github/license/trycoon/liam-esp.svg?maxAge=3600)][license]
-
+[![license](https://img.shields.io/github/license/trycoon/liam-esp.svg?maxAge=3600)](https://opensource.org/licenses/MIT)
 
 ## Overview
 Software for controlling a home built robotic lawn mower.
@@ -30,10 +27,9 @@ Connect a micro-USB cable between your computer and the ESP32 microcontroller, r
   platformio run -t upload
 ```
 
-If your computer is stuck waiting on the following lines:
+If your computer is stuck waiting on the following line:
 ```
-  Uploading .pioenvs/nodemcuv2/firmware.bin
-  esptool.py v2.3.1
+  Serial port /dev/ttyUSB0
 ```
 and eventually timing out, then you need to press the "flash"-button on the ESP32 for 2-3 seconds when waiting on those lines to initialize the flashing-process!
 
@@ -62,7 +58,6 @@ xtensa-esp32-elf-addr2line -pfiaC -e build/PROJECT.elf ADDRESS
 
 ## TODO
 
-TODO: logging library: https://esp-idf.readthedocs.io/en/v1.0/api/log.html
 TODO: check if we could use a PID-library to tune BWF readings when docking. https://github.com/br3ttb/Arduino-PID-Library
 TODO: Multithreading on ESP32, processable.h-interface and let each class use this one instead: https://github.com/copercini/esp32-iot-examples/blob/master/multiloop/multiloop.ino, if not working then look at this: https://www.arduino.cc/en/Reference/Scheduler or this (works even in Arduino-mode): http://www.freertos.org/a00125.html
 TODO: see this for inspiration: https://bitbucket.org/xoseperez/espurna/src

@@ -38,8 +38,11 @@ class Api {
     Ticker pushNewInfoTicker;
     statusResponse currentStatus;
     uint32_t lastMQTT_push;
+    String generateApikey();
     void collectAndPushNewStatus();
     void statusToJson(statusResponse obj, JsonObject& json);
+    void onMqttMessage(char* topic, char* payload, size_t length);
+    etl::deque<uint8_t, 2000> log_messages;
 };
 
 #endif

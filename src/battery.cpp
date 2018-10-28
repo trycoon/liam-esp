@@ -1,5 +1,6 @@
 #include <math.h>
-#include <time.h>
+#include <sys/time.h>
+#include <Preferences.h>
 #include "battery.h"
 #include "settings.h"
 #include "configuration.h"
@@ -13,9 +14,13 @@ Battery::Battery(IO_Analog& io_analog) : io_analog(io_analog) {
   }, this);
 }
 
-void Battery::updateReadings() {
-  time_t now;
+int64_t Battery::getEpocTime() {
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  return (tv.tv_sec * 1000LL + (tv.tv_usec / 1000LL));
+}
 
+void Battery::updateReadings() {
   float adc_reading = io_analog.getVoltage(Settings::BATTERY_SENSOR_PIN);
   batteryVoltage = roundf((adc_reading * Settings::BATTERY_MULTIPLIER) * 100) / 100;  // adjust reading and round to two decimals.
 
@@ -29,21 +34,25 @@ void Battery::updateReadings() {
   if (!_isCharging && !_isFullyCharged && chargerVoltage >= 10.0) {
     _isCharging = true;
     // don't overwrite already existing starttime, we could have been charging with mower turned off.
-    if(Configuration::getInt("StartChargeTime", 0) == 0) {
-      time(&now);
-      Configuration::set("StartChargeTime", now);
+    
+    if (Configuration::config.startChargeTime == 0) {
+      Configuration::config.startChargeTime = getEpocTime();
+      Configuration::save();
     }
   } else if (_isCharging && chargerVoltage < 10.0) {
     _isCharging = false;
-    Configuration::clear("StartChargeTime");  // wipe starttime if charging was aborted.
+    Configuration::config.startChargeTime = 0;  // wipe starttime if charging was aborted.
+    Configuration::save();
   }
 
   if (_isCharging && _isFullyCharged) {
     _isCharging = false;
-    time(&now);
-    Configuration::set("LastFullyChargeTime", now);
-    Configuration::set("LastChargeDuration", now - Configuration::getInt("StartChargeTime", 0));
-    Configuration::clear("StartChargeTime");
+    auto currMillis = getEpocTime();
+    Configuration::config.lastFullyChargeTime = currMillis;
+    Configuration::config.lastChargeDuration = currMillis - Configuration::config.startChargeTime;
+
+    Configuration::config.startChargeTime = 0;
+    Configuration::save();
   }
 }
 
@@ -75,9 +84,9 @@ bool Battery::isFullyCharged() {
 }
 
 uint32_t Battery::getLastFullyChargeTime() {
-  return Configuration::getInt("LastFullyChargeTime", 0);
+  return Configuration::config.lastFullyChargeTime;
 }
 
 uint32_t Battery::getLastChargeDuration() {
-  return Configuration::getInt("LastChargeDuration", 0);
+  return Configuration::config.lastChargeDuration;
 }

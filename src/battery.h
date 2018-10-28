@@ -26,6 +26,7 @@ class Battery {
     bool _needRecharge;
     bool _isFullyCharged;
     void updateReadings();
+    int64_t getEpocTime();
     Ticker batteryReadingTicker;
 };
 

@@ -59,7 +59,19 @@ let proxy = {
       'PUT /api/v1/loglevel': (req, res) => {
         data.setLoglevel(req.body.level);
         res.sendStatus(200);
-      }
+      },
+      'GET /api/v1/logmessages': (req, res) => {
+        return res.json(data.getLogmessages());
+      },
+      'POST /api/v1/apikey': (req, res) => {
+        const CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        let key = 'xxxxxxxxxxxxxxxx'.replace(/[x]/g, function(c) {
+          return CHARS[Math.floor(Math.random() * CHARS.length)];
+        });
+
+        data.setApiKey(key);
+        res.sendStatus(200);
+      },
     };
 
 module.exports = proxy;

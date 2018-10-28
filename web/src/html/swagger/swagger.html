@@ -11,16 +11,26 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.18.4/swagger-ui-bundle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.18.4/swagger-ui-standalone-preset.js"></script>
     <script>
+      function HideTopbarPlugin() {
+        // this plugin overrides the Topbar component to return nothing
+        return {
+          components: {
+            Topbar: function() { return null }
+          }
+        }
+      }
       window.ui = SwaggerUIBundle({
-        url: "swagger.json",
+        url: "swagger.yaml",
         dom_id: '#swagger-ui',
         deepLinking: true,
+        displayRequestDuration: true,
         presets: [
           SwaggerUIBundle.presets.apis,
           SwaggerUIStandalonePreset
         ],
         plugins: [
-          SwaggerUIBundle.plugins.DownloadUrl
+          SwaggerUIBundle.plugins.DownloadUrl,
+          HideTopbarPlugin
         ],
         layout: "StandaloneLayout"
       });

@@ -17,12 +17,12 @@ OTA::OTA(WiFi_Client& wifiClient) : mqtt(wifiClient) {
 
     // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
     Log.notice(F("Start updating %s" CR), type);
-    mqtt.publish_message("START UPDATING FIRMWARE");
+    mqtt.publish_mqtt("START UPDATING FIRMWARE");
   });
 
   ArduinoOTA.onEnd([this]() {
     Log.notice(F(CR "Done updating" CR));
-    mqtt.publish_message("DONE UPDATING FIRMWARE");
+    mqtt.publish_mqtt("DONE UPDATING FIRMWARE");
   });
 
   ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
@@ -52,7 +52,7 @@ void OTA::start() {
   ArduinoOTA.setHostname(Definitions::APP_NAME);
 
   // authentication string
-  ArduinoOTA.setPassword(Configuration::getString("PASSWORD", "liam").c_str());
+  ArduinoOTA.setPassword(Configuration::config.password.c_str());
 
   ArduinoOTA.begin();
   Log.notice(F("OTA available." CR));

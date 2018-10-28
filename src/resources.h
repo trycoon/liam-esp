@@ -10,6 +10,7 @@
 #include "configuration.h"
 #include "io_accelerometer/io_accelerometer.h"
 #include "metrics.h"
+#include "log_store.h"
 
 /**
 * Container class for holding references to instances that should be shared between many classes.
@@ -17,24 +18,26 @@
 */
 class Resources {
   public:
-    Resources(WiFi_Client& mqtt,
+    Resources(WiFi_Client& wifi,
                            WheelController& wheelController,
                            Cutter& cutter,
                            BWF& bwf,
                            Battery& battery,
                            GPS& gps,
                            IO_Accelerometer& accelerometer,
-                           Metrics& metrics)
-                           : mqtt(mqtt),
+                           Metrics& metrics,
+                           LogStore logStore)
+                           : wifi(wifi),
                              wheelController(wheelController),
                              cutter(cutter),
                              bwf(bwf),
                              battery(battery),
                              gps(gps),
                              accelerometer(accelerometer),
-                             metrics(metrics) { }
+                             metrics(metrics),
+                             logStore(logStore) { }
 
-    WiFi_Client& mqtt;
+    WiFi_Client& wifi;
     WheelController& wheelController;
     Cutter& cutter;
     BWF& bwf;
@@ -42,6 +45,7 @@ class Resources {
     GPS& gps;
     IO_Accelerometer& accelerometer;
     Metrics& metrics;
+    LogStore& logStore;
 };
 
 #endif

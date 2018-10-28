@@ -8,12 +8,11 @@
 #include <ArduinoLog.h>
 #include "definitions.h"
 #include "configuration.h"
+#include "log_store.h"
 #include "settings.h"
 
-static const char* MQTT_TOPIC = "home/liam-esp";
-static const char* DEFAULT_NTP = "pool.ntp.org";
 // TODO: AVOID "%" in CSS, https://github.com/me-no-dev/ESPAsyncWebServer/pull/366
-static const char SETUP_HTML[] PROGMEM = "<html><head><meta name=\"viewport\" content=\"width=device-width\"><title>Liam-ESP</title><style>fieldset{padding:1em;font:0.8em/1 sans-serif;margin:1em}legend{padding:0.2em 0.5em;border:1px solid black;font-size:0.9em}label{float:left;margin-right:0.5em;padding-top:0.2em;text-align:right;font-weight:bold;width:6em}input{margin-bottom:0.4em;padding-left: 0.2em;}.center{display:block;margin-right:auto;margin-left:auto;text-align:center}a:link{text-decoration:none;}</style></head><body><h1 class=\"center\">Setup</h1><form action=\"/setup\" method=\"post\"><fieldset><legend>WiFi</legend><label>SSID: </label><input type=\"text\" name=\"SSID\" length=32 value=\"%SSID%\" required><br><label>Password: </label><input type=\"password\" name=\"WIFI_PASSWORD\" length=64 value=\"%WIFI_PASSWORD%\"></fieldset><fieldset><legend>Administrator</legend><label>Username: </label><input type=\"text\" name=\"USERNAME\" length=20 value=\"%USERNAME%\" required><br><label>Password: </label><input type=\"password\" name=\"PASSWORD\" length=20 value=\"%PASSWORD%\" required></fieldset><fieldset><legend>Time</legend><label>NTP-server: </label><input type=\"text\" name=\"NTP_SERVER\" length=40 value=\"%NTP_SERVER%\"><br><label>Time zone: </label><input type=\"number\" name=\"GMT\"  min=\"-12\" max=\"12\" value=\"%GMT%\">&nbsp;<a href=\"https://upload.wikimedia.org/wikipedia/commons/e/e8/Standard_World_Time_Zones.png\" target=\"_blank\">&nbsp;i&nbsp;</a></fieldset><fieldset><legend>MQTT</legend><label>Server IP: </label><input type=\"text\" name=\"MQTT_SERVER\" placeholder=\"leave blank if not used\" length=64 value=\"%MQTT_SERVER%\"><br><label>Port: </label><input type=\"number\" name=\"MQTT_PORT\" placeholder=\"leave blank if not used\" min=\"1024\" max=\"65535\" value=\"%MQTT_PORT%\"><br> <label>Topic: </label> <input type=\"text\" name=\"MQTT_TOPIC\" placeholder=\"leave blank if not used\" length=200 value=\"%MQTT_TOPIC%\"></fieldset><input type=\"submit\" value=\"Save\" class=\"center\"></form></body></html>";
+static const char SETUP_HTML[] PROGMEM = "<html><head><meta name=\"viewport\" content=\"width=device-width\"><title>Liam-ESP</title><style>fieldset{padding:1em;font:0.8em/1 sans-serif;margin:1em}legend{padding:0.2em 0.5em;border:1px solid black;font-size:0.9em}label{float:left;margin-right:0.5em;padding-top:0.2em;text-align:right;font-weight:bold;width:6em}input{margin-bottom:0.4em;padding-left: 0.2em;}.center{display:block;margin-right:auto;margin-left:auto;text-align:center}a:link{text-decoration:none;}</style></head><body><h1 class=\"center\">Setup</h1><form action=\"/setup\" method=\"post\"><fieldset><legend>WiFi</legend><label>SSID: </label><input type=\"text\" name=\"SSID\" length=32 value=\"%SSID%\" required><br><label>Password: </label><input type=\"password\" name=\"WIFI_PASSWORD\" length=64 value=\"%WIFI_PASSWORD%\"></fieldset><fieldset><legend>Administrator</legend><label>Username: </label><input type=\"text\" name=\"USERNAME\" length=20 value=\"%USERNAME%\" required><br><label>Password: </label><input type=\"password\" name=\"PASSWORD\" length=20 value=\"%PASSWORD%\" required></fieldset><fieldset><legend>Time</legend><label>NTP-server: </label><input type=\"text\" name=\"NTP_SERVER\" length=40 value=\"%NTP_SERVER%\"><br><label>Time zone: </label><input type=\"number\" name=\"GMT\"  min=\"-12\" max=\"12\" value=\"%GMT%\">&nbsp;<a href=\"https://upload.wikimedia.org/wikipedia/commons/e/e8/Standard_World_Time_Zones.png\" target=\"_blank\">&nbsp;i&nbsp;</a></fieldset><fieldset><legend>MQTT</legend><label>Server IP: </label><input type=\"text\" name=\"MQTT_SERVER\" placeholder=\"leave blank if not used\" length=64 value=\"%MQTT_SERVER%\"><br><label>Port: </label><input type=\"number\" name=\"MQTT_PORT\" placeholder=\"leave blank if not used\" min=\"1024\" max=\"65535\" value=\"%MQTT_PORT%\"><br><label>Subscribe: </label><input type=\"text\" name=\"MQTT_TOPIC\" placeholder=\"leave blank if not used\" length=200 value=\"%MQTT_TOPIC%\"><br><label>Command: </label><input type=\"text\" name=\"MQTT_TOPIC_COMMAND\" placeholder=\"leave blank if not used\" length=200 value=\"%MQTT_TOPIC_COMMAND%\"></fieldset><input type=\"submit\" value=\"Save\" class=\"center\"></form></body></html>";
 static const char NO_WEB_UI[] PROGMEM = "Web interface is not available. See README.md for instructions about how to flash interface into mower.";
 WiFi_Client* WiFi_Client::Instance = nullptr;
 
@@ -27,23 +26,25 @@ WiFi_Client::WiFi_Client() : web_server(80), ws("/ws") {
 // We populate the HTML with settings saved from Flash memory (or default values).
 String WiFi_Client::renderPlaceholder(const String& placeholder) {
   if (placeholder == "USERNAME") {
-    return Configuration::getString("USERNAME", "admin");
+    return Configuration::config.username;
   } else if (placeholder == "PASSWORD") {
-    return Configuration::getString("PASSWORD");
+    return Configuration::config.password;
   } else if (placeholder == "MQTT_SERVER") {
-    return Configuration::getString("MQTT_SERVER");
+    return Configuration::config.mqttServer;
   } else if (placeholder == "MQTT_PORT") {
-    return Configuration::getString("MQTT_PORT", "1883");
+    return Configuration::config.mqttPort;
   } else if (placeholder == "MQTT_TOPIC") {
-    return Configuration::getString("MQTT_TOPIC", MQTT_TOPIC);
+    return Configuration::config.mqttTopic;
+  } else if (placeholder == "MQTT_TOPIC_COMMAND") {
+    return Configuration::config.mqttTopicCommand;
   } else if (placeholder == "NTP_SERVER") {
-    return Configuration::getString("NTP_SERVER", DEFAULT_NTP);
+    return Configuration::config.ntpServer;
   } else if (placeholder == "GMT") {
-    return Configuration::getString("GMT", "0");
+    return Configuration::config.gmt;
   } else if (placeholder == "WIFI_PASSWORD") {
-    return Configuration::getString("WIFI_PASSWORD");
+    return Configuration::config.wifiPassword;
   } else if (placeholder == "SSID") {
-    return Configuration::getString("SSID");
+    return Configuration::config.ssid;
   } else {
     return String();
   }
@@ -57,7 +58,8 @@ void printLocalTime() {
     return;
   }
 
-  Serial.println(&timeinfo, "Time: %Y-%m-%d, %H:%M:%S%z");
+  // TODO: Fix so this works again.
+  //LoggingSerial.println(&timeinfo, "Time: %Y-%m-%d, %H:%M:%S%z");
 }
 
 // WiFi status eventhandler, called upon when WiFi connection change status.
@@ -101,7 +103,9 @@ void WiFi_Client::start() {
   WiFi.mode(WIFI_MODE_APSTA);
   WiFi.softAP(Definitions::APP_NAME);
   Log.notice(F("AP Started, AP SSID: \"%s\", AP IPv4: %s" CR), Definitions::APP_NAME, WiFi.softAPIP().toString().c_str());
+  
   connect();
+
   setupWebServer();
 
   if (isMQTT_enabled()) {
@@ -117,18 +121,25 @@ void WiFi_Client::start() {
       onMqttPublish(packetId);
     });
 
-    uint8_t ip[4];
-    sscanf(Configuration::getString("MQTT_SERVER").c_str(), "%hhu.%hhu.%hhu.%hhu", &ip[0], &ip[1], &ip[2], &ip[3]);
-    auto mqtt_ip = IPAddress(ip[0], ip[1], ip[2], ip[3]);
-    auto mqtt_port = Configuration::getInt("MQTT_PORT", 1883);
-    
-    Log.notice(F("using MQTT server IP: %s, and port: %d" CR), mqtt_ip.toString().c_str(), mqtt_port);
+    mqttClient.onMessage([this](char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
+      // iterate through callback list and call each one
+      for (const auto &cb : onMqttMessageCallbacks) {
+        cb(topic, payload, len);
+      }
+    });
 
-    mqttClient.setServer(mqtt_ip, mqtt_port);
+    uint8_t ip[4];
+    sscanf(Configuration::config.mqttServer.c_str(), "%hhu.%hhu.%hhu.%hhu", &ip[0], &ip[1], &ip[2], &ip[3]);
+    auto mqtt_ip = IPAddress(ip[0], ip[1], ip[2], ip[3]);
+    auto mqtt_port = Configuration::config.mqttPort;
+    
+    Log.notice(F("using MQTT server IP: %s, and port: %s" CR), mqtt_ip.toString().c_str(), mqtt_port.c_str());
+
+    mqttClient.setServer(mqtt_ip, mqtt_port.toInt());
     //mqttClient.setCredentials("MQTT_USERNAME", "MQTT_PASSWORD");
     mqttClient.setKeepAlive(15); // seconds
     mqttClient.setClientId(Definitions::APP_NAME);
-    mqttClient.setWill(Configuration::getString("MQTT_TOPIC", MQTT_TOPIC).c_str(), 2, true, "DISCONNECTED");
+    mqttClient.setWill(Configuration::config.mqttTopic.c_str(), 2, true, "DISCONNECTED");
   }
 }
 
@@ -142,7 +153,7 @@ void WiFi_Client::setupWebServer() {
     web_server.addHandler(&ws);
 
     //HTTP Authenticate before switch to Websocket protocol
-    //ws.setAuthentication(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str());
+    ws.setAuthentication(Configuration::config.username.c_str(), Configuration::config.password.c_str());
 
     web_server.on("/setup", HTTP_GET, [](AsyncWebServerRequest *request) {
       request->send_P(200, "text/html", SETUP_HTML, renderPlaceholder);
@@ -150,34 +161,39 @@ void WiFi_Client::setupWebServer() {
     // Handle Post-back form from setup page.
     web_server.on("/setup", HTTP_POST, [](AsyncWebServerRequest *request) {
       if(request->hasParam("USERNAME", true)){
-        Configuration::set("USERNAME", request->getParam("USERNAME", true)->value());
+        Configuration::config.username = request->getParam("USERNAME", true)->value();
       }
       if(request->hasParam("PASSWORD", true)){
-        Configuration::set("PASSWORD", request->getParam("PASSWORD", true)->value());
+        Configuration::config.password = request->getParam("PASSWORD", true)->value();
       }
       if(request->hasParam("MQTT_SERVER", true)){
-        Configuration::set("MQTT_SERVER", request->getParam("MQTT_SERVER", true)->value());
+        Configuration::config.mqttServer = request->getParam("MQTT_SERVER", true)->value();
       }
       if(request->hasParam("MQTT_PORT", true)){
-        Configuration::set("MQTT_PORT", request->getParam("MQTT_PORT", true)->value());
+        Configuration::config.mqttPort = request->getParam("MQTT_PORT", true)->value();
       }
       if(request->hasParam("MQTT_TOPIC", true)){
-        Configuration::set("MQTT_TOPIC", request->getParam("MQTT_TOPIC", true)->value());
+        Configuration::config.mqttTopic = request->getParam("MQTT_TOPIC", true)->value();
+      }
+      if(request->hasParam("MQTT_TOPIC_COMMAND", true)){
+        Configuration::config.mqttTopicCommand = request->getParam("MQTT_TOPIC_COMMAND", true)->value();
       }
       if(request->hasParam("NTP_SERVER", true)){
-        Configuration::set("NTP_SERVER", request->getParam("NTP_SERVER", true)->value());
+        Configuration::config.ntpServer = request->getParam("NTP_SERVER", true)->value();
       }
       if(request->hasParam("GMT", true)){
-        Configuration::set("GMT", request->getParam("GMT", true)->value());
+        Configuration::config.gmt = request->getParam("GMT", true)->value();
       }
       if(request->hasParam("WIFI_PASSWORD", true)){
-        Configuration::set("WIFI_PASSWORD", request->getParam("WIFI_PASSWORD", true)->value());
+        Configuration::config.wifiPassword = request->getParam("WIFI_PASSWORD", true)->value();
       }
       if(request->hasParam("SSID", true)){
-        Configuration::set("SSID", request->getParam("SSID", true)->value());
+        Configuration::config.ssid = request->getParam("SSID", true)->value();
       }
       // Save that the setup wizard has been run
-      Configuration::set("FIRSTTIME_RUN", 1);
+      Configuration::config.setupDone = true;
+      
+      Configuration::save();
 
       Log.notice(F("Saved configuration." CR));
       request->redirect("/");
@@ -186,7 +202,7 @@ void WiFi_Client::setupWebServer() {
     });
 
     // When no SSID set, redirect first page to setup page.
-    if (Configuration::getString("SSID", "").length() == 0) {
+    if (Configuration::config.ssid.length() == 0) {
       web_server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->redirect("/setup");
       });
@@ -204,7 +220,7 @@ void WiFi_Client::setupWebServer() {
     if (!SPIFFS.begin()) {
       Log.error(F("Failed to mount SPIFFS filesystem." CR));
       // If we have WiFi settings but web interface is not available, notify user so that they don't think anything is broken.
-      if (Configuration::getString("SSID", "").length() > 0) {
+      if (Configuration::config.ssid.length() > 0) {
         web_server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
           request->send_P(200, "text/plain", NO_WEB_UI);
         }).setFilter(ON_STA_FILTER);
@@ -212,13 +228,13 @@ void WiFi_Client::setupWebServer() {
       return;
     }
 
-    if (Configuration::getString("SSID", "").length() > 0) {
+    if (Configuration::config.ssid.length() > 0) {
       web_server
       .serveStatic("/", SPIFFS, "/")
       .setDefaultFile("index.html")
       .setCacheControl("max-age=2592000") // 30 days.*/
       .setFilter(ON_STA_FILTER)
-      .setAuthentication(Configuration::getString("USERNAME").c_str(), Configuration::getString("PASSWORD").c_str());
+      .setAuthentication(Configuration::config.username.c_str(), Configuration::config.password.c_str());
     }
 
     // Start web server.
@@ -227,17 +243,22 @@ void WiFi_Client::setupWebServer() {
 }
 
 bool WiFi_Client::isMQTT_enabled() {
-  if (Configuration::getString("MQTT_SERVER", "").length() == 0 || Configuration::getString("MQTT_TOPIC", "").length() == 0) {
-    return false;
-  } else {
-    return true;
-  }
+  return Configuration::config.mqttServer.length() > 0 && Configuration::config.mqttTopic.length() > 0;
 }
 
 // Call upon this method to connect/reconnect WiFi
 void WiFi_Client::connect() {
   Log.trace(F("Connecting to WiFi..." CR));
-  WiFi.begin(Configuration::getString("SSID").c_str(), Configuration::getString("WIFI_PASSWORD").c_str());
+
+  if (WiFi.getMode() == WIFI_MODE_STA || Configuration::config.ssid.length() > 0) {
+    WiFi.begin(Configuration::config.ssid.c_str(), Configuration::config.wifiPassword.c_str());
+    dnsServer.stop(); // just in case it's running.
+  } else {
+    // If no SSID is defined, then start up with captive portal and default password "liam".
+    WiFi.begin(Definitions::APP_NAME, "liam");
+    dnsServer.stop(); // just in case it's running.
+    dnsServer.start(53, "*", WiFi.softAPIP());  // capture all requests
+  }
 }
 
 // Method is called upon when have a WiFi connection with an IP address (note that this method could be called upon several times).
@@ -253,7 +274,7 @@ void WiFi_Client::onWifiConnect(WiFiEvent_t event, system_event_info_t info) {
   MDNS.begin(Definitions::APP_NAME);
   MDNS.addService("_http", "_tcp", 80);
   // Get time from NTP server.
-  configTime(atol(Configuration::getString("GMT", "0").c_str()) * 3600, 3600, Configuration::getString("NTP_SERVER", DEFAULT_NTP).c_str()); // sencond parameter is daylight offset (3600 = summertime)
+  configTime(Configuration::config.gmt.toInt() * 3600, 3600, Configuration::config.ntpServer.c_str()); // second parameter is daylight offset (3600 = summertime)
   printLocalTime();
 
   if (isMQTT_enabled()) {
@@ -269,7 +290,7 @@ void WiFi_Client::onWifiDisconnect(WiFiEvent_t event, system_event_info_t info) 
 
   WiFi.disconnect(true);  // force disconnect WiFi to get new settings.
 
-  // TODO: change "once" to "attach", in case we fail to reconnect then "onWifiDisconnect" wount be called upon again and no more attempts will be made!
+  // TODO: change "once" to "attach", in case we fail to reconnect then "onWifiDisconnect" will not be called upon again and no more attempts will be made!
   wifiReconnectTimer.once<WiFi_Client*>(10, [](WiFi_Client* instance) {
     instance->connect();
   }, this);
@@ -281,13 +302,17 @@ void WiFi_Client::connectToMqtt() {
 }
 
 void WiFi_Client::onMqttConnect(bool sessionPresent) {
-  mqttClient.publish(Configuration::getString("MQTT_TOPIC", MQTT_TOPIC).c_str(), 1, true, "CONNECTED");
+  mqttClient.publish(Configuration::config.mqttTopic.c_str(), 1, true, "CONNECTED");
   Log.notice(F("Connected to the MQTT broker." CR));
 
   // Flush any messages waiting in queue now that we are connected to broker.
   flushQueueTimer.once_ms<WiFi_Client*>(1, [](WiFi_Client* instance) {
-    instance->flushQueue();
+    instance->flushMqttQueue();
   }, this);
+
+  if (Configuration::config.mqttTopicCommand.length() > 0) {
+    mqttClient.subscribe(Configuration::config.mqttTopicCommand.c_str(), 1);
+  }
 }
 
 void WiFi_Client::onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
@@ -295,14 +320,14 @@ void WiFi_Client::onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
 
   if (WiFi.isConnected()) {
     // wait two seconds then try to reconnect.
-    // TODO: change "once" to "attach", in case we fail to reconnect then "onMqttDisconnect" wount be called upon again and no more attempts will be made!
+    // TODO: change "once" to "attach", in case we fail to reconnect then "onMqttDisconnect" will not be called upon again and no more attempts will be made!
     mqttReconnectTimer.once<WiFi_Client*>(2, [](WiFi_Client* instance) {
       instance->connectToMqtt();
     }, this);
   }
 }
 
-void WiFi_Client::flushQueue() {
+void WiFi_Client::flushMqttQueue() {
   while(mqttClient.connected() && !msgQueue.empty()) {
     MQTT_Message message = msgQueue.front();  // oldest message in queue.
 
@@ -319,9 +344,9 @@ void WiFi_Client::flushQueue() {
   }
 }
 
-void WiFi_Client::publish_message(std::string message, std::string subtopic) {
+void WiFi_Client::publish_mqtt(std::string message, std::string subtopic) {
   if (isMQTT_enabled()) {
-    std::string topic = Configuration::getString("MQTT_TOPIC").c_str();
+    std::string topic = Configuration::config.mqttTopic.c_str();
 
     if (subtopic.length() > 0) {
       // make sure subtopics always begins with an slash ("/")
@@ -338,7 +363,7 @@ void WiFi_Client::publish_message(std::string message, std::string subtopic) {
     }
 
     msgQueue.push({ message, topic });
-    flushQueue();
+    flushMqttQueue();
   }
 }
 
@@ -357,28 +382,44 @@ AsyncWebServer& WiFi_Client::getWebServer() {
  * @param client [optional] client to send to, if none specified then we broadcast to everybody
  */
 void WiFi_Client::sendDataWebSocket(String msgType, JsonObject& json, AsyncWebSocketClient* client) {
-  DynamicJsonBuffer jsonBuffer(400);
-  JsonObject& root = jsonBuffer.createObject();
-  root["type"] = msgType;
-  root["payload"] = json;
+  // only push if there are connected clients.
+  if (ws.count() > 0) {
+    DynamicJsonBuffer jsonBuffer(400);
+    JsonObject& root = jsonBuffer.createObject();
+    root["type"] = msgType;
+    root["payload"] = json;
 
-  auto len = root.measureLength();
-  AsyncWebSocketMessageBuffer* buffer = ws.makeBuffer(len); // creates a buffer (len + 1) for you.
+    auto len = root.measureLength();
+    AsyncWebSocketMessageBuffer* buffer = ws.makeBuffer(len); // creates a buffer (len + 1) for you.
 
-  if (buffer) {
-      root.printTo((char*)buffer->get(), len + 1);
-      String jsonStr;
-      root.printTo(jsonStr);
-      Log.trace("WS pushed: %s" CR, jsonStr.c_str());
+    if (buffer) {
+        root.printTo((char*)buffer->get(), len + 1);
+        //TODO: would like an Log.isTrace() here!
+        String jsonStr;
+        root.printTo(jsonStr);
+        Log.trace("WS pushed: %s" CR, jsonStr.c_str());
 
-      if (client) {
-        client->text(buffer);
-      } else {
-        ws.textAll(buffer);
-      }
+        if (client) {
+          client->text(buffer);
+        } else {
+          ws.textAll(buffer);
+        }
+    }
   }
 }
 
 AsyncWebSocket& WiFi_Client::getWebSocketServer() {
   return ws;
+}
+
+void WiFi_Client::process() {
+  // when running own accesspoint we want to capture all request and send them to the setup wizard-page.
+  if (WiFi.getMode() == WIFI_MODE_APSTA) {
+   // dnsServer.processNextRequest();
+  }
+}
+
+void WiFi_Client::registerMqttMessageCallback(const cb_mqttMessage &cb) {
+  // add callback to end of callback list
+  onMqttMessageCallbacks.push_back(cb);
 }

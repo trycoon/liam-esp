@@ -2,7 +2,6 @@
 #include <ArduinoLog.h>
 #include "settings.h"
 #include "io_accelerometer.h"
-#include "configuration.h"
 
 // https://github.com/kriswiner/EM7180_SENtral_sensor_hub/wiki/A.-A-Short-Survey-of-Sensor-Fusion-Solutions
 // code exmaple from https://github.com/simondlevy/EM7180

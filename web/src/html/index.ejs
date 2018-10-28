@@ -105,6 +105,17 @@
             <option value="4" selected="selected">Notice</option>
             <option value="6">Verbose</option>
           </select>
+
+          <div class="center">
+            <fieldset>
+              <legend>REST API</legend>
+              <label for="apikey">key</label>
+              <input id="apikey" disabled />
+              <span class="js-generateApiKey button">New key</span>
+              <br>
+              <a href="/swagger.html" target="_blank">OpenAPI documenation</a>
+            </fieldset>            
+          </div>
         </section>
         <section class="section js-section js-section-schedule" style="display: none">
         </section>
@@ -123,9 +134,6 @@
           <div>
             <label for="syslog">System log:</label>
             <textarea id="syslog" name="syslog" rows="10"readonly></textarea>
-          </div>
-          <div>
-            <a href="/swagger.html" target="_blank">REST API</a>
           </div>
         </section>
       </div>

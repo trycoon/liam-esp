@@ -40,6 +40,7 @@ namespace Settings {
   extern const uint8_t GPS_RX_PIN;
   extern const uint8_t GPS_TX_PIN;
   extern const uint16_t MQTT_QUEUE_LENGTH;
+  extern const size_t LOGMESSAGES_LENGTH;
 };
 
 #endif

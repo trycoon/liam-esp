@@ -5,6 +5,7 @@
 #include "definitions.h"
 #include "configuration.h"
 #include "settings.h"
+#include "log_store.h"
 #include "resources.h"
 #include "io_analog.h"
 #include "io_accelerometer/io_accelerometer.h"
@@ -20,9 +21,10 @@
 #include "state_controller.h"
 #include "api.h"
 
-
 /*
  * Software to control a LIAM robotmower using a NodeMCU/ESP-32 (or similar ESP32) microcontroller.
+ * 
+ * Congratulation, you have just found the starting point of the program!
  */
 
 // Give us an warning if main loop is delayed more than this value. This could be an indication of hidden "delay" calls in our code.
@@ -31,6 +33,7 @@ const uint32_t LOOP_DELAY_WARNING = 200000; // 200 ms
 const uint32_t LOOP_DELAY_WARNING_COOLDOWN = 10000000; // 10 sec
 
 // Setup references between all classes.
+LogStore logstore;
 IO_Analog io_analog;
 IO_Accelerometer io_accelerometer(Wire);
 WiFi_Client wifi;
@@ -43,7 +46,7 @@ BWF bwf;
 GPS gps;
 Battery battery(io_analog);
 Metrics metrics(battery, gps);
-Resources resources(wifi, wheelController, cutter, bwf, battery, gps, io_accelerometer, metrics);
+Resources resources(wifi, wheelController, cutter, bwf, battery, gps, io_accelerometer, metrics, logstore);
 StateController stateController(resources);
 Api api(stateController, resources);
 
@@ -76,10 +79,14 @@ void scan_I2C() {
 }
 
 void setup() {
-  Serial.begin(115200);
+  logstore.begin(115200);
 
-  Serial.printf("\n=== %s v%s ===\n\n", Definitions::APP_NAME, Definitions::APP_VERSION);
-  Log.begin(Configuration::getInt("logLevel", LOG_LEVEL_NOTICE), &Serial, true);
+  logstore.printf("\n=== %s v%s ===\n\n", Definitions::APP_NAME, Definitions::APP_VERSION);
+
+  Configuration::load();
+  
+  // setup Log library so that we can start logging events using e.g. Log.notice()...
+  Log.begin(Configuration::config.logLevel, &logstore, true);
 
   // setup I2C
   Wire.begin(Settings::SDA_PIN, Settings::SCL_PIN);
@@ -89,10 +96,10 @@ void setup() {
 
   io_accelerometer.start();
 
-  auto lastState = Configuration::getString("lastState", "");
+  auto lastState = Configuration::config.lastState;
   // initialize state controller, assume we are DOCKED unless there is a saved state.
   if (rtc_get_reset_reason(0) == SW_CPU_RESET && lastState.length() > 0) {
-    Log.notice(F("Returning to last state \"%s\" after software crash!" CR), lastState.c_str());
+    Log.notice(F("Returning to last state \"%s\" after software crash!" CR), lastState);
     stateController.setState(lastState);
   } else {
     stateController.setState(Definitions::MOWER_STATES::DOCKED);
@@ -100,8 +107,10 @@ void setup() {
 
   wifi.start();
 
-  if (Configuration::isConfigured()) {
+  if (Configuration::config.setupDone) {
     api.setupApi();
+  } else {
+    Log.notice(F("Starting mower for first time. Please connect to WiFi accesspoint \"%s\" and run installation wizard!" CR), Definitions::APP_NAME);
   }
 
   ota.start();
@@ -110,9 +119,11 @@ void setup() {
 // Main program loop
 void loop() {
   uint64_t loopStartTime = esp_timer_get_time();
+  
   ota.handle();
- 
-  if (Configuration::isConfigured()) {
+  wifi.process();
+  
+  if (Configuration::config.setupDone) {
     // always check if we are flipped.
     if (io_accelerometer.isFlipped() && stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::FLIPPED) {
       stateController.setState(Definitions::MOWER_STATES::FLIPPED);

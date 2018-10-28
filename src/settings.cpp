@@ -105,4 +105,7 @@ namespace Settings {
 
     // Max number of messages awaiting to be sent to broker. Higher value consumes more RAM-memory but let us be disconnected from WiFi for a longer period.
     const uint16_t MQTT_QUEUE_LENGTH = 50;
+
+    // How many characters of log messages that are kept, increase to have longer log message history at the expense of higher memory consumption.
+    const size_t LOGMESSAGES_LENGTH = 2000;
 }

@@ -24,6 +24,9 @@ input[type=range] {
 input[type=range]:focus {
     outline: none
 }
+input {
+    font-size: 1em
+}
 ol, ul {
     margin: 0;
     padding: 0;
@@ -187,7 +190,6 @@ p {
 }
 .button {
   display: inline-block;
-  vertical-align: top;
   line-height: 32px;
   padding: 0 10px;
   font-size: 15px;
@@ -354,7 +356,10 @@ p {
     width: 2em;
   }
 }
-#syslog,
+#syslog {
+  width: 100%;
+  font-size: 0.8rem;
+}
 .gl3dmodel {
   width: 100%;
 }

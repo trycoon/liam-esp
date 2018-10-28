@@ -8,12 +8,17 @@ function getSystemInfoAndRender() {
 
     requestInProgress = true;
 
-    api.getSystem().done(data => {
-        $('.js-section-info .appName').text(data.name);
-        $('.js-section-info .appVersion').text(data.version);
-        $('.js-section-info .cpuFreq').text(data.cpuFreq);
-        $('.js-section-info .flashChipSize').text(data.flashChipSize);
-        $('.js-section-info .freeHeap').text(data.freeHeap);
+    $.when(
+        api.getSystem(),
+        api.getLogmessages()
+    ).done((r1, r2) => {
+        $('.js-section-info .appName').text(r1[0].name);
+        $('.js-section-info .appVersion').text(r1[0].version);
+        $('.js-section-info .cpuFreq').text(r1[0].cpuFreq);
+        $('.js-section-info .flashChipSize').text(r1[0].flashChipSize);
+        $('.js-section-info .freeHeap').text(r1[0].freeHeap);
+
+        $('#syslog').text(r2[0].messages);
     })
     .always(() => {
         requestInProgress = false;

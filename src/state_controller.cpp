@@ -36,9 +36,10 @@ void StateController::setState(Definitions::MOWER_STATES newState) {
 
     Log.notice("New state: %s" CR, currentStateInstance->getStateName());
     // save state in case we reboot
-    Configuration::set("lastState", currentStateInstance->getStateName());
+    Configuration::config.lastState = currentStateInstance->getStateName();
+    Configuration::save();
 
-    resources.mqtt.publish_message(currentStateInstance->getStateName(), "/state");
+    resources.wifi.publish_mqtt(currentStateInstance->getStateName(), "/state");
   }
 }
 
@@ -67,6 +68,25 @@ void StateController::setState(String newState) {
   } else {
     Log.warning("state \"%s\" unknown, ignoring in setState." CR, newState);
   }
+}
+
+bool StateController::setUserChangableState(String newState) {
+  if (newState == "LAUNCHING") {
+    setState(Definitions::MOWER_STATES::LAUNCHING);
+  } else if (newState == "MOWING") {
+    setState(Definitions::MOWER_STATES::MOWING);
+  } else if (newState == "DOCKING") {
+    setState(Definitions::MOWER_STATES::DOCKING);
+  } else if (newState == "STOP") {
+    setState(Definitions::MOWER_STATES::STOP);
+  } else if (newState == "TEST") {
+    setState(Definitions::MOWER_STATES::TEST);
+  } else {
+    Log.notice(F("State \"%s\" not available for user to change." CR), newState);
+    return false;
+  }
+
+  return true;
 }
 
 AbstractState* StateController::getStateInstance() {

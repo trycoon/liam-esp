@@ -23,6 +23,11 @@ class StateController {
     void setState(String newState);
 
     /**
+    * Set new running state, only the states that allowed to be set externally are available.
+    */
+    bool setUserChangableState(String newState);
+
+    /**
     * Get running state instance.
     */
     AbstractState* getStateInstance();

@@ -138,13 +138,13 @@ function updateBattery() {
     batteryTicks[9].style.fill = liam.data.status.batteryLevel >= 50 ? "#080" : liam.data.status.batteryLevel > 20 ? "#880" : liam.data.status.batteryLevel > 0 ? "#800" : "#b3b3b3";
   
     if (liam.data.status.isCharging) {
-      document.querySelector('.js-charging').style.visibility = 'inline-block';
-      document.querySelector('.js-battery-value').style.visibility = 'hidden';
+      document.querySelector('.js-charging').style.display = 'inline-block';
+      document.querySelector('.js-battery-value').style.display = 'none';
     } else {
-      document.querySelector('.js-charging').style.visibility = 'hidden';
+      document.querySelector('.js-charging').style.display = 'none';
       let batteryValueEl = document.querySelector('.js-battery-value');
       batteryValueEl.textContent = liam.data.status.batteryLevel + '%';
-      batteryValueEl.style.visibility = 'inline-block';
+      batteryValueEl.style.display = 'inline-block';
     }
   }
 }
