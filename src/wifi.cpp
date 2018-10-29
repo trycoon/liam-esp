@@ -193,10 +193,19 @@ void WiFi_Client::setupWebServer() {
       Configuration::config.setupDone = true;
       
       Configuration::save();
-
       Log.notice(F("Saved configuration." CR));
-      request->redirect("/");
-      sleep(100);
+
+      // TODO:
+      // Run WiFi begin with new SSID settings to verify that they are working before we reboot.
+      // If not working then notify user that credentials or something is wrong.
+      // If working, then set location below to optained IP from accesspoint.
+      
+      // Redirect client back to startpage
+      auto *response = request->beginResponse(307);
+      response->addHeader("Location", "/");
+      request->send(response);
+
+      sleep(50);
       ESP.restart();
     });
 
@@ -414,6 +423,7 @@ AsyncWebSocket& WiFi_Client::getWebSocketServer() {
 void WiFi_Client::process() {
   // when running own accesspoint we want to capture all request and send them to the setup wizard-page.
   if (WiFi.getMode() == WIFI_MODE_APSTA) {
+    // TODO:
    // dnsServer.processNextRequest();
   }
 }

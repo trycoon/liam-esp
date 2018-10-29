@@ -18,7 +18,8 @@ function getSystemInfoAndRender() {
         $('.js-section-info .flashChipSize').text(r1[0].flashChipSize);
         $('.js-section-info .freeHeap').text(r1[0].freeHeap);
 
-        $('#syslog').text(r2[0].messages);
+        let logmessages = r2[0].messages.join('\n');
+        $('#syslog').text(logmessages);
     })
     .always(() => {
         requestInProgress = false;

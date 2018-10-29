@@ -51,6 +51,9 @@ Api api(stateController, resources);
 
 uint64_t loopDelayWarningTime;
 
+/**
+ * Scan I2C buss for available devices and print result to console.
+ */
 void scan_I2C() {
   byte error, address;
   int devices = 0;
@@ -77,7 +80,13 @@ void scan_I2C() {
   }
 }
 
+/**
+ * Here we setup initial stuff, this is only run once.
+ */
 void setup() {
+
+  pinMode(Definitions::FACTORY_RESET_PIN, INPUT_PULLUP);
+
   logstore.begin(115200);
 
   logstore.printf("\n=== %s v%s ===\n\n", Definitions::APP_NAME, Definitions::APP_VERSION);
@@ -120,6 +129,7 @@ void loop() {
   uint64_t loopStartTime = esp_timer_get_time();
   
   if (digitalRead(Definitions::FACTORY_RESET_PIN) == LOW) {
+    Log.notice(F("Factory reset by Switch" CR));
     Configuration::wipe();
     delay(1000);
     ESP.restart();

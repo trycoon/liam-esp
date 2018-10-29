@@ -205,10 +205,6 @@ void Api::setupApi() {
     response->addHeader("Cache-Control", "no-store, must-revalidate");
     DynamicJsonBuffer jsonBuffer(20000);
     JsonObject& root = jsonBuffer.createObject();
-    JsonObject& links = root.createNestedObject("_links");
-    JsonObject& self = links.createNestedObject("self");
-    self["href"] = "http://" + WiFi.localIP().toString() + "/api/v1/history/battery";
-    self["method"] = "GET";
 
     JsonObject& samples = root.createNestedObject("samples");
     JsonArray& time = samples.createNestedArray("time");
@@ -235,10 +231,6 @@ void Api::setupApi() {
     response->addHeader("Cache-Control", "no-store, must-revalidate");    
     DynamicJsonBuffer jsonBuffer(60000);
     JsonObject& root = jsonBuffer.createObject();
-    JsonObject& links = root.createNestedObject("_links");
-    JsonObject& self = links.createNestedObject("self");
-    self["href"] = "http://" + WiFi.localIP().toString() + "/api/v1/history/position";
-    self["method"] = "GET";
 
     JsonArray& samples = root.createNestedArray("samples");
     for (auto &s: resources.metrics.getGpsPositionHistory()) {
@@ -267,10 +259,6 @@ void Api::setupApi() {
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
 
-    JsonObject& self = links.createNestedObject("self");
-    self["href"] = host + "/api/v1/history";
-    self["method"] = "GET";
-
     JsonObject& battery = links.createNestedObject("battery");
     battery["href"] = host + "/api/v1/history/battery";
     battery["method"] = "GET";
@@ -297,10 +285,6 @@ void Api::setupApi() {
     DynamicJsonBuffer jsonBuffer(750);
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
-
-    JsonObject& self = links.createNestedObject("self");
-    self["href"] = host + "/api/v1/manual";
-    self["method"] = "GET";
 
     JsonObject& forward = links.createNestedObject("forward");
     forward["href"] = host + "/api/v1/manual/forward";
@@ -344,10 +328,6 @@ void Api::setupApi() {
     
     DynamicJsonBuffer jsonBuffer(600);
     JsonObject& root = jsonBuffer.createObject();
-    JsonObject& links = root.createNestedObject("_links");
-    JsonObject& self = links.createNestedObject("self");
-    self["href"] = "http://" + WiFi.localIP().toString() + "/api/v1/status";
-    self["method"] = "GET";
 
     statusToJson(currentStatus, root);
 
@@ -368,10 +348,6 @@ void Api::setupApi() {
     response->addHeader("Cache-Control", "no-store, must-revalidate");    
     DynamicJsonBuffer jsonBuffer(400);
     JsonObject& root = jsonBuffer.createObject();
-    JsonObject& links = root.createNestedObject("_links");
-    JsonObject& self = links.createNestedObject("self");
-    self["href"] = "http://" + WiFi.localIP().toString() + "/api/v1/system";
-    self["method"] = "GET";
     
     root["name"] = Definitions::APP_NAME;
     root["version"] = Definitions::APP_VERSION;
@@ -401,10 +377,6 @@ void Api::setupApi() {
     response->addHeader("Cache-Control", "no-store, must-revalidate");
     DynamicJsonBuffer jsonBuffer(50);
     JsonObject& root = jsonBuffer.createObject();
-    JsonObject& links = root.createNestedObject("_links");
-    JsonObject& self = links.createNestedObject("self");
-    self["href"] = "http://" + WiFi.localIP().toString() + "/api/v1/loglevel";
-    self["method"] = "GET";
 
     root["level"] = Configuration::config.logLevel;
 
@@ -425,11 +397,7 @@ void Api::setupApi() {
     response->addHeader("Cache-Control", "no-store, must-revalidate");
     DynamicJsonBuffer jsonBuffer(Definitions::MAX_LOGMESSAGES * 50 + 20);  // just best guess.
     JsonObject& root = jsonBuffer.createObject();
-    JsonObject& links = root.createNestedObject("_links");
-    JsonObject& self = links.createNestedObject("self");
-    self["href"] = "http://" + WiFi.localIP().toString() + "/api/v1/logmessages";
-    self["method"] = "GET";
-
+   
     JsonArray& loggmessages = root.createNestedArray("messages");
     for (auto &line: resources.logStore.getLogMessages()) {
       // ignore empty lines
@@ -461,10 +429,6 @@ void Api::setupApi() {
     DynamicJsonBuffer jsonBuffer(900);
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
-
-    JsonObject& self = links.createNestedObject("self");
-    self["href"] = host + "/api/v1";
-    self["method"] = "GET";
 
     JsonObject& history = links.createNestedObject("history");
     history["href"] = host + "/api/v1/history";
@@ -727,7 +691,9 @@ void Api::setupApi() {
 
     resources.cutter.stop(true);
     resources.wheelController.stop(false);
-    Configuration::wipe();    
+    Configuration::wipe();
+    
+    Log.notice(F("Factory reset by API request" CR));    
     request->send(200);
     delay(1000);
     ESP.restart();

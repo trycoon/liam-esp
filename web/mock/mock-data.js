@@ -80,7 +80,16 @@ let uptime = new Date(),
     },
     getLogmessages: () => {
         return {
-            messages: 'N: Gyro/accelerometer/compass init success.\nN: New state: DOCKED\nN: AP Started, AP SSID: "liam-esp", AP IPv4: 192.168.4.1\nN: Web server initialized\nN: using MQTT server IP: 192.168.1.10, and port: 1883\nN: OTA available.\nN: Connected to WiFi accesspoint "Stargate", using IP-address: 192.168.1.123 and MAC: 30:AE:A4:19:33:44\nN: Connected to the MQTT broker.'
+            messages: [
+                'N: Gyro/accelerometer/compass init success.',
+                'N: New state: DOCKED',
+                'N: AP Started, AP SSID: "liam-esp", AP IPv4: 192.168.4.1',
+                'N: Web server initialized',
+                'N: using MQTT server IP: 192.168.1.10, and port: 1883',
+                'N: OTA available.',
+                'N: Connected to WiFi accesspoint "Stargate", using IP-address: 192.168.1.123 and MAC: 30:AE:A4:19:33:44',
+                'N: Connected to the MQTT broker.'
+            ]
         }
     },
     setApiKey: (key) => {
