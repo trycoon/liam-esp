@@ -119,6 +119,13 @@ void setup() {
 void loop() {
   uint64_t loopStartTime = esp_timer_get_time();
   
+  if (digitalRead(Definitions::FACTORY_RESET_PIN) == LOW) {
+    Configuration::wipe();
+    delay(1000);
+    ESP.restart();
+    return;
+  }
+
   ota.handle();
   wifi.process();
   

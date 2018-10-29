@@ -727,9 +727,7 @@ void Api::setupApi() {
 
     resources.cutter.stop(true);
     resources.wheelController.stop(false);
-    Configuration::wipe();
-    
-    Log.notice(F("Factory reset by API request" CR));
+    Configuration::wipe();    
     request->send(200);
     delay(1000);
     ESP.restart();
