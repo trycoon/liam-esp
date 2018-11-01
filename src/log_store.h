@@ -11,7 +11,7 @@ class LogStore : public HardwareSerial {
     LogStore();
     size_t write(uint8_t) override;
     size_t write(const uint8_t* buffer, size_t size) override;
-    std::deque<String> getLogMessages();
+    std::deque<String>& getLogMessages();
 
   private:
     std::deque<String> log_messages;

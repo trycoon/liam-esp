@@ -87,9 +87,8 @@ namespace Configuration {
         config.setupDone = json["setupDone"];
       }
     }
-    // Can't use logging library since it's depending on logLevel above, catch-22.
-    // TODO: Fix so this works again.
-    //LoggingSerial.printf("Loaded settings from Flash: %s\n", jsonString.c_str());
+
+    Log.notice("Loaded settings from Flash: %s" CR, jsonString.c_str());
   }
   
   void save() {    

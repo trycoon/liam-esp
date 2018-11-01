@@ -1,6 +1,11 @@
 #include "log_store.h"
 
-LogStore::LogStore() : HardwareSerial(0), log_messages(Definitions::MAX_LOGMESSAGES), current_line("") {}
+/**
+ * Lowlevel class for writing log messages to serial output, but also to store them for later retreival with method getLogmessages.
+ */
+LogStore::LogStore() : HardwareSerial(0), log_messages(Definitions::MAX_LOGMESSAGES), current_line("") {
+  current_line.reserve(100);
+}
 
 size_t LogStore::write(uint8_t c) {
   
@@ -11,9 +16,10 @@ size_t LogStore::write(uint8_t c) {
       if (log_messages.size() >= Definitions::MAX_LOGMESSAGES) {
         log_messages.pop_front();
       }
-      log_messages.push_back(current_line);
+      log_messages.emplace_back(std::move(current_line));
       current_line = "";
-      current_linenumber++;
+      current_line.reserve(100);
+      ++current_linenumber;
     } else {
       current_line.concat((char)c);
     }
@@ -31,9 +37,10 @@ size_t LogStore::write(const uint8_t* buffer, size_t size) {
         if (log_messages.size() >= Definitions::MAX_LOGMESSAGES) {
           log_messages.pop_front();
         }
-        log_messages.push_back(current_line);
+        log_messages.emplace_back(std::move(current_line));
         current_line = "";
-        current_linenumber++;
+        current_line.reserve(100);
+        ++current_linenumber;
       } else {
         current_line.concat((char)buffer[i]);
       }
@@ -43,7 +50,7 @@ size_t LogStore::write(const uint8_t* buffer, size_t size) {
   return result;
 }
 
-std::deque<String> LogStore::getLogMessages() {
+std::deque<String>& LogStore::getLogMessages() {
 
   return log_messages;
 }

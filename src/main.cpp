@@ -88,12 +88,13 @@ void setup() {
   pinMode(Definitions::FACTORY_RESET_PIN, INPUT_PULLUP);
 
   logstore.begin(115200);
+  Log.begin(LOG_LEVEL_NOTICE, &logstore, true);
 
-  logstore.printf("\n=== %s v%s ===\n\n", Definitions::APP_NAME, Definitions::APP_VERSION);
+  Log.notice("\n=== %s v%s ===\n\n", Definitions::APP_NAME, Definitions::APP_VERSION);
 
   Configuration::load();
   
-  // setup Log library so that we can start logging events using e.g. Log.notice()...
+  // setup Log library to correct log level.
   Log.begin(Configuration::config.logLevel, &logstore, true);
 
   // setup I2C

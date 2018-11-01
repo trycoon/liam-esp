@@ -49,16 +49,17 @@ String WiFi_Client::renderPlaceholder(const String& placeholder) {
   }
 }
 
-void printLocalTime() {
+String WiFi_Client::getTime() {
   struct tm timeinfo;
 
-  if(!getLocalTime(&timeinfo)){
-    Log.warning(F("Failed to obtain time" CR));
-    return;
+  if (!getLocalTime(&timeinfo, 5000)) { // tries for 5000 ms
+    return F("Failed to obtain time");
   }
 
-  // TODO: Fix so this works again.
-  //LoggingSerial.println(&timeinfo, "Time: %Y-%m-%d, %H:%M:%S%z");
+  char outstr[80];
+  strftime(outstr, sizeof(outstr), "Time: %d %b %Y, %H:%M:%S%z", &timeinfo); // ISO 8601 time
+
+  return String(outstr);
 }
 
 // WiFi status eventhandler, called upon when WiFi connection change status.
@@ -283,7 +284,7 @@ void WiFi_Client::onWifiConnect(WiFiEvent_t event, system_event_info_t info) {
   MDNS.addService("_http", "_tcp", 80);
   // Get time from NTP server.
   configTime(Configuration::config.gmt.toInt() * 3600, 3600, Configuration::config.ntpServer.c_str()); // second parameter is daylight offset (3600 = summertime)
-  printLocalTime();
+  Log.notice("%s" CR, getTime().c_str());
 
   if (isMQTT_enabled()) {
     connectToMqtt();
