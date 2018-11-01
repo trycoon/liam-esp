@@ -355,6 +355,7 @@ void Api::setupApi() {
     root["flashChipSize"] = ESP.getFlashChipSize();
     root["freeHeap"] = ESP.getFreeHeap();
     root["apiKey"] = Configuration::config.apiKey.c_str();
+    root["localTime"] = resources.wifi.getTime().c_str();
     
     JsonObject& settings = root.createNestedObject("settings");
     settings["batteryFullVoltage"] = Definitions::BATTERY_FULLY_CHARGED;

@@ -25,6 +25,7 @@ let uptime = new Date(),
         flashChipSize: 4194304,
         freeHeap: 109608,
         apiKey: '17ff5eEc39fD847B',
+        localTime: '01 Nov 2018, 21:57:10+0100',
         settings: {
             batteryFullVoltage: 16.8,
             batteryEmptyVoltage: 14.0,

@@ -33,7 +33,8 @@ class WiFi_Client : public Processable {
     void checkWifiSettings();
     void sendDataWebSocket(String msgType, JsonObject& json, AsyncWebSocketClient* client = nullptr);
     void registerMqttMessageCallback(const cb_mqttMessage &cb);
-
+    String getTime();
+    
     /* Internal use only! */
     void process();
     
@@ -56,7 +57,6 @@ class WiFi_Client : public Processable {
     static void WiFiEvent(system_event_id_t event, system_event_info_t info);
     bool isMQTT_enabled();
     void flushMqttQueue();
-    String getTime();
     void connect();
     void onWifiConnect(system_event_id_t event, system_event_info_t info);
     void onWifiDisconnect(system_event_id_t event, system_event_info_t info);
