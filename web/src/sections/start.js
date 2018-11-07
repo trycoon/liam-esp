@@ -5,28 +5,28 @@ let sec = $('.js-section-start');
 function setLaunchMowerState() {
   api.selectState("LAUNCHING")
   .fail(function(e) {
-    console.error(e);
+    console.error(e.message);
   });
 }
 
 function setMowingState() {
   api.selectState("MOWING")
   .fail(function(e) {
-    console.error(e);
+    console.error(e.message);
   });
 }
 
 function setDockingState() {
   api.selectState("DOCKING")
   .fail(function(e) {
-    console.error(e);
+    console.error(e.message);
   });
 }
 
 function setStopState() {
   api.selectState("STOP")
   .fail(function(e) {
-    console.error(e);
+    console.error(e.message);
   });
 }
 
@@ -111,40 +111,41 @@ function toggleStateButtons() {
   }
 }
 
-function updateCompass() {
-  if (liam.data.status && liam.data.status.heading) {
-    let currentHeadingArrow = document.querySelector('.js-currentHeadingArrow');
-    let targetHeadingArrow = document.querySelector('.js-targetHeadingArrow');
-    currentHeadingArrow.setAttribute('transform', `rotate(${liam.data.status.heading}, 50, 50)`);
-    targetHeadingArrow.setAttribute('transform', `rotate(${liam.data.status.targetHeading}, 50, 50)`);
-  }
-}
-
 function updateBattery() {
   if (liam.data.status && liam.data.status.batteryLevel) {
     let batteryTicks = document.querySelectorAll('.js-battery .js-tick');
-
-    batteryTicks[0].style.fill = liam.data.status.batteryLevel >= 100 ? "#080" : "#b3b3b3";
-    batteryTicks[1].style.fill = liam.data.status.batteryLevel > 90 ? "#080" : "#b3b3b3";
-    batteryTicks[2].style.fill = liam.data.status.batteryLevel > 80 ? "#080" : "#b3b3b3";
-    batteryTicks[3].style.fill = liam.data.status.batteryLevel > 70 ? "#080" : "#b3b3b3";
-    batteryTicks[4].style.fill = liam.data.status.batteryLevel > 60 ? "#080" : "#b3b3b3";
-    batteryTicks[5].style.fill = liam.data.status.batteryLevel >= 50 ? "#080" : "#b3b3b3";
-
-    batteryTicks[6].style.fill = liam.data.status.batteryLevel >= 50 ? "#080" : liam.data.status.batteryLevel > 40 ? "#880" : "#b3b3b3";
-    batteryTicks[7].style.fill = liam.data.status.batteryLevel >= 50 ? "#080" : liam.data.status.batteryLevel > 30 ? "#880" : "#b3b3b3";
-
-    batteryTicks[8].style.fill = liam.data.status.batteryLevel >= 50 ? "#080" : liam.data.status.batteryLevel > 20 ? "#880" : liam.data.status.batteryLevel > 10 ? "#800" : "#b3b3b3";
-    batteryTicks[9].style.fill = liam.data.status.batteryLevel >= 50 ? "#080" : liam.data.status.batteryLevel > 20 ? "#880" : liam.data.status.batteryLevel > 0 ? "#800" : "#b3b3b3";
   
     if (liam.data.status.isCharging) {
       document.querySelector('.js-charging').style.display = 'inline-block';
       document.querySelector('.js-battery-value').style.display = 'none';
+
+      batteryTicks.forEach(function(tick) {
+        tick.style.fill = "#880";
+        tick.classList.add('pulsate');
+      });
+
     } else {
       document.querySelector('.js-charging').style.display = 'none';
       let batteryValueEl = document.querySelector('.js-battery-value');
       batteryValueEl.textContent = liam.data.status.batteryLevel + '%';
       batteryValueEl.style.display = 'inline-block';
+
+      batteryTicks.forEach(function(tick) {
+        tick.classList.remove('pulsate');
+      });
+      
+      batteryTicks[0].style.fill = liam.data.status.batteryLevel >= 100 ? "#080" : "#b3b3b3";
+      batteryTicks[1].style.fill = liam.data.status.batteryLevel > 90 ? "#080" : "#b3b3b3";
+      batteryTicks[2].style.fill = liam.data.status.batteryLevel > 80 ? "#080" : "#b3b3b3";
+      batteryTicks[3].style.fill = liam.data.status.batteryLevel > 70 ? "#080" : "#b3b3b3";
+      batteryTicks[4].style.fill = liam.data.status.batteryLevel > 60 ? "#080" : "#b3b3b3";
+      batteryTicks[5].style.fill = liam.data.status.batteryLevel >= 50 ? "#080" : "#b3b3b3";
+  
+      batteryTicks[6].style.fill = liam.data.status.batteryLevel >= 50 ? "#080" : liam.data.status.batteryLevel > 40 ? "#880" : "#b3b3b3";
+      batteryTicks[7].style.fill = liam.data.status.batteryLevel >= 50 ? "#080" : liam.data.status.batteryLevel > 30 ? "#880" : "#b3b3b3";
+  
+      batteryTicks[8].style.fill = liam.data.status.batteryLevel >= 50 ? "#080" : liam.data.status.batteryLevel > 20 ? "#880" : liam.data.status.batteryLevel > 10 ? "#800" : "#b3b3b3";
+      batteryTicks[9].style.fill = liam.data.status.batteryLevel >= 50 ? "#080" : liam.data.status.batteryLevel > 20 ? "#880" : liam.data.status.batteryLevel > 0 ? "#800" : "#b3b3b3";
     }
   }
 }
@@ -173,7 +174,6 @@ function updatedStatus() {
   sec.find('.js-state').text(text);
 
   toggleStateButtons();
-  updateCompass();
   updateBattery();
 }
 

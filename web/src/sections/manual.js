@@ -42,7 +42,7 @@ function stop() {
 function startMowerMotor() {
   api.manual("cutter_on")
   .fail(function(e) {
-    console.error(e);
+    console.error(e.message);
   });
 }
 

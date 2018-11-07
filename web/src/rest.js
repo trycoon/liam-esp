@@ -24,6 +24,10 @@ export function getSystem() {
   return $.getJSON('/api/v1/system');
 }
 
+export function getBatteryHistory() {
+  return $.getJSON('/api/v1/history/battery');
+}
+
 export function manual(command, params) {
   return $.ajax({
     url: `/api/v1/manual/${command}`,

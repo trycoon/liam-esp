@@ -15,8 +15,6 @@ let uptime = new Date(),
         rightWheelSpd: 80,
         pitch: 0,
         roll: 0,
-        heading: 0,
-        targetHeading: 45,
     },
     currentSystem = {
         name: 'liam-esp',
@@ -38,7 +36,6 @@ let uptime = new Date(),
         state.batteryVoltage = Math.floor(Math.random() * (16.8 - 14.0 + 1)) + 14.0;
         state.batteryLevel  = Math.round(Math.random() * 100);
         state.cutterLoad = Math.round(Math.random() * 100);
-        state.heading = Math.floor(Math.random() * 90) - 45;
         state.uptime = Math.round((new Date().getTime() - uptime.getTime()) / 1000)
         state.wifiSignal = Math.floor(Math.random() * (-30 - -90 + 1)) + -90;
 
@@ -50,14 +47,15 @@ let uptime = new Date(),
         return system;
     },
     getBatterySamples: () => {
-        let samples = [],
+        let samples = {
+            time: [],
+            value: []
+        },
         date = new Date().getTime();
 
         for (let i = 0; i < 100; i++) {
-            samples.push({
-                t: date + i,
-                v: 14.8 - i / 10
-            });
+            samples.time.push(date + i);
+            samples.value.push(16.8 - i / 100);
         }
 
         return samples;

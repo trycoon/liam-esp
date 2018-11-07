@@ -50,7 +50,7 @@ void WheelController::turn(int16_t direction, std::function<void(void)> fn) {
   direction = constrain(direction, -360, 360);
   // ignore too small changes since compass and motors may not be that accurate.
   if (abs(direction) > 3) {
-    auto currentHeading = accelerometer.getOrientation().heading;
+  /*  auto currentHeading = accelerometer.getOrientation().heading;
     targetHeading = currentHeading + direction;
     
     // keep within 0-360 degrees
@@ -70,7 +70,7 @@ void WheelController::turn(int16_t direction, std::function<void(void)> fn) {
     } else if (direction > 0) {
       leftWheel.setSpeed(70);
       rightWheel.setSpeed(-70);
-    }
+    }*/
   }
 }
 
@@ -84,8 +84,7 @@ void WheelController::stop(bool smooth) {
 status WheelController::getStatus() {
   return { 
     leftWheel.getSpeed(), 
-    rightWheel.getSpeed(), 
-    targetHeading
+    rightWheel.getSpeed() 
   };
 }
 
@@ -94,9 +93,4 @@ void WheelController::process() {
   // TODO: when we are close to target direction, reduce speed even more to not overshoot target.
   // TODO: when we are within 2-3 degrees range of target direction then we should concider us having hit the target, the risk is that we enter a endless loop constantly overshooting the target if we are trying to exactly match target direction.
   // TODO: call upon callback-function and set wheels speed to original value (saved at turn-method) when hitting target.
-  auto currentHeading = accelerometer.getOrientation().heading;
-  if (currentHeading == targetHeading) {
-    leftWheel.setSpeed(0);
-    rightWheel.setSpeed(0);
-  }
 }

@@ -12,7 +12,8 @@ import ReconnectingWebSocket from 'reconnecting-websocket';
 global.liam = {
   config: {},
   data: {
-    status: {}
+    status: {},
+    system: {},
   },
   sections: {
     start: sectionStart,
@@ -20,7 +21,7 @@ global.liam = {
     metrics: sectionMetrics,
     settings: sectionSettings,
     schedule: sectionSchedule,
-    info: sectionInfo
+    info: sectionInfo,
   }
 };
 
@@ -126,13 +127,19 @@ function init() {
   setTheme();
   addClickEffect();
 
-  for (let section in global.liam.sections) {
-    global.liam.sections[section].init();
-  }
-  
-  showSection('start');
   showLostConnectionModal();
-  startSubscribingOnStatus();
+
+  // get initial settings and system information.
+  api.getSystem().done(data => {
+    liam.data.system = data;
+  
+    for (let section in global.liam.sections) {
+      global.liam.sections[section].init();
+    }
+
+    showSection('start');
+    startSubscribingOnStatus();
+  });
 }
 
 // Start application.

@@ -313,35 +313,37 @@ p {
     }
 }
 /* Charts */
-.ct-chart .ct-label.ct-vertical,
-.ct-chart .ct-label.ct-horizontal {
-  color: rgba(255, 255, 255, 0.5);
-} 
-.ct-chart .ct-grid.ct-vertical,
-.ct-chart .ct-grid.ct-horizontal {
-  stroke: rgba(255, 255, 255, 0.1);
-  stroke-dasharray: 2px;
-  shape-rendering: crispEdges;
+.ct-chart {
+    .ct-label.ct-vertical,
+    .ct-label.ct-horizontal {
+        color: rgba(255, 255, 255, 0.5);
+    }
+    .ct-grid.ct-vertical,
+    .ct-grid.ct-horizontal {
+        stroke: rgba(255, 255, 255, 0.1);
+        stroke-dasharray: 2px;
+        shape-rendering: crispEdges;
+    }
+    .ct-series.ct-series-a .ct-line {
+        stroke: #008000;
+        stroke-width: 2px;
+        stroke-linecap: round;
+    }
 }
-.ct-chart .ct-series.ct-series-a .ct-line {
-  stroke: #008000;
-  stroke-width: 2px;
-  stroke-linecap: round;
+
+#battery-chart {
+    .ct-series.ct-series-b .ct-line {
+        stroke: #00A000;
+        stroke-width: 2px;
+        stroke-dasharray: 5px 3px;
+    }
+    .ct-series.ct-series-c .ct-line {
+        stroke: red;
+        stroke-width: 2px;
+        stroke-dasharray: 5px 3px;
+    }
 }
-/* Compass */
-.compass {
-  height: 30vw;
-  stroke-linecap: round;
-  .currentHeadingArrow {
-    stroke:rgb(0, 255, 0);
-    stroke-width: 3
-  }
-  .targetHeadingArrow {
-    stroke:rgb(255, 255, 0);
-    stroke-dasharray: 4;
-    stroke-width: 2
-  }
-}
+
 /* Battery indicator */
 .battery {
   svg {
@@ -358,7 +360,9 @@ p {
 }
 #syslog {
   width: 100%;
+  resize: none;
   font-size: 0.8rem;
+  overflow-x: scroll;
 }
 .gl3dmodel {
   width: 100%;

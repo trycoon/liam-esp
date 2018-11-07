@@ -30,10 +30,8 @@ void Api::statusToJson(statusResponse obj, JsonObject& json) {
     json["wifiSignal"] = obj.wifiSignal;
     json["leftWheelSpd"] = obj.leftWheelSpd;
     json["rightWheelSpd"] = obj.rightWheelSpd;
-    json["targetHeading"] = obj.targetHeading;
     json["pitch"] = obj.pitch;
     json["roll"] = obj.roll;
-    json["heading"] = obj.heading;
 }
 
 /**
@@ -84,10 +82,6 @@ void Api::collectAndPushNewStatus() {
     currentStatus.rightWheelSpd = stat.rightWheelSpeed;
     statusChanged = true;
   }
-  if (currentStatus.targetHeading != stat.targetHeading) {
-    currentStatus.targetHeading = stat.targetHeading;
-    statusChanged = true;
-  }
   auto wifiSignal = WiFi.RSSI();
   if (currentStatus.wifiSignal != wifiSignal) {
     currentStatus.wifiSignal = wifiSignal;
@@ -101,10 +95,6 @@ void Api::collectAndPushNewStatus() {
   }
   if (currentStatus.roll != orient.roll) {
     currentStatus.roll = orient.roll;
-    statusChanged = true;
-  }
-  if (currentStatus.heading != orient.heading) {
-    currentStatus.heading = orient.heading;
     statusChanged = true;
   }
 

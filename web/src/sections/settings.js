@@ -4,10 +4,11 @@ let sec = $('.js-section-settings');
 export function selected() {
     api.getSystem()
     .then(function(data) {
+        liam.data.system = data;
         sec.find('#apikey').val(data.apiKey);
     })
     .fail(function(e) {
-        console.error(e);
+        console.error(e.message);
     });
 
     api.getLoglevel()
@@ -15,7 +16,7 @@ export function selected() {
         $(`#loglever option[value="${data.level}"]`).prop('selected', true);
     })
     .fail(function(e) {
-        console.error(e);
+        console.error(e.message);
     });
 }
 
@@ -26,14 +27,14 @@ export function unselected() {
 function restart() {
     api.restart()
     .fail(function(e) {
-        console.error(e);
+        console.error(e.message);
     });
 }
 
 function factoryreset() {
     api.factoryreset()
     .fail(function(e) {
-        console.error(e);
+        console.error(e.message);
     });
 }
 
@@ -52,7 +53,7 @@ export function init() {
             alert("You must reboot system for loglevel changes to be used.")
         })
         .fail(function(e) {
-            console.error(e);
+            console.error(e.message);
         });
     });
     sec.find('.js-generateApiKey').on('click', function() {
@@ -60,14 +61,15 @@ export function init() {
         .then(function() {
             api.getSystem()
             .then(function(data) {
+                liam.data.system = data;
                 sec.find('#apikey').val(data.apiKey);
             })
             .fail(function(e) {
-                console.error(e);
+                console.error(e.message);
             });
         })
         .fail(function(e) {
-            console.error(e);
+            console.error(e.message);
         });
     });
 }

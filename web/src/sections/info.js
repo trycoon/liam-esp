@@ -1,6 +1,15 @@
 import * as api from '../rest.js';
 let interval, requestInProgress;
 
+function renderInfo() {
+    let info = liam.data.system;
+    $('.js-section-info .appName').text(info.name);
+    $('.js-section-info .appVersion').text(info.version);
+    $('.js-section-info .cpuFreq').text(info.cpuFreq);
+    $('.js-section-info .flashChipSize').text(info.flashChipSize);
+    $('.js-section-info .freeHeap').text(info.freeHeap);
+}
+
 function getSystemInfoAndRender() {
     if (requestInProgress) {
         return;
@@ -12,11 +21,8 @@ function getSystemInfoAndRender() {
         api.getSystem(),
         api.getLogmessages()
     ).done((r1, r2) => {
-        $('.js-section-info .appName').text(r1[0].name);
-        $('.js-section-info .appVersion').text(r1[0].version);
-        $('.js-section-info .cpuFreq').text(r1[0].cpuFreq);
-        $('.js-section-info .flashChipSize').text(r1[0].flashChipSize);
-        $('.js-section-info .freeHeap').text(r1[0].freeHeap);
+        liam.data.system = r1[0];
+        renderInfo();
 
         let logmessages = r2[0].messages.join('\n');
         $('#syslog').text(logmessages);
@@ -62,8 +68,10 @@ function updatedStatus() {
 }
 
 export function selected() {
+    renderInfo();   // render the information we already got
+    getSystemInfoAndRender();   // and then get fresh ones
     interval = setInterval(() => {
-        getSystemInfoAndRender();
+        getSystemInfoAndRender();   // and keep on fetching updated system information as long as the user view this tab
     }, 5000);
 }
 
@@ -73,5 +81,4 @@ export function unselected() {
 
 export function init() {
     window.addEventListener('statusUpdated', updatedStatus);
-    getSystemInfoAndRender();
 }

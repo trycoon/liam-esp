@@ -1,57 +1,109 @@
 import * as api from '../rest.js';
-const MAX_SAMPLES = 20;
+const MAX_SAMPLES = 40; // How many points in graph, too many gets hard to read.
 let batteryChart,
     batteryData = [],
+    batteryFullThreshold = new Array(MAX_SAMPLES),
+    batteryEmptyThreshold = new Array(MAX_SAMPLES),
     wifiChart,
     wifiData = [],
     cutterLoadChart,
-    cutterLoadData = [];
+    cutterLoadData = [],
+    batteryInterval,
+    batteryRequestInProgress;
 
-function renderUpdates() {
-    wifiChart.update({
-        series: [wifiData],
-    });
+function getBatteryHistoryAndRender() {
+    if (batteryRequestInProgress) {
+        return;
+    }
 
-    batteryChart.update({
-        series: [batteryData],
-    });
+    batteryRequestInProgress = true;
 
-    cutterLoadChart.update({
-        series: [cutterLoadData],
+    api.getBatteryHistory()
+    .then(function(data) {
+        let values = data.samples.value,
+            times = data.samples.time;
+        // limit number of samples
+        if (values.length > MAX_SAMPLES) {
+            values = values.slice(-MAX_SAMPLES);
+            times = times.slice(-MAX_SAMPLES);
+        }
+
+        batteryChart.update({
+            series: [{
+                name: 'batteryVoltage',
+                data: values        
+            },
+            {
+                name: 'batteryFullThreshold',
+                data: batteryFullThreshold        
+            },
+            {
+                name: 'batteryEmptyThreshold',
+                data: batteryEmptyThreshold        
+            }],
+        });
+    })
+    .fail(function(e) {
+        console.error(e.message);
+    })
+    .always(() => {
+        batteryRequestInProgress = false;
     });
 }
 
 // Keep receiving and storing useful metrics, that we could display later
 function updatedStatus() {
     // prevent chart from growing to infinity (consuming browser memory)
-    if (batteryData.length > MAX_SAMPLES) {
-        batteryData = batteryData.slice(-MAX_SAMPLES);
-    }
     if (cutterLoadData.length > MAX_SAMPLES) {
         cutterLoadData = cutterLoadData.slice(-MAX_SAMPLES);
     }
     if (wifiData.length > MAX_SAMPLES) {
         wifiData = wifiData.slice(-MAX_SAMPLES);
     }
-    batteryData.push(liam.data.status.batteryVoltage);
+
     cutterLoadData.push(liam.data.status.cutterLoad);
     wifiData.push(liam.data.status.wifiSignal);
 
-    renderUpdates();
+    cutterLoadChart.update({
+        series: [cutterLoadData],
+    });
+
+    wifiChart.update({
+        series: [wifiData],
+    });
 }
 
 export function selected() {
-    renderUpdates();
+    getBatteryHistoryAndRender();
+    batteryInterval = setInterval(() => {
+        getBatteryHistoryAndRender();   // and keep on fetching updated battery status as long as the user view this tab
+    }, 5000);
 }
 
 export function unselected() {
+    clearInterval(batteryInterval);
 }
 
 export function init() {
+
     window.addEventListener('statusUpdated', updatedStatus);
 
+    batteryFullThreshold.fill(liam.data.system.settings.batteryFullVoltage);
+    batteryEmptyThreshold.fill(liam.data.system.settings.batteryEmptyVoltage);
+
     batteryChart = new Chartist.Line('#battery-chart', {
-        series: [batteryData],
+        series: [{
+            name: 'batteryVoltage',
+            data: batteryData        
+        },
+        {
+            name: 'batteryFullThreshold',
+            data: batteryFullThreshold        
+        },
+        {
+            name: 'batteryEmptyThreshold',
+            data: batteryEmptyThreshold        
+        }],
     }, {
         axisX: {
             showGrid: false,
@@ -64,8 +116,8 @@ export function init() {
         },
         //fullWidth: true,
         showPoint: false,
-        high: 17.0,
-        low: 13.0,
+        high: liam.data.system.settings.batteryFullVoltage + 1.0,
+        low: liam.data.system.settings.batteryEmptyVoltage - 1.0,
     });
 
     wifiChart = new Chartist.Line('#wifi-chart', {

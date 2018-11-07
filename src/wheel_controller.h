@@ -9,7 +9,6 @@
 struct status {
   int16_t leftWheelSpeed;
   int16_t rightWheelSpeed;
-  uint16_t targetHeading;
 };
 
 class WheelController : public Processable {
@@ -51,7 +50,6 @@ class WheelController : public Processable {
     Wheel& leftWheel;
     Wheel& rightWheel;
     IO_Accelerometer& accelerometer;
-    uint16_t targetHeading;
 };
 
 #endif

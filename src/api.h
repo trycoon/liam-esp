@@ -21,10 +21,8 @@ struct statusResponse {
   bool cutterRotating;
   int16_t leftWheelSpd;
   int16_t rightWheelSpd;
-  uint16_t targetHeading;
   int16_t pitch;
   int16_t roll;
-  uint16_t heading;
 };
 
 class Api {
