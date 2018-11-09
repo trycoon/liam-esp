@@ -199,7 +199,7 @@ void Api::setupApi() {
     JsonObject& samples = root.createNestedObject("samples");
     JsonArray& time = samples.createNestedArray("time");
     JsonArray& value = samples.createNestedArray("value");
-    for (auto &s: resources.metrics.getBatteryHistory()) {
+    for (auto &s: resources.battery.getBatteryHistory()) {
       time.add(s.time);
       value.add(s.batteryVoltage);
     }

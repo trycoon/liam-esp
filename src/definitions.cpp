@@ -89,8 +89,7 @@ namespace Definitions
   /*
     Charger Settings
   */
-  const uint8_t CHARGER_SENSOR_PIN = 32;    // Pin on ADC for measuring charger voltage.
-  const float CHARGER_MULTIPLIER = 24.0 / 1.1; // Charger voltage divided by ADC max value, used to calculate real charger voltage.
+  const float CHARGE_CURRENT_THRESHOLD = 100;    // Current going into the battery that are above this threshold will be interpreted as the battery is charging. 
 
   /*
     Factory reset switch

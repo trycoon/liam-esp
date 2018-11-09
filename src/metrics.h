@@ -6,19 +6,12 @@
 #include <list>
 #include "processable.h"
 #include "scheduler/scheduler.h"
-#include "battery.h"
 #include "gps.h"
 
 struct metricSample {
   uint32_t time;  // TODO: to save memory we could make this the difference in milliseconds since last time, instead of a compleate timestamp.
-  float batteryVoltage;
   double lat;
   double lng;
-};
-
-struct batterySample {
-  uint32_t time;
-  float batteryVoltage;
 };
 
 struct gpsPosition {
@@ -32,15 +25,13 @@ struct gpsPosition {
 */
 class Metrics : Processable {
   public:
-    Metrics(Battery& battery, GPS& gps);
-    std::list<batterySample> getBatteryHistory();
+    Metrics(GPS& gps);
     std::list<gpsPosition> getGpsPositionHistory();
 
     void process();
 
   private:
     const uint16_t MAX_SAMPLES = 100;   // How much history reading are we going to keep? set too high will consume excessive memory and we may get out-of-memory related errors.
-    Battery& battery;
     GPS& gps;
     Scheduler pollTimer;
     std::list<metricSample> metricSamples;

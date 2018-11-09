@@ -51,8 +51,7 @@ namespace Definitions {
   extern const float BATTERY_FULLY_CHARGED;
   extern const float BATTERY_EMPTY;
   extern const float BATTERY_MULTIPLIER;
-  extern const uint8_t CHARGER_SENSOR_PIN;
-  extern const float CHARGER_MULTIPLIER;
+  extern const float CHARGE_CURRENT_THRESHOLD;
   extern const uint8_t TILT_ANGLE_MAX;
   extern const uint8_t IO_ACCELEROMETER_INT_PIN;
   extern const uint8_t FACTORY_RESET_PIN;

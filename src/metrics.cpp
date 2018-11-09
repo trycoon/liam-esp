@@ -1,6 +1,6 @@
 #include "metrics.h"
 
-Metrics::Metrics(Battery& battery, GPS& gps) : battery(battery), gps(gps), metricSamples(MAX_SAMPLES) {
+Metrics::Metrics(GPS& gps) : gps(gps), metricSamples(MAX_SAMPLES) {
   pollTimer.schedule([this]() {
     getSample();
   }, 5000, true);
@@ -20,7 +20,6 @@ void Metrics::getSample() {
   }
 
   sample.time = millis();
-  sample.batteryVoltage = battery.getBatteryVoltage();
 //  sample.lat = gps.getPosition();
 //  sample.lng;
 
@@ -29,20 +28,6 @@ void Metrics::getSample() {
 
 void Metrics::process() {
   pollTimer.process();
-}
-
-std::list<batterySample> Metrics::getBatteryHistory() {
-  std::list<batterySample> samples;
-  batterySample sample;
-
-  for (auto &s: metricSamples){
-    sample.time = s.time;
-    sample.batteryVoltage = s.batteryVoltage;
-
-    samples.push_back(sample);
-  }
-
-  return samples;
 }
 
 std::list<gpsPosition> Metrics::getGpsPositionHistory() {

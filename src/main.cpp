@@ -43,8 +43,8 @@ WheelController wheelController(leftWheel, rightWheel, io_accelerometer);
 Cutter cutter(io_analog);
 BWF bwf;
 GPS gps;
-Battery battery(io_analog);
-Metrics metrics(battery, gps);
+Battery battery(io_analog, Wire);
+Metrics metrics(gps);
 Resources resources(wifi, wheelController, cutter, bwf, battery, gps, io_accelerometer, metrics, logstore);
 StateController stateController(resources);
 Api api(stateController, resources);
@@ -103,6 +103,7 @@ void setup() {
   delay(100);
   scan_I2C();
 
+  battery.start();
   io_accelerometer.start();
 
   auto lastState = Configuration::config.lastState;

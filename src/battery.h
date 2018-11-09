@@ -4,30 +4,47 @@
 #include <string>
 #include <Arduino.h>
 #include <Ticker.h>
+#include <Wire.h>
+#include <deque>
+#include <Adafruit_INA219.h>
 #include "io_analog.h"
+
+struct batterySample {
+  uint32_t time;
+  float batteryVoltage;
+};
 
 class Battery {
   public:
-    Battery(IO_Analog& io_analog);
-    float getChargerVoltage();
-    float getBatteryVoltage();
-    uint8_t getBatteryStatus();
-    uint32_t getLastFullyChargeTime();
-    uint32_t getLastChargeDuration();
-    bool isCharging();
-    bool needRecharge();
-    bool isFullyCharged();
+    Battery(IO_Analog& io_analog, TwoWire& w);
+    float getBatteryVoltage() const;
+    uint8_t getBatteryStatus() const;
+    uint32_t getLastFullyChargeTime() const;
+    uint32_t getLastChargeDuration() const;
+    const std::deque<batterySample>& getBatteryHistory() const;
+    bool isCharging() const;
+    bool needRecharge() const;
+    bool isFullyCharged() const;
+    void start();
 
   private:
+    const uint16_t MAX_SAMPLES = 100;   // How much history are we going to keep? set too high will consume excessive memory and we may get out-of-memory related errors.
+    const uint16_t BATTERY_CHARGECURRENT_DELAY = 200; // milliseconds
+    const uint16_t BATTERY_VOLTAGE_DELAY = 20;  // seconds
     IO_Analog& io_analog;
-    float chargerVoltage;
+    TwoWire& wire;
+    Adafruit_INA219 ina219;
     float batteryVoltage;
+    float lastChargeCurrentReading;
     bool _isCharging;
     bool _needRecharge;
     bool _isFullyCharged;
-    void updateReadings();
+    void updateBatteryVoltage();
+    void updateChargeCurrent();
     int64_t getEpocTime();
-    Ticker batteryReadingTicker;
+    Ticker batteryVoltageTicker;
+    Ticker chargeCurrentTicker;
+    std::deque<batterySample> batterySamples;
 };
 
 #endif
