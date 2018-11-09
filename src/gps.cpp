@@ -18,7 +18,7 @@ bool GPS::isEnabled() {
   return Definitions::GPS_RX_PIN > 0 && Definitions::GPS_TX_PIN > 0;
 }
 
-void GPS::GPS_isr(uint8_t c) {
+void IRAM_ATTR GPS::GPS_isr(uint8_t c) {
 //  gps.handle(c);
 }
 
@@ -27,3 +27,7 @@ void GPS::GPS_isr(uint8_t c) {
     currentFix = gps.read();
   }
 }*/
+
+const std::deque<gpsPosition>& GPS::getGpsPositionHistory() const {
+  return gpsPosistionSamples;
+}

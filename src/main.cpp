@@ -16,7 +16,6 @@
 #include "bwf.h"
 #include "battery.h"
 #include "gps.h"
-#include "metrics.h"
 #include "state_controller.h"
 #include "api.h"
 
@@ -44,8 +43,7 @@ Cutter cutter(io_analog);
 BWF bwf;
 GPS gps;
 Battery battery(io_analog, Wire);
-Metrics metrics(gps);
-Resources resources(wifi, wheelController, cutter, bwf, battery, gps, io_accelerometer, metrics, logstore);
+Resources resources(wifi, wheelController, cutter, bwf, battery, gps, io_accelerometer, logstore);
 StateController stateController(resources);
 Api api(stateController, resources);
 
@@ -149,7 +147,6 @@ void loop() {
 
     stateController.getStateInstance()->process();
     wheelController.process();
-    metrics.process();
   }
 
   uint64_t currentTime = esp_timer_get_time();

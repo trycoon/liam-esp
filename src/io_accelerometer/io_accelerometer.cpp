@@ -95,6 +95,7 @@ void IO_Accelerometer::getReadings() {
 
       currentOrientation.roll = roundf(roll);
       currentOrientation.pitch = roundf(pitch);
+      currentOrientation.heading = roundf(yaw);
     }
 
     if (em7180.gotBarometer()) {

@@ -32,6 +32,7 @@ void Api::statusToJson(statusResponse obj, JsonObject& json) {
     json["rightWheelSpd"] = obj.rightWheelSpd;
     json["pitch"] = obj.pitch;
     json["roll"] = obj.roll;
+    json["heading"] = obj.heading;
 }
 
 /**
@@ -96,6 +97,10 @@ void Api::collectAndPushNewStatus() {
   if (currentStatus.roll != orient.roll) {
     currentStatus.roll = orient.roll;
     statusChanged = true;
+  }
+  if (currentStatus.heading != orient.heading) {	
+    currentStatus.heading = orient.heading;	
+    statusChanged = true;	
   }
 
   // These change so often that we don't set statusChanged for these, otherwise we would push everytime.
@@ -223,7 +228,7 @@ void Api::setupApi() {
     JsonObject& root = jsonBuffer.createObject();
 
     JsonArray& samples = root.createNestedArray("samples");
-    for (auto &s: resources.metrics.getGpsPositionHistory()) {
+    for (auto &s: resources.gps.getGpsPositionHistory()) {
         JsonObject& sample = samples.createNestedObject();
         sample["t"] = s.time;
         sample["lt"] = s.lat;

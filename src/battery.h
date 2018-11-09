@@ -28,9 +28,9 @@ class Battery {
     void start();
 
   private:
-    const uint16_t MAX_SAMPLES = 100;   // How much history are we going to keep? set too high will consume excessive memory and we may get out-of-memory related errors.
-    const uint16_t BATTERY_CHARGECURRENT_DELAY = 200; // milliseconds
-    const uint16_t BATTERY_VOLTAGE_DELAY = 20;  // seconds
+    static const uint16_t MAX_SAMPLES = 100;   // How much history are we going to keep? set too high will consume excessive memory and we may get out-of-memory related errors.
+    static const uint16_t BATTERY_CHARGECURRENT_DELAY = 200; // milliseconds
+    static const uint16_t BATTERY_VOLTAGE_DELAY = 20;  // seconds
     IO_Analog& io_analog;
     TwoWire& wire;
     Adafruit_INA219 ina219;

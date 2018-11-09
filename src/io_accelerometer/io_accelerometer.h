@@ -17,6 +17,7 @@ static const uint8_t Q_RATE_DIVISOR = 3; // 1/3 gyro rate
 struct orientation {
   int16_t pitch;
   int16_t roll;
+  uint16_t heading;
 };
 
 class IO_Accelerometer {

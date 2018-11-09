@@ -23,6 +23,7 @@ struct statusResponse {
   int16_t rightWheelSpd;
   int16_t pitch;
   int16_t roll;
+  uint16_t heading;
 };
 
 class Api {

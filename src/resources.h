@@ -9,7 +9,6 @@
 #include "gps.h"
 #include "configuration.h"
 #include "io_accelerometer/io_accelerometer.h"
-#include "metrics.h"
 #include "log_store.h"
 
 /**
@@ -25,7 +24,6 @@ class Resources {
                            Battery& battery,
                            GPS& gps,
                            IO_Accelerometer& accelerometer,
-                           Metrics& metrics,
                            LogStore& logStore)
                            : wifi(wifi),
                              wheelController(wheelController),
@@ -34,7 +32,6 @@ class Resources {
                              battery(battery),
                              gps(gps),
                              accelerometer(accelerometer),
-                             metrics(metrics),
                              logStore(logStore) { }
 
     WiFi_Client& wifi;
@@ -44,7 +41,6 @@ class Resources {
     Battery& battery;
     GPS& gps;
     IO_Accelerometer& accelerometer;
-    Metrics& metrics;
     LogStore& logStore;
 };
 

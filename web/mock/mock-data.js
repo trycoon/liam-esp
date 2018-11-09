@@ -15,6 +15,7 @@ let uptime = new Date(),
         rightWheelSpd: 80,
         pitch: 0,
         roll: 0,
+        heading: 0,
     },
     currentSystem = {
         name: 'liam-esp',
@@ -36,6 +37,7 @@ let uptime = new Date(),
         state.batteryVoltage = Math.floor(Math.random() * (16.8 - 14.0 + 1)) + 14.0;
         state.batteryLevel  = Math.round(Math.random() * 100);
         state.cutterLoad = Math.round(Math.random() * 100);
+        state.heading = Math.floor(Math.random() * 90) - 45;
         state.uptime = Math.round((new Date().getTime() - uptime.getTime()) / 1000)
         state.wifiSignal = Math.floor(Math.random() * (-30 - -90 + 1)) + -90;
 
