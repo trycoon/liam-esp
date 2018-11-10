@@ -17,7 +17,7 @@ Api::Api(StateController& stateController, Resources& resources) :
   stateController(stateController),
   resources(resources) {}
 
-void Api::statusToJson(statusResponse obj, JsonObject& json) {
+void Api::statusToJson(statusResponse& obj, JsonObject& json) {
     json["state"] = obj.state;
     json["batteryVoltage"] = obj.batteryVoltage;
     json["batteryLevel"] = obj.batteryLevel;
@@ -340,8 +340,8 @@ void Api::setupApi() {
         }
 
     auto *response = request->beginResponseStream("application/json");
-    response->addHeader("Cache-Control", "no-store, must-revalidate");    
-    DynamicJsonBuffer jsonBuffer(400);
+    response->addHeader("Cache-Control", "no-store, must-revalidate");
+    DynamicJsonBuffer jsonBuffer(300);
     JsonObject& root = jsonBuffer.createObject();
     
     root["name"] = Definitions::APP_NAME;
@@ -355,7 +355,7 @@ void Api::setupApi() {
     JsonObject& settings = root.createNestedObject("settings");
     settings["batteryFullVoltage"] = Definitions::BATTERY_FULLY_CHARGED;
     settings["batteryEmptyVoltage"] = Definitions::BATTERY_EMPTY;
-
+    
     root.printTo(*response);
     request->send(response);
   });
@@ -717,7 +717,7 @@ void Api::setupApi() {
 
       Configuration::config.logLevel = atoi(root["level"]);
       Configuration::save();
-      Log.notice(F("Set loglevel to %s" CR), root["level"]);
+      Log.notice(F("Set loglevel to %i" CR), Configuration::config.logLevel);
 
       request->send(200);
     } else {

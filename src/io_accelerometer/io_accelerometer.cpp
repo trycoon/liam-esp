@@ -24,7 +24,7 @@ void IO_Accelerometer::start() {
   } else {
     Log.notice(F("Gyro/accelerometer/compass init success." CR));
 
-    sensorReadingTicker.attach_ms<IO_Accelerometer*>(300, [](IO_Accelerometer* instance) {
+    sensorReadingTicker.attach_ms<IO_Accelerometer*>(200, [](IO_Accelerometer* instance) {
       instance->getReadings();
     }, this);
   }
@@ -34,7 +34,7 @@ bool IO_Accelerometer::isAvailable() {
   return available;
 }
 
-orientation IO_Accelerometer::getOrientation() {
+const orientation& IO_Accelerometer::getOrientation() const {
   return currentOrientation;
 }
 
@@ -52,7 +52,7 @@ void IO_Accelerometer::getReadings() {
 
     em7180.checkEventStatus(); // this also clears the interrupt
 
-    if (em7180.gotError()){
+    if (em7180.gotError()) {
       Log.warning(F("IO_accelerometer error: %s" CR), em7180.getErrorString());
       //TODO: implement some kind of recovery code here!
 
@@ -82,27 +82,30 @@ void IO_Accelerometer::getReadings() {
 
       em7180.readQuaternion(qw, qx, qy, qz);
 
-      float roll = atan2(2.0f * (qw * qx + qy * qz), qw * qw - qx * qx - qy * qy + qz * qz);
-      float pitch = -asin(2.0f * (qx * qz - qw * qy));
-      float yaw = atan2(2.0f * (qx * qy + qw * qz), qw * qw + qx * qx - qy * qy - qz * qz);
+      // ignore nan-reading we get quite often (I don't know why we get them)
+      if (!isnan(qw) && !isnan(qx) && !isnan(qy) && !isnan(qz)) {
+        float roll = atan2(2.0f * (qw * qx + qy * qz), qw * qw - qx * qx - qy * qy + qz * qz);
+        float pitch = -asin(2.0f * (qx * qz - qw * qy));
+        float yaw = atan2(2.0f * (qx * qy + qw * qz), qw * qw + qx * qx - qy * qy - qz * qz);
 
-      roll *= 180.0f / PI;  // Radians to Degree
-      pitch *= 180.0f / PI; // Radians to Degree
-      yaw *= 180.0f / PI;   // Radians to Degree
-      if (yaw < 0) {
-        yaw += 360.0f; // Ensure yaw stays between 0 and 360
+        roll *= 180.0f / PI;  // Radians to Degree
+        pitch *= 180.0f / PI; // Radians to Degree
+        yaw *= 180.0f / PI;   // Radians to Degree
+        if (yaw < 0) {
+          yaw += 360.0f; // Ensure yaw stays between 0 and 360
+        }
+
+        currentOrientation.roll = roundf(roll);
+        currentOrientation.pitch = roundf(pitch);
+        currentOrientation.heading = roundf(yaw);
       }
-
-      currentOrientation.roll = roundf(roll);
-      currentOrientation.pitch = roundf(pitch);
-      currentOrientation.heading = roundf(yaw);
     }
 
-    if (em7180.gotBarometer()) {
+    /*if (em7180.gotBarometer()) {
       float temperature, pressure;
 
       em7180.readBarometer(pressure, temperature);
-      /*
+
       // TODO: implement weather support later.
       Serial.println("Barometer:");
       Serial.print("  Altimeter temperature = ");
@@ -114,8 +117,8 @@ void IO_Accelerometer::getReadings() {
       float altitude = (1.0f - powf(pressure / 1013.25f, 0.190295f)) * 44330.0f;
       Serial.print("  Altitude = ");
       Serial.print(altitude, 2);
-      Serial.println(" m\n");*/
-    }
+      Serial.println(" m\n");
+    }*/
   }
 }
 

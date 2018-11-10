@@ -98,11 +98,10 @@ void setup() {
   // setup I2C
   Wire.begin(Definitions::SDA_PIN, Definitions::SCL_PIN);
   Wire.setTimeout(500); // milliseconds
-  delay(100);
   scan_I2C();
-
-  battery.start();
+  delay(100);
   io_accelerometer.start();
+  battery.start();
 
   auto lastState = Configuration::config.lastState;
   // initialize state controller, assume we are DOCKED unless there is a saved state.

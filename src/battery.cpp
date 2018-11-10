@@ -6,7 +6,7 @@
 #include "definitions.h"
 #include "configuration.h"
 
-Battery::Battery(IO_Analog& io_analog, TwoWire& w) : io_analog(io_analog), wire(w) {}
+Battery::Battery(IO_Analog& io_analog, TwoWire& w) : io_analog(io_analog), wire(w), lastChargeCurrentReading(0) {}
 
 void Battery::start() {
   ina219.begin(&wire);
@@ -14,6 +14,7 @@ void Battery::start() {
   // Set initial state.
   updateChargeCurrent();
   updateBatteryVoltage();
+  Log.trace("Battery voltage: %Fv, charge current: %FmA" CR, batteryVoltage, lastChargeCurrentReading);
 
   // update battery voltage readings every XX second.
   batteryVoltageTicker.attach<Battery*>(BATTERY_VOLTAGE_DELAY, [](Battery* instance) {
@@ -52,10 +53,10 @@ void Battery::updateChargeCurrent() {
   auto chargeCurrent = ina219.getCurrent_mA();
 
   _isCharging = chargeCurrent >= Definitions::CHARGE_CURRENT_THRESHOLD;
-
   // if we just started charging
   if (_isCharging && lastChargeCurrentReading < Definitions::CHARGE_CURRENT_THRESHOLD) {
     Log.notice("Start charging battery." CR);
+    
     // don't overwrite already existing starttime, we could have been charging with mower turned off.
     if (Configuration::config.startChargeTime == 0) {
       Configuration::config.startChargeTime = getEpocTime();

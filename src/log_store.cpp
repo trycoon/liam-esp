@@ -35,7 +35,7 @@ const std::deque<String>& LogStore::getLogMessages() const {
 
 void LogStore::writeInternal(uint8_t c) {
   if (c != '\n') {
-    current_line.concat(c);
+    current_line.concat((char)c);
   } else {
     if (log_messages.size() >= Definitions::MAX_LOGMESSAGES) {
       log_messages.pop_front();

@@ -109,5 +109,5 @@ namespace Definitions
   const uint16_t MQTT_QUEUE_LENGTH = 50;
 
   // How many lines of log messages that are kept, increase to have longer log message history at the expense of higher memory consumption.
-  const uint16_t MAX_LOGMESSAGES = 100;
+  const uint16_t MAX_LOGMESSAGES = 50;
 }

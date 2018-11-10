@@ -25,7 +25,7 @@ class IO_Accelerometer {
     IO_Accelerometer(TwoWire& w);
     bool isAvailable();
     bool isFlipped();
-    orientation getOrientation();
+    const orientation& getOrientation() const;
     void start();
 
   private:
