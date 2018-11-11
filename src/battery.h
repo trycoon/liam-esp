@@ -6,6 +6,7 @@
 #include <Ticker.h>
 #include <Wire.h>
 #include <deque>
+#include <vector>
 #include <Adafruit_INA219.h>
 #include "io_analog.h"
 
@@ -29,7 +30,7 @@ class Battery {
 
   private:
     static const uint16_t MAX_SAMPLES = 100;   // How much history are we going to keep? set too high will consume excessive memory and we may get out-of-memory related errors.
-    static const uint16_t BATTERY_CHARGECURRENT_DELAY = 200; // milliseconds
+    static const uint16_t BATTERY_CHARGECURRENT_DELAY = 100; // milliseconds
     static const uint16_t BATTERY_VOLTAGE_DELAY = 20;  // seconds
     IO_Analog& io_analog;
     TwoWire& wire;
@@ -39,6 +40,8 @@ class Battery {
     bool _isCharging;
     bool _needRecharge;
     bool _isFullyCharged;
+    std::vector<float> currentMedian;
+    uint8_t currentMedianIndex;
     void updateBatteryVoltage();
     void updateChargeCurrent();
     int64_t getEpocTime();

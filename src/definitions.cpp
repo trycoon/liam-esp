@@ -74,7 +74,7 @@ namespace Definitions
   // 3.0 volts should be considered an completely discharged cell, below that will damage the cell.
   const float BATTERY_FULLY_CHARGED = 16.8;        // in volt. e.g. 4.2 volt * 4 cells = 16.8 volt.
   const float BATTERY_EMPTY = 14.00;               // in volt. e.g. 3.0 volt * 4 cells = 12.0 volt and then we add a few volts to give us enough power to get us back to the charger.
-  const float BATTERY_MULTIPLIER = BATTERY_FULLY_CHARGED / 1.1;   // Battery voltage divided by ADC max value, used to calculate real battery voltage.
+  const float BATTERY_MULTIPLIER = BATTERY_FULLY_CHARGED / 3.04;   // Battery voltage divided by ADC max value, used to calculate real battery voltage.
 
   // Nickel–metal hydride / NiMH example. http://batteryuniversity.com/learn/article/charging_nickel_metal_hydride
   // const float BATTERY_FULLY_CHARGED = 14.50;

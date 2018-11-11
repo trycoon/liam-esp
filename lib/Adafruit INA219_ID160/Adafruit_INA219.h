@@ -111,6 +111,7 @@ enum {
     INA219_CONFIG_BADCRES_10BIT      =       (0x0080),  // 10-bit bus res = 0..1023
     INA219_CONFIG_BADCRES_11BIT      =       (0x0100),  // 11-bit bus res = 0..2047
     INA219_CONFIG_BADCRES_12BIT       =      (0x0180),  // 12-bit bus res = 0..4097
+    INA219_CONFIG_BADCRES_12BIT_128S_69MS  = (0x0780),  // 128 x 12-bit bus samples averaged together
 };
 
 /**************************************************************************/
@@ -220,6 +221,10 @@ class Adafruit_INA219{
   float getShuntVoltage_mV(void);
   float getCurrent_mA(void);
   float getPower_mW(void);
+  void setAmpInstant(void);
+  void setAmpAverage(void);
+  void setVoltInstant(void);
+  void setVoltAverage(void);
 
  private:
   TwoWire *_i2c;

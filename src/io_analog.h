@@ -14,9 +14,6 @@ class IO_Analog {
     * Get the voltage readings from the specified pin.
     */
     float getVoltage(uint8_t pin);
-  
-  private:
-    const float VOLTAGE_CONVERSION = 1.1 / 4095;  // max value 4095=1.1v
 };
 
 #endif

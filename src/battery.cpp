@@ -2,19 +2,22 @@
 #include <sys/time.h>
 #include <Preferences.h>
 #include <ArduinoLog.h>
+#include <vector>
 #include "battery.h"
 #include "definitions.h"
 #include "configuration.h"
 
-Battery::Battery(IO_Analog& io_analog, TwoWire& w) : io_analog(io_analog), wire(w), lastChargeCurrentReading(0) {}
+Battery::Battery(IO_Analog& io_analog, TwoWire& w) : io_analog(io_analog), wire(w), lastChargeCurrentReading(0), currentMedian(11, 0), currentMedianIndex(0) {}
 
 void Battery::start() {
   ina219.begin(&wire);
-
+  
   // Set initial state.
-  updateChargeCurrent();
+  for (auto i: currentMedian) {
+    updateChargeCurrent();
+  }
   updateBatteryVoltage();
-  Log.trace("Battery voltage: %Fv, charge current: %FmA" CR, batteryVoltage, lastChargeCurrentReading);
+  Log.trace("Battery voltage: %F volt, charge current: %F mA" CR, batteryVoltage, lastChargeCurrentReading);
 
   // update battery voltage readings every XX second.
   batteryVoltageTicker.attach<Battery*>(BATTERY_VOLTAGE_DELAY, [](Battery* instance) {
@@ -30,6 +33,22 @@ int64_t Battery::getEpocTime() {
   struct timeval tv;
   gettimeofday(&tv, NULL);
   return (tv.tv_sec * 1000LL + (tv.tv_usec / 1000LL));
+}
+
+template<typename T>
+T calculateMedian(std::vector<T> entries) {
+  size_t size = entries.size();
+
+  if (size == 0) {
+    return 0;  // Undefined, really.
+  } else {
+    sort(entries.begin(), entries.end());
+    if (size % 2 == 0) {
+      return (entries[size / 2 - 1] + entries[size / 2]) / 2;
+    } else {
+      return entries[size / 2];
+    }
+  }
 }
 
 void Battery::updateBatteryVoltage() {
@@ -51,12 +70,16 @@ void Battery::updateBatteryVoltage() {
 
 void Battery::updateChargeCurrent() {
   auto chargeCurrent = ina219.getCurrent_mA();
+  currentMedian[currentMedianIndex++%currentMedian.size()] = chargeCurrent;  // enter new reading into array.
+  // we can get some missreadings (1475.10) from time to time, so we record samples to an array an take the median value to filter out all noice.
+  chargeCurrent = calculateMedian<float>(currentMedian);
 
   _isCharging = chargeCurrent >= Definitions::CHARGE_CURRENT_THRESHOLD;
   // if we just started charging
   if (_isCharging && lastChargeCurrentReading < Definitions::CHARGE_CURRENT_THRESHOLD) {
     Log.notice("Start charging battery." CR);
-    
+    Log.trace("Charge current: %F mA" CR, chargeCurrent);
+
     // don't overwrite already existing starttime, we could have been charging with mower turned off.
     if (Configuration::config.startChargeTime == 0) {
       Configuration::config.startChargeTime = getEpocTime();

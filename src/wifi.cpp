@@ -283,7 +283,7 @@ void WiFi_Client::onWifiConnect(WiFiEvent_t event, system_event_info_t info) {
   MDNS.begin(Definitions::APP_NAME);
   MDNS.addService("_http", "_tcp", 80);
   // Get time from NTP server.
-  configTime(Configuration::config.gmt.toInt() * 3600, 3600, Configuration::config.ntpServer.c_str()); // second parameter is daylight offset (3600 = summertime)
+  configTime(Configuration::config.gmt.toInt() * 3600, 0, Configuration::config.ntpServer.c_str()); // second parameter is daylight offset (3600 = summertime)
   Log.notice("Time: %s" CR, getTime().c_str());
 
   if (isMQTT_enabled()) {

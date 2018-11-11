@@ -88,7 +88,7 @@ namespace Configuration {
       }
     }
 
-    Log.notice("Loaded settings from Flash: %s" CR, jsonString.c_str());
+    Log.trace("Loaded settings from Flash: %s" CR, jsonString.c_str());
   }
   
   void save() {    
