@@ -84,6 +84,9 @@ void scan_I2C() {
 void setup() {
 
   pinMode(Definitions::FACTORY_RESET_PIN, INPUT_PULLUP);
+  pinMode(Definitions::PAUSE_PIN, INPUT_PULLUP);
+  pinMode(Definitions::BUMPER_PIN, INPUT_PULLUP);
+  pinMode(Definitions::BUZZER_PIN, OUTPUT);
 
   logstore.begin(115200);
   Log.begin(LOG_LEVEL_NOTICE, &logstore, true);

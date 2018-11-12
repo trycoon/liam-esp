@@ -44,6 +44,9 @@ namespace Definitions {
   extern const uint8_t CUTTER_LOAD_PIN;
   extern const float CUTTER_LOAD_RESISTOR_MULTIPLIER;
   extern const uint8_t CUTTER_MAX_SPEED;
+  extern const uint8_t PAUSE_PIN;
+  extern const uint8_t BUZZER_PIN;
+  extern const uint8_t BUMPER_PIN;
   extern const uint8_t LEFT_BWF_PIN;
   extern const uint8_t RIGHT_BWF_PIN;
   extern const uint32_t BWF_SENSE_TIMEOUT;
