@@ -13,7 +13,7 @@
       <div id="modal" class="center">
         <div class="vertical-center">
           <i class="fas fa-ban fa-10x"></i>
-          <h3>No connection with mower!</h3>
+          <h2>No connection with mower!</h2>
           <p>Mower out of range, mower turned off, or WiFi not working?</p>
         </div>
       </div>
@@ -80,14 +80,15 @@
           </div>
         </section>
         <section class="section js-section js-section-metrics" style="display: none">
-            <h3>Battery voltage (V)</h3>
+            <h2>Battery voltage (V)</h2>
             <div id="battery-chart" class="ct-chart ct-minor-seventh"></div>
-            <h3>WiFi reception (dBm)</h3>
+            <h2>WiFi reception (dBm)</h2>
             <div id="wifi-chart" class="ct-chart ct-minor-seventh"></div>
-            <h3>Cuttermotor load (%)</h3>
+            <h2>Cuttermotor load (%)</h2>
             <div id="cutterload-chart" class="ct-chart ct-minor-seventh"></div>
         </section>
         <section class="section js-section js-section-settings" style="display: none">
+          <h2>Settings</h2>
           <div class="buttons center">
             <a href="/setup" class="button">Installation wizard</a>
             <span class="js-restart button">Reboot</span>
@@ -103,17 +104,15 @@
           </select>
 
           <div class="center">
-            <fieldset>
-              <legend>REST API</legend>
-              <label for="apikey">key</label>
+              <h3>REST API</h3>
               <input id="apikey" disabled />
               <span class="js-generateApiKey button">New key</span>
               <br>
               <a href="/swagger.html" target="_blank">OpenAPI documenation</a>
-            </fieldset>            
           </div>
         </section>
         <section class="section js-section js-section-schedule" style="display: none">
+          <h2>Schedule mowing</h2>
         </section>
         <section class="section js-section js-section-info" style="display: none">
           <section>
@@ -136,6 +135,10 @@
             <h2>Firmware update</h2>
             <form method="POST" action="/updatefirmware" enctype="multipart/form-data">
               <input type="file" name="update" value="select" >
+              <select id="firmwareUpdateType" name="firmwareUpdateType">
+                <option value="FLASH" selected="selected">System</option>
+                <option value="SPIFFS">User interface</option>
+              </select>
               <input class="center button" type="submit" value="Update">
             </form>
           </section>

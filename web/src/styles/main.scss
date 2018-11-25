@@ -22,10 +22,11 @@ input[type=range] {
     background: transparent
 }
 input[type=range]:focus {
-    outline: none
+    outline: none;
 }
 input {
-    font-size: 1em
+    font-size: 1em;
+    margin: 1vw 0;
 }
 ol, ul {
     margin: 0;
@@ -51,6 +52,7 @@ label,select, textarea {
 select {
     width: 100%;
     max-width: 200px;
+    margin: 1vw 0;
     border-radius: 4px;
 }
 
@@ -75,6 +77,11 @@ h1 {
 h2 {
   font-size: 1rem;
   margin: 0.5rem 0;
+}
+h3 {
+    font-size: 1rem;
+    margin: 3vw auto 1vw auto;
+    text-align: center;
 }
 p {
   font-size: 0.8rem;

@@ -244,12 +244,14 @@ void WiFi_Client::setupWebServer() {
       {
         return request->requestAuthentication();
       }
+      
+      String firmwareUpdateType = "SPIFFS"; // TODO: get parameter from request.
 
       if (!index) { // if index == 0 then this is the first frame of data
-        Log.notice(F("Updating firmware from file: %s" CR), filename.c_str());
+        Log.notice(F("Updating firmware from file: %s of type %s" CR), filename.c_str(), firmwareUpdateType);
         publish_mqtt("START UPDATING FIRMWARE");
         
-        if (!Update.begin(UPDATE_SIZE_UNKNOWN, U_FLASH)) {  // TODO: support update of SPIFFS using "U_SPIFFS"
+        if (!Update.begin(UPDATE_SIZE_UNKNOWN, firmwareUpdateType == "SPIFFS" ? U_SPIFFS : U_FLASH)) {  // TODO: support update of SPIFFS using "U_SPIFFS"
           Update.printError(Serial);
         }
       }
