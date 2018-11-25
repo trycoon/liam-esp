@@ -36,8 +36,8 @@ IO_Analog io_analog;
 IO_Accelerometer io_accelerometer(Wire);
 WiFi_Client wifi;
 OTA ota(wifi);
-Wheel leftWheel(1, Definitions::LEFT_WHEEL_MOTOR_PIN, Definitions::LEFT_WHEEL_MOTOR_DIRECTION_PIN, Definitions::LEFT_WHEEL_MOTOR_INVERTED, Definitions::LEFT_WHEEL_MOTOR_SPEED);
-Wheel rightWheel(2, Definitions::RIGHT_WHEEL_MOTOR_PIN, Definitions::RIGHT_WHEEL_MOTOR_DIRECTION_PIN, Definitions::RIGHT_WHEEL_MOTOR_INVERTED, Definitions::RIGHT_WHEEL_MOTOR_SPEED);
+Wheel leftWheel(1, Definitions::LEFT_WHEEL_MOTOR_PIN, Definitions::LEFT_WHEEL_MOTOR_DIRECTION_PIN, Definitions::LEFT_WHEEL_ODOMETER_PIN, Definitions::LEFT_WHEEL_MOTOR_INVERTED, Definitions::LEFT_WHEEL_MOTOR_SPEED);
+Wheel rightWheel(2, Definitions::RIGHT_WHEEL_MOTOR_PIN, Definitions::RIGHT_WHEEL_MOTOR_DIRECTION_PIN, Definitions::RIGHT_WHEEL_ODOMETER_PIN, Definitions::RIGHT_WHEEL_MOTOR_INVERTED, Definitions::RIGHT_WHEEL_MOTOR_SPEED);
 WheelController wheelController(leftWheel, rightWheel, io_accelerometer);
 Cutter cutter(io_analog);
 BWF bwf;
@@ -91,7 +91,7 @@ void setup() {
   logstore.begin(115200);
   Log.begin(LOG_LEVEL_NOTICE, &logstore, true);
 
-  Log.notice("\n=== %s v%s ===\n\n", Definitions::APP_NAME, Definitions::APP_VERSION);
+  Log.notice("\n=== %s v%s ===\nbuild time: %s %s\n\n", Definitions::APP_NAME, Definitions::APP_VERSION, __DATE__, __TIME__);
 
   Configuration::load();
   
@@ -100,7 +100,8 @@ void setup() {
 
   // setup I2C
   Wire.begin(Definitions::SDA_PIN, Definitions::SCL_PIN);
-  Wire.setTimeout(500); // milliseconds
+  Wire.setTimeout(500);   // milliseconds
+  Wire.setClock(400000);  // 400 kHz I2C speed
   scan_I2C();
   delay(100);
   io_accelerometer.start();
@@ -116,14 +117,13 @@ void setup() {
   }
 
   wifi.start();
+  ota.start();
 
   if (Configuration::config.setupDone) {
     api.setupApi();
   } else {
     Log.notice(F("Starting mower for first time. Please connect to WiFi accesspoint \"%s\" and run installation wizard!" CR), Definitions::APP_NAME);
   }
-
-  ota.start();
 }
 
 // Main program loop

@@ -100,7 +100,7 @@ function startSubscribingOnStatus() {
   });
 
   socket.addEventListener('error', (error) => {
-    console.warn(`Got WS error: ${error}`);
+    console.warn(`Got WS error: ${error.message}`);
   });
 
   // Listen for messages
@@ -117,6 +117,22 @@ function startSubscribingOnStatus() {
   });  
 }
 
+function setupSections() {
+  // get initial settings and system information.
+  api.getSystem().done(data => {
+    liam.data.system = data;
+  
+    for (let section in global.liam.sections) {
+      global.liam.sections[section].init();
+    }
+
+    showSection('start');
+    startSubscribingOnStatus();
+  }).catch(() => {
+    setTimeout(setupSections, 500); // retry if failed.
+  });
+}
+
 function init() {
   // Hide all sections first, showSection() will show the appropriate one.
   $('.section').hide();
@@ -128,18 +144,7 @@ function init() {
   addClickEffect();
 
   showLostConnectionModal();
-
-  // get initial settings and system information.
-  api.getSystem().done(data => {
-    liam.data.system = data;
-  
-    for (let section in global.liam.sections) {
-      global.liam.sections[section].init();
-    }
-
-    showSection('start');
-    startSubscribingOnStatus();
-  });
+  setupSections();
 }
 
 // Start application.

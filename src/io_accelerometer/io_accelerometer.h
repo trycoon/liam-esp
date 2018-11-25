@@ -23,8 +23,9 @@ struct orientation {
 class IO_Accelerometer {
   public:
     IO_Accelerometer(TwoWire& w);
-    bool isAvailable();
-    bool isFlipped();
+    ~IO_Accelerometer();
+    bool isAvailable() const;
+    bool isFlipped() const;
     const orientation& getOrientation() const;
     void start();
 
@@ -33,8 +34,9 @@ class IO_Accelerometer {
     Ticker sensorReadingTicker;
     EM7180_Master em7180;
     orientation currentOrientation;
-    void getReadings();
     bool available = false;
+    void IRAM_ATTR interruptHandler();
+    void getReadings();
 };
 
 #endif

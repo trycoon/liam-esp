@@ -69,14 +69,10 @@ select {
 }
 /* TYPOGRAPHY */
 h1 {
-  font-size: 2.5rem;
-  margin: 0.5rem 0;
-}
-h2 {
   font-size: 2rem;
   margin: 0.5rem 0;
 }
-h3 {
+h2 {
   font-size: 1rem;
   margin: 0.5rem 0;
 }
@@ -347,23 +343,33 @@ p {
 /* Battery indicator */
 .battery {
   svg {
-    height: 30vw;
+    height: 15vw;
   }
   -webkit-flex: 0 0 35%;
   flex: 0 0 35%;
   .battery-value {
     float: right;
     font-size: 5vw;
-    line-height: 30vw;
+    margin: 0 auto 0 3vw;
+    line-height: 15vw;
     width: 2em;
   }
+  .charging {
+    margin: 0 3vw 0 auto;
+  }
 }
+/* Mower heading compass */
+.compass {
+    margin: 3vw;
+}
+/* System messages log */
 #syslog {
   width: 100%;
   resize: none;
   font-size: 0.8rem;
   overflow-x: scroll;
 }
+/* 3D model */
 .gl3dmodel {
   width: 100%;
 }

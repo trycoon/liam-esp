@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <ArduinoLog.h>
+#include <FunctionalInterrupt.h>
 #include "definitions.h"
 #include "io_accelerometer.h"
 
@@ -7,16 +8,20 @@
 // code exmaple from https://github.com/simondlevy/EM7180
 static volatile bool newData;
 
-void IRAM_ATTR interruptHandler() { // IRAM_ATTR tells the complier, that this code Must always be in the ESP32's IRAM, the limited 128k IRAM. Use it sparingly.
+IO_Accelerometer::IO_Accelerometer(TwoWire& w): _Wire(w), em7180(ARES, GRES, MRES, MAG_RATE, ACCEL_RATE, GYRO_RATE, BARO_RATE, Q_RATE_DIVISOR) {
+  pinMode(Definitions::IO_ACCELEROMETER_INT_PIN, INPUT_PULLUP);
+}
+
+IO_Accelerometer::~IO_Accelerometer() {
+  detachInterrupt(digitalPinToInterrupt(Definitions::IO_ACCELEROMETER_INT_PIN));
+}
+
+void IRAM_ATTR IO_Accelerometer::interruptHandler() { // IRAM_ATTR tells the complier, that this code Must always be in the ESP32's IRAM, the limited 128k IRAM. Use it sparingly.
   newData = true;
 }
 
-IO_Accelerometer::IO_Accelerometer(TwoWire& w): _Wire(w), em7180(ARES, GRES, MRES, MAG_RATE, ACCEL_RATE, GYRO_RATE, BARO_RATE, Q_RATE_DIVISOR) {
-  pinMode(Definitions::IO_ACCELEROMETER_INT_PIN, INPUT);
-}
-
 void IO_Accelerometer::start() {
-  attachInterrupt(Definitions::IO_ACCELEROMETER_INT_PIN, interruptHandler, RISING);
+  attachInterrupt(digitalPinToInterrupt(Definitions::IO_ACCELEROMETER_INT_PIN), std::bind(&IO_Accelerometer::interruptHandler, this), RISING);
   available = em7180.begin();
 
   if (!available) {
@@ -30,7 +35,7 @@ void IO_Accelerometer::start() {
   }
 }
 
-bool IO_Accelerometer::isAvailable() {
+bool IO_Accelerometer::isAvailable() const {
   return available;
 }
 
@@ -38,7 +43,7 @@ const orientation& IO_Accelerometer::getOrientation() const {
   return currentOrientation;
 }
 
-bool IO_Accelerometer::isFlipped() {
+bool IO_Accelerometer::isFlipped() const {
   if (available == false) {
     return false;
   } else {    
@@ -47,7 +52,7 @@ bool IO_Accelerometer::isFlipped() {
 }
 
 void IO_Accelerometer::getReadings() {
-  if (available && newData) {
+  if (available && newData) {    
     newData = false;
 
     em7180.checkEventStatus(); // this also clears the interrupt
@@ -122,3 +127,11 @@ void IO_Accelerometer::getReadings() {
   }
 }
 
+// Possible cheaper replacements parts:
+// LM303:
+//  https://github.com/switchdoclabs/SDL_ESP32_BC24_COMPASS
+//  https://github.com/adafruit/Adafruit_LSM303DLHC
+//  https://cdn-shop.adafruit.com/datasheets/LSM303DLHC.PDF
+//  https://github.com/mikeshub/Pololu_Open_IMU
+// MPU9255:
+//  https://github.com/natanaeljr/esp32-MPU-driver

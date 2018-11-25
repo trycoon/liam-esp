@@ -113,7 +113,8 @@ float Battery::getBatteryVoltage() const {
 * Get battery status in percent, 100% = fully charged.
 */
 uint8_t Battery::getBatteryStatus() const {
-  return round((batteryVoltage - Definitions::BATTERY_EMPTY) / (Definitions::BATTERY_FULLY_CHARGED - Definitions::BATTERY_EMPTY) * 100);
+  auto level = round((batteryVoltage - Definitions::BATTERY_EMPTY) / (Definitions::BATTERY_FULLY_CHARGED - Definitions::BATTERY_EMPTY) * 100);
+  return level > 100 ? 100 : level;
 }
 
 bool Battery::isCharging() const {

@@ -61,8 +61,7 @@ bool Cutter::isCutting() {
 void Cutter::senseLoad() {
   //TODO: convert to percent.
   //load = io_analog.getVoltage(Definitions::CUTTER_LOAD_PIN);
-  load=10;  // TODO: make to set this to something otherwise we get an IntegerByDivision-error!
-}
+  load=10;
 
 uint8_t Cutter::getLoad() {
   return load;

@@ -6,12 +6,13 @@
 #include <cassert>
 #include <ESPmDNS.h>
 #include <ArduinoLog.h>
+#include <Update.h>
 #include "definitions.h"
 #include "configuration.h"
 #include "log_store.h"
 
 // TODO: AVOID "%" in CSS, https://github.com/me-no-dev/ESPAsyncWebServer/pull/366
-static const char SETUP_HTML[] PROGMEM = "<html><head><meta name=\"viewport\" content=\"width=device-width\"><title>Liam-ESP</title><style>fieldset{padding:1em;font:0.8em/1 sans-serif;margin:1em}legend{padding:0.2em 0.5em;border:1px solid black;font-size:0.9em}label{float:left;margin-right:0.5em;padding-top:0.2em;text-align:right;font-weight:bold;width:6em}input{margin-bottom:0.4em;padding-left: 0.2em;}.center{display:block;margin-right:auto;margin-left:auto;text-align:center}a:link{text-decoration:none;}</style></head><body><h1 class=\"center\">Setup</h1><form action=\"/setup\" method=\"post\"><fieldset><legend>WiFi</legend><label>SSID: </label><input type=\"text\" name=\"SSID\" length=32 value=\"%SSID%\" required><br><label>Password: </label><input type=\"password\" name=\"WIFI_PASSWORD\" length=64 value=\"%WIFI_PASSWORD%\"></fieldset><fieldset><legend>Administrator</legend><label>Username: </label><input type=\"text\" name=\"USERNAME\" length=20 value=\"%USERNAME%\" required><br><label>Password: </label><input type=\"password\" name=\"PASSWORD\" length=20 value=\"%PASSWORD%\" required></fieldset><fieldset><legend>Time</legend><label>NTP-server: </label><input type=\"text\" name=\"NTP_SERVER\" length=40 value=\"%NTP_SERVER%\"><br><label>Time zone: </label><input type=\"number\" name=\"GMT\"  min=\"-12\" max=\"12\" value=\"%GMT%\">&nbsp;<a href=\"https://upload.wikimedia.org/wikipedia/commons/e/e8/Standard_World_Time_Zones.png\" target=\"_blank\">&nbsp;i&nbsp;</a></fieldset><fieldset><legend>MQTT</legend><label>Server IP: </label><input type=\"text\" name=\"MQTT_SERVER\" placeholder=\"leave blank if not used\" length=64 value=\"%MQTT_SERVER%\"><br><label>Port: </label><input type=\"number\" name=\"MQTT_PORT\" placeholder=\"leave blank if not used\" min=\"1024\" max=\"65535\" value=\"%MQTT_PORT%\"><br><label>Subscribe: </label><input type=\"text\" name=\"MQTT_TOPIC\" placeholder=\"leave blank if not used\" length=200 value=\"%MQTT_TOPIC%\"><br><label>Command: </label><input type=\"text\" name=\"MQTT_TOPIC_COMMAND\" placeholder=\"leave blank if not used\" length=200 value=\"%MQTT_TOPIC_COMMAND%\"></fieldset><input type=\"submit\" value=\"Save\" class=\"center\"></form></body></html>";
+static const char SETUP_HTML[] PROGMEM = "<!DOCTYPE html><html lang=\"en\"><head><meta name=\"viewport\" content=\"width=device-width,initial-scale=1,user-scalable=no\"><title>Liam-ESP</title><style>fieldset{padding:1em;font:0.8em/1 sans-serif;margin:1em}legend{padding:0.2em 0.5em;border:1px solid black;font-size:0.9em}label{float:left;margin-right:0.5em;padding-top:0.2em;text-align:right;font-weight:bold;width:6em}input{margin-bottom:0.4em;padding-left: 0.2em;}.center{display:block;margin-right:auto;margin-left:auto;text-align:center}a:link{text-decoration:none;}button,.button{border:0;border-radius:0.3rem;background-color:#1fa3ec;color:#fff;line-height:2rem;font-size:1.1rem;width:6em;}</style></head><body><h1 class=\"center\">Setup</h1><form action=\"/setup\" method=\"post\"><fieldset><legend>WiFi</legend><label>SSID: </label><input type=\"text\" name=\"SSID\" length=32 value=\"%SSID%\" required><br><label>Password: </label><input type=\"password\" name=\"WIFI_PASSWORD\" length=64 value=\"%WIFI_PASSWORD%\"></fieldset><fieldset><legend>Administrator</legend><label>Username: </label><input type=\"text\" name=\"USERNAME\" length=20 value=\"%USERNAME%\" required><br><label>Password: </label><input type=\"password\" name=\"PASSWORD\" length=20 value=\"%PASSWORD%\" required></fieldset><fieldset><legend>Time</legend><label>NTP-server: </label><input type=\"text\" name=\"NTP_SERVER\" length=40 value=\"%NTP_SERVER%\"><br><label>Time zone: </label><input type=\"number\" name=\"GMT\"  min=\"-12\" max=\"12\" value=\"%GMT%\">&nbsp;<a href=\"https://upload.wikimedia.org/wikipedia/commons/e/e8/Standard_World_Time_Zones.png\" target=\"_blank\">&nbsp;i&nbsp;</a></fieldset><fieldset><legend>MQTT</legend><label>Server IP: </label><input type=\"text\" name=\"MQTT_SERVER\" placeholder=\"leave blank if not used\" length=64 value=\"%MQTT_SERVER%\"><br><label>Port: </label><input type=\"number\" name=\"MQTT_PORT\" placeholder=\"leave blank if not used\" min=\"1024\" max=\"65535\" value=\"%MQTT_PORT%\"><br><label>Subscribe: </label><input type=\"text\" name=\"MQTT_TOPIC\" placeholder=\"leave blank if not used\" length=200 value=\"%MQTT_TOPIC%\"><br><label>Command: </label><input type=\"text\" name=\"MQTT_TOPIC_COMMAND\" placeholder=\"leave blank if not used\" length=200 value=\"%MQTT_TOPIC_COMMAND%\"></fieldset><input type=\"submit\" value=\"Save\" class=\"center button\"></form></body></html>";
 static const char NO_WEB_UI[] PROGMEM = "Web interface is not available. See README.md for instructions about how to flash interface into mower.";
 WiFi_Client* WiFi_Client::Instance = nullptr;
 
@@ -68,19 +69,19 @@ void WiFi_Client::WiFiEvent(WiFiEvent_t event, system_event_info_t info) {
       case SYSTEM_EVENT_AP_START: {
         // When we run as an accesspoint
         WiFi.softAPsetHostname(Definitions::APP_NAME);
-        WiFi.softAPenableIpV6();
+        //WiFi.softAPenableIpV6();
         break;
       case SYSTEM_EVENT_STA_START:
         // When we run in Station-mode (are connected to an accesspoint as client)
         WiFi.setHostname(Definitions::APP_NAME);
         break;
       case SYSTEM_EVENT_STA_CONNECTED:
-        WiFi.enableIpV6();
+        //WiFi.enableIpV6();
         break;
-      case SYSTEM_EVENT_AP_STA_GOT_IP6:
+      /*case SYSTEM_EVENT_AP_STA_GOT_IP6:
         //both interfaces get the same event
         Log.trace("STA IPv6: %s, AP IPv6: %s" CR, WiFi.localIPv6().toString().c_str(), WiFi.softAPIPv6().toString().c_str());
-        break;
+        break;*/
       case SYSTEM_EVENT_STA_GOT_IP:
         Instance->onWifiConnect(event, info);
         break;
@@ -104,6 +105,14 @@ void WiFi_Client::start() {
   WiFi.softAP(Definitions::APP_NAME);
   Log.notice(F("AP Started, AP SSID: \"%s\", AP IPv4: %s" CR), Definitions::APP_NAME, WiFi.softAPIP().toString().c_str());
   
+  // Annonce us on WiFi network using Multicast DNS. This should be run BEFORE WiFi connect.
+  if (MDNS.begin(Definitions::APP_NAME)) {
+    MDNS.addService("http", "tcp", 80);
+    MDNS.addService("ws", "tcp", 80);
+  } else {
+    Log.warning("Failed setup mDNS" CR);
+  }
+
   connect();
 
   setupWebServer();
@@ -156,10 +165,18 @@ void WiFi_Client::setupWebServer() {
     ws.setAuthentication(Configuration::config.username.c_str(), Configuration::config.password.c_str());
 
     web_server.on("/setup", HTTP_GET, [](AsyncWebServerRequest *request) {
+      // TODO: list available accesspoints to choose between. https://github.com/switchdoclabs/SDL_ESP32_BC24_GETIP/blob/master/WiFiManager.cpp#L436
       request->send_P(200, "text/html", SETUP_HTML, renderPlaceholder);
     });
     // Handle Post-back form from setup page.
     web_server.on("/setup", HTTP_POST, [](AsyncWebServerRequest *request) {
+      if ((request->hasParam("apiKey") &&
+        request->getParam("apiKey")->value() != Configuration::config.apiKey) && 
+      !request->authenticate(Configuration::config.username.c_str(), Configuration::config.password.c_str()))
+      {
+        return request->requestAuthentication();
+      }
+
       if(request->hasParam("USERNAME", true)){
         Configuration::config.username = request->getParam("USERNAME", true)->value();
       }
@@ -202,12 +219,54 @@ void WiFi_Client::setupWebServer() {
       // If working, then set location below to optained IP from accesspoint.
       
       // Redirect client back to startpage
-      auto *response = request->beginResponse(307);
+      auto *response = request->beginResponse(303);
       response->addHeader("Location", "/");
       request->send(response);
 
       sleep(50);
       ESP.restart();
+    });
+
+    // Handle Post-back form firmware update.
+    web_server.on("/updatefirmware", HTTP_POST, [](AsyncWebServerRequest *request) {
+      
+      // Redirect client back to startpage
+      auto *response = request->beginResponse(303, "text/plain", Update.hasError() ? "FAILED" : "SUCCESS");
+      response->addHeader("Location", "/");
+      request->send(response);
+
+      sleep(50);
+      ESP.restart();
+    }, [this](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
+      if ((request->hasParam("apiKey") &&
+        request->getParam("apiKey")->value() != Configuration::config.apiKey) && 
+      !request->authenticate(Configuration::config.username.c_str(), Configuration::config.password.c_str()))
+      {
+        return request->requestAuthentication();
+      }
+
+      if (!index) { // if index == 0 then this is the first frame of data
+        Log.notice(F("Updating firmware from file: %s" CR), filename.c_str());
+        publish_mqtt("START UPDATING FIRMWARE");
+        
+        if (!Update.begin(UPDATE_SIZE_UNKNOWN, U_FLASH)) {  // TODO: support update of SPIFFS using "U_SPIFFS"
+          Update.printError(Serial);
+        }
+      }
+
+      //Write chunked data to the free sketch space
+      if (Update.write(data, len) != len) {
+        Update.printError(Serial);
+      }
+      
+      if (final) { // if the final flag is set then this is the last frame of data
+        if (Update.end(true)) { //true to set the size to the current progress
+          Log.notice(F(CR "Firmware update complete, wrote %i bytes. Rebooting..." CR), index + len);
+          publish_mqtt("DONE UPDATING FIRMWARE");
+        } else {
+          Update.printError(Serial);
+        }
+      }
     });
 
     // When no SSID set, redirect first page to setup page.
@@ -220,7 +279,9 @@ void WiFi_Client::setupWebServer() {
     web_server.onNotFound([](AsyncWebServerRequest *request){
       if (request->method() == HTTP_OPTIONS) {
 		    request->send(200); // CORS-support
-	    } else {
+	    } else if (Configuration::config.ssid.length() == 0) {
+        request->redirect("/setup");
+      } else {
 		    request->send(404);
 	    }
     });
@@ -241,7 +302,7 @@ void WiFi_Client::setupWebServer() {
       web_server
       .serveStatic("/", SPIFFS, "/")
       .setDefaultFile("index.html")
-      .setCacheControl("max-age=2592000") // 30 days.*/
+      .setCacheControl("max-age=2592000") // 30 days.
       .setFilter(ON_STA_FILTER)
       .setAuthentication(Configuration::config.username.c_str(), Configuration::config.password.c_str());
     }
@@ -279,9 +340,6 @@ void WiFi_Client::onWifiConnect(WiFiEvent_t event, system_event_info_t info) {
   //close own AP network
   WiFi.mode(WIFI_MODE_STA);
 
-  // Annonce us on WiFi network using Multicast DNS.
-  MDNS.begin(Definitions::APP_NAME);
-  MDNS.addService("_http", "_tcp", 80);
   // Get time from NTP server.
   configTime(Configuration::config.gmt.toInt() * 3600, 0, Configuration::config.ntpServer.c_str()); // second parameter is daylight offset (3600 = summertime)
   Log.notice("Time: %s" CR, getTime().c_str());
@@ -343,11 +401,7 @@ void WiFi_Client::flushMqttQueue() {
     uint16_t packetIdPub1 = mqttClient.publish(message.topic.c_str(), 1, true, message.message.c_str());
     // if packet id is greater than 0 then we have successfully sent package.
     if (packetIdPub1 > 0) {
-     /* Serial.print("Publish MQTT-message: id="); Serial.print(packetIdPub1);
-      Serial.print(", topic=\""); Serial.print(message.topic.c_str());
-      Serial.print("\", message=\""); Serial.print(message.message.c_str());
-      Serial.println("\"");*/
-
+      Log.trace(F("Publish MQTT-message: id=%i, topic=\"%s\", message=\"%s\"" CR), packetIdPub1, message.topic.c_str(), message.message.c_str());
       msgQueue.pop();
     }
   }

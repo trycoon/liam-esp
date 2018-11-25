@@ -64,13 +64,17 @@ let proxy = {
         return res.json(data.getLogmessages());
       },
       'POST /api/v1/apikey': (req, res) => {
-        const CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        const CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
         let key = 'xxxxxxxxxxxxxxxx'.replace(/[x]/g, function(c) {
           return CHARS[Math.floor(Math.random() * CHARS.length)];
         });
 
         data.setApiKey(key);
         res.sendStatus(200);
+      },
+      'POST /updatefirmware': (req, res) => {
+        res.writeHead(303, {'Content-Type': 'text/plain', 'Location': '/'});
+        res.end('SUCCESS');
       },
     };
 

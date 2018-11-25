@@ -31,17 +31,23 @@ namespace Definitions
   */
   const uint8_t LEFT_WHEEL_MOTOR_PIN = 19;
   const uint8_t LEFT_WHEEL_MOTOR_DIRECTION_PIN = 18;
+  const uint8_t LEFT_WHEEL_ODOMETER_PIN = 5;
+  
   const uint8_t LEFT_WHEEL_MOTOR_SPEED = 100;   // 0-100 (%), used to compensate for drifting motors, lower this value if mower drift to the right.
   const bool LEFT_WHEEL_MOTOR_INVERTED = false; // Set to "true" if left wheel runs backward when mower should be running forward.
 
   const uint8_t RIGHT_WHEEL_MOTOR_PIN = 17;
   const uint8_t RIGHT_WHEEL_MOTOR_DIRECTION_PIN = 16;
+  const uint8_t RIGHT_WHEEL_ODOMETER_PIN = 14;
+
   const uint8_t RIGHT_WHEEL_MOTOR_SPEED = 100;   // 0-100 (%), used to compensate for drifting motors, lower this value if mower drift to the left.
   const bool RIGHT_WHEEL_MOTOR_INVERTED = true;  // Set to "true" if right wheel runs backward when mower should be running forward.
 
   const uint8_t WHEEL_MOTOR_MIN_SPEED = 30;    // 0-100 (%), set the minimum speed that the wheel motors should use. This is used in combination with e.g. WHEEL_MOTOR_DECREASE_SPEED_AT_CUTTER_LOAD.
   const uint8_t WHEEL_MOTOR_TURN_SPEED = 50;   // 0-100 (%), speed to use when turning.
-  const bool WHEEL_MOTOR_DECREASE_SPEED_AT_CUTTER_LOAD = false;
+  const bool WHEEL_MOTOR_DECREASE_SPEED_AT_CUTTER_LOAD = false; // reduce forward movement of mower when there is a high load on cutter (like high grass)
+  const uint16_t WHEEL_ODOMETERPULSES_PER_ROTATION = 50;        // number of odometer pulses from motor that equals a full rotation of the shaft (check with motor manufacturer).
+  const uint8_t WHEEL_DIAMETER = 190;   // in millimeter
 
   /*
     Cutter settings

@@ -7,7 +7,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const apiMocker = require('webpack-api-mocker');
-const CleanWebpackPlugin = require('clean-webpack-plugin')
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+const CompressionPlugin = require('compression-webpack-plugin');
 const myIp = require('my-local-ip');
 
 const config = {
@@ -27,7 +28,8 @@ const config = {
     publicPath: '/',
 
     // We add hash to filename to avoid caching issues
-    filename: '[name].[hash].js',
+    filename: '[hash].js',
+    //filename: '[name].[hash].js', // can't use this because filename becomes too long, max limit of 32 chars in SPIFFS.
   },
 
   resolve: {
@@ -90,7 +92,7 @@ const config = {
       template: resolve(__dirname, '..', 'src', 'html', 'index.ejs'),
     }),
     new ExtractTextPlugin({
-      filename: 'style.[hash].css',
+      filename: '[hash].css',
       disable: !isProd,
     }),
     new webpack.optimize.ModuleConcatenationPlugin(), // Scope Hoisting: https://www.codementor.io/drewpowers/high-performance-webpack-config-for-front-end-delivery-90sqic1qa#1-scope-hoisting
@@ -103,6 +105,13 @@ const config = {
         to: resolve(__dirname, '..', '..', 'data')
       }
     ]),
+    new CompressionPlugin({
+      test: /(\.html|\.js|\.css|\.yaml)$/i,
+      algorithm: 'gzip',
+      threshold: 4096, // Only assets bigger than this size are processed. In bytes.
+      compressionOptions: { level: 9 },
+      deleteOriginalAssets: isProd,
+    }),
   ],
 };
 

@@ -7,7 +7,7 @@ LogStore::LogStore() : HardwareSerial(0) {
   current_line.reserve(100);
 }
 
-size_t LogStore::write(uint8_t c) {  
+size_t LogStore::write(uint8_t c) { 
   auto result = HardwareSerial::write(c);
   
   if (result > 0) {
