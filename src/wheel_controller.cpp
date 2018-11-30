@@ -89,6 +89,9 @@ status WheelController::getStatus() {
 }
 
 void WheelController::process() {
+  /*if (leftWheel.getSpeed() == 0) {
+    leftWheel.setSpeed(90);
+  }*/
   // TODO: handle smooth-running.
   // TODO: when we are close to target direction, reduce speed even more to not overshoot target.
   // TODO: when we are within 2-3 degrees range of target direction then we should concider us having hit the target, the risk is that we enter a endless loop constantly overshooting the target if we are trying to exactly match target direction.

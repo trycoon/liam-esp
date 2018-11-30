@@ -2,6 +2,7 @@
 #include "api.h"
 #include "esp_log.h"
 #include "definitions.h"
+#include "utils.h"
 #include "io_accelerometer/io_accelerometer.h"
 
 /**
@@ -124,20 +125,6 @@ void Api::collectAndPushNewStatus() {
 }
 
 /**
- * Generate a 128 bit long API key of ASCII characters
- */
-String Api::generateApikey() {
-  const String CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-  String key = "";
-  // get true random number from the hardware RNG. this must be called after WiFi has been enabled to be truly random.
-  for (int i = 0; i < 16; i++) {
-    key += CHARS[random(0, CHARS.length())];
-  }
-  
-  return key;
-}
-
-/**
  * Receives commands from MQTT broker that we could act upon.
  */
 void Api::onMqttMessage(char* topic, char* payload, size_t length) {
@@ -160,7 +147,7 @@ void Api::onMqttMessage(char* topic, char* payload, size_t length) {
 void Api::setupApi() {
   // alternative to Basic authentication, API key should be included in each API request.
   if (Configuration::config.apiKey.length() == 0) {
-    Configuration::config.apiKey = generateApikey();
+    Configuration::config.apiKey = Utils::generateKey(16);
     Configuration::save();
   }
 
@@ -178,23 +165,21 @@ void Api::setupApi() {
 
   // HTTP basic authentication
   web_server.on("/api/v1/login", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    if (!request->authenticate(Configuration::config.username.c_str(), Configuration::config.password.c_str())) {
+    if (!resources.wifi.isAuthenticated(request)) {
       return request->requestAuthentication();
     }
 
-    auto *response = request->beginResponse(200, "text/plain", "Login Success!");
+    auto *response = request->beginResponse(200, "application/json", "{}");
+    response->addHeader("Set-Cookie", "liam-" + Configuration::config.mowerId + "=" + Utils::generateKey(16) + "; HttpOnly; Path=/api");
     response->addHeader("Cache-Control", "no-store, must-revalidate");
     request->send(response);
   });
 
   // respond to GET requests on URL /api/v1/history/battery
   web_server.on("/api/v1/history/battery", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    if ((request->hasParam("apiKey") &&
-         request->getParam("apiKey")->value() != Configuration::config.apiKey) && 
-        !request->authenticate(Configuration::config.username.c_str(), Configuration::config.password.c_str()))
-        {
-          return request->requestAuthentication();
-        }
+    if (!resources.wifi.isAuthenticated(request)) {
+      return request->requestAuthentication();
+    }
 
     auto *response = request->beginResponseStream("application/json");
     response->addHeader("Cache-Control", "no-store, must-revalidate");
@@ -215,12 +200,9 @@ void Api::setupApi() {
 
   // respond to GET requests on URL /api/v1/history/position
   web_server.on("/api/v1/history/position", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    if ((request->hasParam("apiKey") &&
-         request->getParam("apiKey")->value() != Configuration::config.apiKey) && 
-        !request->authenticate(Configuration::config.username.c_str(), Configuration::config.password.c_str()))
-        {
-          return request->requestAuthentication();
-        }
+    if (!resources.wifi.isAuthenticated(request)) {
+      return request->requestAuthentication();
+    }
 
     auto *response = request->beginResponseStream("application/json");
     response->addHeader("Cache-Control", "no-store, must-revalidate");    
@@ -241,12 +223,9 @@ void Api::setupApi() {
 
   // respond to GET requests on URL /api/v1/history
   web_server.on("/api/v1/history", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    if ((request->hasParam("apiKey") &&
-         request->getParam("apiKey")->value() != Configuration::config.apiKey) && 
-        !request->authenticate(Configuration::config.username.c_str(), Configuration::config.password.c_str()))
-        {
-          return request->requestAuthentication();
-        }
+    if (!resources.wifi.isAuthenticated(request)) {
+      return request->requestAuthentication();
+    }
     
     const String host = "http://" + WiFi.localIP().toString();
     auto *response = request->beginResponseStream("application/json");
@@ -268,12 +247,9 @@ void Api::setupApi() {
 
   // respond to GET requests on URL /api/v1/manual
   web_server.on("/api/v1/manual", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    if ((request->hasParam("apiKey") &&
-         request->getParam("apiKey")->value() != Configuration::config.apiKey) && 
-        !request->authenticate(Configuration::config.username.c_str(), Configuration::config.password.c_str()))
-        {
-          return request->requestAuthentication();
-        }
+    if (!resources.wifi.isAuthenticated(request)) {
+      return request->requestAuthentication();
+    }
 
     const String host = "http://" + WiFi.localIP().toString();
     auto *response = request->beginResponseStream("application/json");
@@ -288,10 +264,6 @@ void Api::setupApi() {
     JsonObject& backward = links.createNestedObject("backward");
     backward["href"] = host + "/api/v1/manual/backward";
     backward["method"] = "PUT";
-
-    /*JsonObject& left = links.createNestedObject("turn");
-    left["href"] = host + "/api/v1/manual/turn";
-    left["method"] = "PUT";*/
 
     JsonObject& stop = links.createNestedObject("stop");
     stop["href"] = host + "/api/v1/manual/stop";
@@ -311,12 +283,9 @@ void Api::setupApi() {
 
   // respond to GET requests on URL /api/v1/status
   web_server.on("/api/v1/status", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    if ((request->hasParam("apiKey") &&
-         request->getParam("apiKey")->value() != Configuration::config.apiKey) && 
-        !request->authenticate(Configuration::config.username.c_str(), Configuration::config.password.c_str()))
-        {
-          return request->requestAuthentication();
-        }
+    if (!resources.wifi.isAuthenticated(request)) {
+      return request->requestAuthentication();
+    }
 
     auto *response = request->beginResponseStream("application/json");
     response->addHeader("Cache-Control", "no-store, must-revalidate");
@@ -332,12 +301,12 @@ void Api::setupApi() {
 
   // respond to GET requests on URL /api/v1/system
   web_server.on("/api/v1/system", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    if ((request->hasParam("apiKey") &&
-         request->getParam("apiKey")->value() != Configuration::config.apiKey) && 
-        !request->authenticate(Configuration::config.username.c_str(), Configuration::config.password.c_str()))
-        {
-          return request->requestAuthentication();
-        }
+    if (!resources.wifi.isAuthenticated(request)) {
+      return request->requestAuthentication();
+    }
+
+    esp_chip_info_t chip_info;
+    esp_chip_info(&chip_info);
 
     auto *response = request->beginResponseStream("application/json");
     response->addHeader("Cache-Control", "no-store, must-revalidate");
@@ -346,8 +315,10 @@ void Api::setupApi() {
     
     root["name"] = Definitions::APP_NAME;
     root["version"] = Definitions::APP_VERSION;
+    root["mowerId"] = Configuration::config.mowerId;
     root["cpuFreq"] = ESP.getCpuFreqMHz();
     root["flashChipSize"] = ESP.getFlashChipSize();
+    root["chipRevision"] = chip_info.revision;
     root["freeHeap"] = ESP.getFreeHeap();
     root["apiKey"] = Configuration::config.apiKey.c_str();
     root["localTime"] = resources.wifi.getTime().c_str();
@@ -362,12 +333,9 @@ void Api::setupApi() {
 
   // respond to GET requests on URL /api/v1/loglevel
   web_server.on("/api/v1/loglevel", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    if ((request->hasParam("apiKey") &&
-         request->getParam("apiKey")->value() != Configuration::config.apiKey) && 
-        !request->authenticate(Configuration::config.username.c_str(), Configuration::config.password.c_str()))
-        {
-          return request->requestAuthentication();
-        }
+    if (!resources.wifi.isAuthenticated(request)) {
+      return request->requestAuthentication();
+    }
 
     auto *response = request->beginResponseStream("application/json");
     response->addHeader("Cache-Control", "no-store, must-revalidate");
@@ -382,12 +350,9 @@ void Api::setupApi() {
 
   // respond to GET requests on URL /api/v1/logmessages
   web_server.on("/api/v1/logmessages", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    if ((request->hasParam("apiKey") &&
-         request->getParam("apiKey")->value() != Configuration::config.apiKey) && 
-        !request->authenticate(Configuration::config.username.c_str(), Configuration::config.password.c_str()))
-        {
-          return request->requestAuthentication();
-        }
+    if (!resources.wifi.isAuthenticated(request)) {
+      return request->requestAuthentication();
+    }
 
     auto *response = request->beginResponseStream("application/json");
     response->addHeader("Cache-Control", "no-store, must-revalidate");
@@ -413,12 +378,9 @@ void Api::setupApi() {
 
   // respond to GET requests on URL /api/v1
   web_server.on("/api/v1", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    if ((request->hasParam("apiKey") &&
-         request->getParam("apiKey")->value() != Configuration::config.apiKey) && 
-        !request->authenticate(Configuration::config.username.c_str(), Configuration::config.password.c_str()))
-        {
-          return request->requestAuthentication();
-        }
+    if (!resources.wifi.isAuthenticated(request)) {
+      return request->requestAuthentication();
+    }
 
     const String host = "http://" + WiFi.localIP().toString();
     AsyncResponseStream *response = request->beginResponseStream("application/json");
@@ -475,14 +437,12 @@ void Api::setupApi() {
 
   // respond to PUT requests on URL /api/v1/state, change state of mower.
   // example body: {"state": "TEST"}
-  web_server.on("/api/v1/state", HTTP_PUT, [this](AsyncWebServerRequest *request) {
-    if ((request->hasParam("apiKey") &&
-         request->getParam("apiKey")->value() != Configuration::config.apiKey) && 
-        !request->authenticate(Configuration::config.username.c_str(), Configuration::config.password.c_str()))
-        {
-          return request->requestAuthentication();
-        }
-  }, NULL, [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+  web_server.on("/api/v1/state", HTTP_PUT, [this](AsyncWebServerRequest *request) {}, NULL,
+  [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+    if (!resources.wifi.isAuthenticated(request)) {
+      return request->requestAuthentication();
+    }
+
     DynamicJsonBuffer jsonBuffer(100);
     JsonObject& root = jsonBuffer.parseObject((const char*)data);
 
@@ -506,16 +466,14 @@ void Api::setupApi() {
   // respond to PUT requests on URL /api/v1/manual/forward, drive mower forward.
   // example body: {"speed": 50, "turnrate": 0, "smooth": false}
   web_server.on("/api/v1/manual/forward", HTTP_PUT, [this](AsyncWebServerRequest *request) {
-    if ((request->hasParam("apiKey") &&
-         request->getParam("apiKey")->value() != Configuration::config.apiKey) && 
-        !request->authenticate(Configuration::config.username.c_str(), Configuration::config.password.c_str()))
-        {
-          return request->requestAuthentication();
-        }
 
     stateController.setState(Definitions::MOWER_STATES::MANUAL);
 
   }, NULL, [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+    if (!resources.wifi.isAuthenticated(request)) {
+      return request->requestAuthentication();
+    }
+
     DynamicJsonBuffer jsonBuffer(100);
     JsonObject& root = jsonBuffer.parseObject((const char*)data);
 
@@ -543,16 +501,14 @@ void Api::setupApi() {
   // respond to PUT requests on URL /api/v1/manual/backward, drive mower backward.
   // example body: {"speed": 50, "turnrate": 0, "smooth": false}
   web_server.on("/api/v1/manual/backward", HTTP_PUT, [this](AsyncWebServerRequest *request) {
-    if ((request->hasParam("apiKey") &&
-         request->getParam("apiKey")->value() != Configuration::config.apiKey) && 
-        !request->authenticate(Configuration::config.username.c_str(), Configuration::config.password.c_str()))
-        {
-          return request->requestAuthentication();
-        }
 
     stateController.setState(Definitions::MOWER_STATES::MANUAL);
 
   }, NULL, [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+    if (!resources.wifi.isAuthenticated(request)) {
+      return request->requestAuthentication();
+    }
+
     DynamicJsonBuffer jsonBuffer(100);
     JsonObject& root = jsonBuffer.parseObject((const char*)data);
 
@@ -577,43 +533,11 @@ void Api::setupApi() {
     }
   });
 
-  // respond to PUT requests on URL /api/v1/manual/turn, turn mower to specified direction (degrees 0-360).
-  // example body: {"direction": 180}
- /* web_server.on("/api/v1/manual/turn", HTTP_PUT, [this](AsyncWebServerRequest *request) {
-    if ((request->hasParam("apiKey") &&
-         request->getParam("apiKey")->value() != Configuration::config.apiKey) && 
-        !request->authenticate(Configuration::config.username.c_str(), Configuration::config.password.c_str()))
-        {
-          return request->requestAuthentication();
-        }
-
-    stateController.setState(Definitions::MOWER_STATES::MANUAL);
-
-  }, NULL, [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
-    DynamicJsonBuffer jsonBuffer(100);
-    JsonObject& root = jsonBuffer.parseObject((const char*)data);
-
-    if (root.success()) {
-      if (!root.containsKey("direction")) {
-        request->send(400, "text/plain", "Bad Request - missing 'direction' parameter");
-        return;
-      }
-
-      resources.wheelController.turn(root["direction"]);
-      request->send(200);
-    } else {
-      request->send(400, "text/plain", "Bad Request");
-    }
-  });*/
-
   // respond to PUT requests on URL /api/v1/manual/stop, stop mower movement.
   web_server.on("/api/v1/manual/stop", HTTP_PUT, [this](AsyncWebServerRequest *request) {
-    if ((request->hasParam("apiKey") &&
-         request->getParam("apiKey")->value() != Configuration::config.apiKey) && 
-        !request->authenticate(Configuration::config.username.c_str(), Configuration::config.password.c_str()))
-        {
-          return request->requestAuthentication();
-        }
+    if (!resources.wifi.isAuthenticated(request)) {
+      return request->requestAuthentication();
+    }
 
     stateController.setState(Definitions::MOWER_STATES::MANUAL);
 
@@ -625,12 +549,9 @@ void Api::setupApi() {
 
   // respond to PUT requests on URL /api/v1/manual/cutter_on, start mower cutter.
   web_server.on("/api/v1/manual/cutter_on", HTTP_PUT, [this](AsyncWebServerRequest *request) {
-    if ((request->hasParam("apiKey") &&
-         request->getParam("apiKey")->value() != Configuration::config.apiKey) && 
-        !request->authenticate(Configuration::config.username.c_str(), Configuration::config.password.c_str()))
-        {
-          return request->requestAuthentication();
-        }
+    if (!resources.wifi.isAuthenticated(request)) {
+      return request->requestAuthentication();
+    }
 
     stateController.setState(Definitions::MOWER_STATES::MANUAL);
 
@@ -642,12 +563,9 @@ void Api::setupApi() {
 
   // respond to PUT requests on URL /api/v1/manual/cutter_off, stop mower cutter.
   web_server.on("/api/v1/manual/cutter_off", HTTP_PUT, [this](AsyncWebServerRequest *request) {
-    if ((request->hasParam("apiKey") &&
-         request->getParam("apiKey")->value() != Configuration::config.apiKey) && 
-        !request->authenticate(Configuration::config.username.c_str(), Configuration::config.password.c_str()))
-        {
-          return request->requestAuthentication();
-        }
+    if (!resources.wifi.isAuthenticated(request)) {
+      return request->requestAuthentication();
+    }
 
     stateController.setState(Definitions::MOWER_STATES::MANUAL);
 
@@ -659,12 +577,9 @@ void Api::setupApi() {
 
   // respond to PUT requests on URL /api/v1/reboot, restart mower.
   web_server.on("/api/v1/reboot", HTTP_PUT, [this](AsyncWebServerRequest *request) {
-    if ((request->hasParam("apiKey") &&
-         request->getParam("apiKey")->value() != Configuration::config.apiKey) && 
-        !request->authenticate(Configuration::config.username.c_str(), Configuration::config.password.c_str()))
-        {
-          return request->requestAuthentication();
-        }
+    if (!resources.wifi.isAuthenticated(request)) {
+      return request->requestAuthentication();
+    }
 
     resources.cutter.stop(true);
     resources.wheelController.stop(false);
@@ -678,12 +593,9 @@ void Api::setupApi() {
 
   // respond to PUT requests on URL /api/v1/factoryreset, reset all setting and restart mower.
   web_server.on("/api/v1/factoryreset", HTTP_PUT, [this](AsyncWebServerRequest *request) {
-    if ((request->hasParam("apiKey") &&
-         request->getParam("apiKey")->value() != Configuration::config.apiKey) && 
-        !request->authenticate(Configuration::config.username.c_str(), Configuration::config.password.c_str()))
-        {
-          return request->requestAuthentication();
-        }
+    if (!resources.wifi.isAuthenticated(request)) {
+      return request->requestAuthentication();
+    }
 
     resources.cutter.stop(true);
     resources.wheelController.stop(false);
@@ -698,14 +610,12 @@ void Api::setupApi() {
   }); 
 
   // respond to PUT requests on URL /api/v1/loglevel, set loglevel for mower (useful for fault finding).
-  web_server.on("/api/v1/loglevel", HTTP_PUT, [this](AsyncWebServerRequest *request) {
-    if ((request->hasParam("apiKey") &&
-         request->getParam("apiKey")->value() != Configuration::config.apiKey) && 
-        !request->authenticate(Configuration::config.username.c_str(), Configuration::config.password.c_str()))
-        {
-          return request->requestAuthentication();
-        }
-  }, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+  web_server.on("/api/v1/loglevel", HTTP_PUT, [this](AsyncWebServerRequest *request) {}, NULL,
+  [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+    if (!resources.wifi.isAuthenticated(request)) {
+      return request->requestAuthentication();
+    }
+
     DynamicJsonBuffer jsonBuffer(30);
     JsonObject& root = jsonBuffer.parseObject((const char*)data);
 
@@ -726,15 +636,13 @@ void Api::setupApi() {
   });
 
   // respond to PUT requests on URL /api/v1/apikey, trigger generation of new API key.
-  web_server.on("/api/v1/apikey", HTTP_POST, [this](AsyncWebServerRequest *request) {
-    if ((request->hasParam("apiKey") &&
-         request->getParam("apiKey")->value() != Configuration::config.apiKey) && 
-        !request->authenticate(Configuration::config.username.c_str(), Configuration::config.password.c_str()))
-        {
-          return request->requestAuthentication();
-        }
-  }, NULL, [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
-    Configuration::config.apiKey = generateApikey();
+  web_server.on("/api/v1/apikey", HTTP_POST, [this](AsyncWebServerRequest *request) {}, NULL,
+  [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+    if (!resources.wifi.isAuthenticated(request)) {
+      return request->requestAuthentication();
+    }
+        
+    Configuration::config.apiKey = Utils::generateKey(16);
     Configuration::save();
     Log.notice(F("Generated a new API key." CR));
 

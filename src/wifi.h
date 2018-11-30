@@ -30,7 +30,7 @@ class WiFi_Client : public Processable {
     void publish_mqtt(std::string message, std::string subtopic = "");
     AsyncWebServer& getWebServer();  // code-smell, we should think of a better way than to expose this inner reference when we need to register routes!
     AsyncWebSocket& getWebSocketServer();  // code-smell, we should think of a better way than to expose this inner reference when we need to register routes!
-    void checkWifiSettings();
+    bool isAuthenticated(AsyncWebServerRequest *request);
     void sendDataWebSocket(String msgType, JsonObject& json, AsyncWebSocketClient* client = nullptr);
     void registerMqttMessageCallback(const cb_mqttMessage &cb);
     String getTime();
@@ -53,6 +53,8 @@ class WiFi_Client : public Processable {
     AsyncWebSocket ws;
     DNSServer dnsServer;
     std::vector<cb_mqttMessage> onMqttMessageCallbacks;
+    bool capturePortalRunning;
+    bool wifiStartedOnce;   // set to true if WiFi.begin() has been run atleast once.
 
     static void WiFiEvent(system_event_id_t event, system_event_info_t info);
     bool isMQTT_enabled();
@@ -64,6 +66,8 @@ class WiFi_Client : public Processable {
     void onMqttConnect(bool sessionPresent);
     void onMqttDisconnect(AsyncMqttClientDisconnectReason reason);
     void onMqttPublish(uint16_t packetId);
+    void setupOTA();
+    void setupMQTT();
     void setupWebServer();
 };
 

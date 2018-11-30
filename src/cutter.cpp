@@ -62,6 +62,7 @@ void Cutter::senseLoad() {
   //TODO: convert to percent.
   //load = io_analog.getVoltage(Definitions::CUTTER_LOAD_PIN);
   load=10;
+}
 
 uint8_t Cutter::getLoad() {
   return load;

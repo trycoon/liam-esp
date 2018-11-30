@@ -11,6 +11,7 @@
 namespace Configuration {
 
   struct configObject {
+    String mowerId;
     String username;
     String password;
     int8_t logLevel;

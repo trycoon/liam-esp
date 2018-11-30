@@ -271,15 +271,24 @@ components:
           type: string
         version:
           type: string
+        mowerId:
+          type: string
         cpuFreq:
           type: integer
           format: uint8
         flashChipSize:
           type: integer
           format: uint32
+        chipRevision:
+          type: integer
+          format: uint8
         freeHeap:
           type: integer
           format: uint32
+        apiKey:
+          type: string
+        localTime:
+          type: string
         settings:
           type: object
           properties:

@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <rom/rtc.h>
+#include <esp_log.h>
 #include <ArduinoLog.h>
 #include "definitions.h"
 #include "configuration.h"
@@ -9,7 +10,6 @@
 #include "io_analog.h"
 #include "io_accelerometer/io_accelerometer.h"
 #include "wifi.h"
-#include "ota/ota.h"
 #include "wheel_controller.h"
 #include "wheel.h"
 #include "cutter.h"
@@ -35,7 +35,6 @@ LogStore logstore;
 IO_Analog io_analog;
 IO_Accelerometer io_accelerometer(Wire);
 WiFi_Client wifi;
-OTA ota(wifi);
 Wheel leftWheel(1, Definitions::LEFT_WHEEL_MOTOR_PIN, Definitions::LEFT_WHEEL_MOTOR_DIRECTION_PIN, Definitions::LEFT_WHEEL_ODOMETER_PIN, Definitions::LEFT_WHEEL_MOTOR_INVERTED, Definitions::LEFT_WHEEL_MOTOR_SPEED);
 Wheel rightWheel(2, Definitions::RIGHT_WHEEL_MOTOR_PIN, Definitions::RIGHT_WHEEL_MOTOR_DIRECTION_PIN, Definitions::RIGHT_WHEEL_ODOMETER_PIN, Definitions::RIGHT_WHEEL_MOTOR_INVERTED, Definitions::RIGHT_WHEEL_MOTOR_SPEED);
 WheelController wheelController(leftWheel, rightWheel, io_accelerometer);
@@ -88,6 +87,8 @@ void setup() {
   pinMode(Definitions::BUMPER_PIN, INPUT_PULLUP);
   pinMode(Definitions::BUZZER_PIN, OUTPUT);
 
+  //esp_log_level_set("*", ESP_LOG_DEBUG);
+
   logstore.begin(115200);
   Log.begin(LOG_LEVEL_NOTICE, &logstore, true);
 
@@ -117,7 +118,6 @@ void setup() {
   }
 
   wifi.start();
-  ota.start();
 
   if (Configuration::config.setupDone) {
     api.setupApi();
@@ -138,7 +138,6 @@ void loop() {
     return;
   }
 
-  ota.handle();
   wifi.process();
   
   if (Configuration::config.setupDone) {

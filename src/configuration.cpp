@@ -1,6 +1,7 @@
 #include <ArduinoLog.h>
 #include "configuration.h"
 #include "log_store.h"
+#include "utils.h"
 
 namespace Configuration {
 
@@ -11,6 +12,10 @@ namespace Configuration {
   configObject config;
 
   void load() {
+    // this one is never saved/loaded from preferences, we just cache it here.
+    // it's an unique id for every ESP32, also used as MAC-address for network.
+    config.mowerId = Utils::uint64String(ESP.getEfuseMac());
+
     preferences.begin("liam-esp", true);
     auto jsonString = preferences.getString("config", "{}");
     preferences.end();

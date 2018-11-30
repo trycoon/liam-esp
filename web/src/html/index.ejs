@@ -60,11 +60,8 @@
                       <path class="js-tick" d="m -139.25081,250.00407 v 130 h 40 40 v -130 -130 h -40 -40 z" style="fill:#b3b3b3;" />
                     </g>
                 </svg>
-                <span class="battery-value js-battery-value" style="display: none">100%</span>
+                <span class="battery-value js-battery-value">100%</span>
               </div>
-              <div class="center">
-                <canvas id="js-compass" class="compass"></canvas>
-              </div> 
             </div>
         </section>
         <section class="section js-section js-section-manual" style="display: none">
@@ -77,6 +74,9 @@
               <span class="js-startmower button">Start cutter</span>
               <span class="js-stopmower button">Stop cutter</span>
             </div>
+          </div>
+          <div class="center">
+            <canvas id="js-compass" class="compass"></canvas>
           </div>
         </section>
         <section class="section js-section js-section-metrics" style="display: none">
@@ -120,10 +120,13 @@
             <p>
               Application:&nbsp;<strong><span class="appName"></span></strong><br>
               Version:&nbsp;<strong><span class="appVersion"></span></strong><br>
+              Mower Id:&nbsp;<strong><span class="mowerId"></span></strong><br>
               Uptime:&nbsp;<span class="uptime"></span><br>
               CPU frequency:&nbsp;<strong><span class="cpuFreq"></span></strong>&nbsp;MHz<br>
               Flash chipsize:&nbsp;<strong><span class="flashChipSize"></span></strong>&nbsp;Bytes<br>
+              Chip revision:&nbsp;<strong><span class="chipRevision"></span></strong><br>
               Free heap memory:&nbsp;<strong><span class="freeHeap"></span></strong>&nbsp;Bytes<br>
+              Mower clock:&nbsp;<strong><span class="localTime"></span></strong><br>
               WiFi signal:&nbsp;<strong><span class="wifiSignal"></span></strong>
             </p>            
           </section>
