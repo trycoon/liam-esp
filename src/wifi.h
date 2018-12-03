@@ -14,6 +14,7 @@
 #include <ArduinoJson.h>
 #include <AsyncMqttClient.h>
 #include <ESPAsyncWebServer.h>
+#include "configuration.h"
 #include "processable.h"
 
 struct MQTT_Message {
@@ -31,6 +32,9 @@ class WiFi_Client : public Processable {
     AsyncWebServer& getWebServer();  // code-smell, we should think of a better way than to expose this inner reference when we need to register routes!
     AsyncWebSocket& getWebSocketServer();  // code-smell, we should think of a better way than to expose this inner reference when we need to register routes!
     bool isAuthenticated(AsyncWebServerRequest *request);
+    bool isAuthenticatedSession(AsyncWebServerRequest *request);
+    String authenticateSession(String username, String password);
+    void removeAuthenticatedSession(AsyncWebServerRequest *request);
     void sendDataWebSocket(String msgType, JsonObject& json, AsyncWebSocketClient* client = nullptr);
     void registerMqttMessageCallback(const cb_mqttMessage &cb);
     String getTime();
@@ -53,6 +57,7 @@ class WiFi_Client : public Processable {
     AsyncWebSocket ws;
     DNSServer dnsServer;
     std::vector<cb_mqttMessage> onMqttMessageCallbacks;
+    std::vector<String> authenticatedSessions;
     bool capturePortalRunning;
     bool wifiStartedOnce;   // set to true if WiFi.begin() has been run atleast once.
 
@@ -66,6 +71,7 @@ class WiFi_Client : public Processable {
     void onMqttConnect(bool sessionPresent);
     void onMqttDisconnect(AsyncMqttClientDisconnectReason reason);
     void onMqttPublish(uint16_t packetId);
+    String parseSessionFromRequest(AsyncWebServerRequest *request);
     void setupOTA();
     void setupMQTT();
     void setupWebServer();

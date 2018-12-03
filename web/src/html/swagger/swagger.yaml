@@ -87,6 +87,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Logmessages'
+  /session:
+    post:
+      tags:
+        - Authentication
+      description: login user and create session. An session cookie will be set that are expected to be used in future request
+      operationId: createSession
+      responses:
+        '200':
+          description: successfully logged in user
+        '400':
+          description: if missing parameters or request is malformed
+        '401':
+          description: if login failed due to wrong credentials
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSession'          
+    get:
+      tags:
+        - Authentication
+      description: get current session
+      operationId: getSession
+      responses:
+        '200':
+          description: active session available
+        '404':
+          description: no session available
+    delete:
+      tags:
+        - Authentication
+      description: logout session.
+      operationId: deleteSession
+      responses:
+        '200':
+          description: session removed
   /apikey:
     post:
       tags:
@@ -385,6 +421,13 @@ components:
                 type: number
                 format: double
                 description: GPS-longitude
+    CreateSession:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
 security:
   - basicAuth: []
   - apiKeyAuth: []

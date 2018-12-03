@@ -163,18 +163,6 @@ void Api::setupApi() {
     instance->collectAndPushNewStatus();     
   }, this);
 
-  // HTTP basic authentication
-  web_server.on("/api/v1/login", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    if (!resources.wifi.isAuthenticated(request)) {
-      return request->requestAuthentication();
-    }
-
-    auto *response = request->beginResponse(200, "application/json", "{}");
-    response->addHeader("Set-Cookie", "liam-" + Configuration::config.mowerId + "=" + Utils::generateKey(16) + "; HttpOnly; Path=/api");
-    response->addHeader("Cache-Control", "no-store, must-revalidate");
-    request->send(response);
-  });
-
   // respond to GET requests on URL /api/v1/history/battery
   web_server.on("/api/v1/history/battery", HTTP_GET, [this](AsyncWebServerRequest *request) {
     if (!resources.wifi.isAuthenticated(request)) {
@@ -371,9 +359,28 @@ void Api::setupApi() {
     request->send(response);
   });
 
+  // respond to GET requests on URL /api/v1/session
+  web_server.on("/api/v1/session", HTTP_GET, [this](AsyncWebServerRequest *request) {
+    if (resources.wifi.isAuthenticatedSession(request)) {
+      request->send(200, "text/plain");
+    } else {
+      request->send(401, "text/plain");
+    }
+  });
+
+  // respond to DELETE requests on URL /api/v1/session
+  web_server.on("/api/v1/session", HTTP_DELETE, [this](AsyncWebServerRequest *request) {
+
+    resources.wifi.removeAuthenticatedSession(request);
+
+    AsyncWebServerResponse *response = request->beginResponse(200);
+    response->addHeader("Set-Cookie", "liam-" + Configuration::config.mowerId + "=null; HttpOnly; Path=/api; Max-Age=0");
+    request->send(response);
+  });
+
   //
   // THE FOLLOWING REST-ENDPOINT SHOULD ALWAYS BE THE LAST ONE REGISTERED OF THE GET-ENDPOINTS !!!
-  // As it's the least specific one it will otherwise catch the others requests.
+  // As it's the least specific one it will otherwise catch the other requests.
   //
 
   // respond to GET requests on URL /api/v1
@@ -392,8 +399,9 @@ void Api::setupApi() {
     history["href"] = host + "/api/v1/history";
     history["method"] = "GET";
 
-    JsonObject& login = links.createNestedObject("login");
-    login["href"] = host + "/api/v1/login";
+    JsonObject& login = links.createNestedObject("session");
+    login["href"] = host + "/api/v1/session";
+    login["method"] = "POST|GET|DELETE";
 
     JsonObject& manual = links.createNestedObject("manual");
     manual["href"] = host + "/api/v1/manual";
@@ -630,6 +638,40 @@ void Api::setupApi() {
       Log.notice(F("Set loglevel to %i" CR), Configuration::config.logLevel);
 
       request->send(200);
+    } else {
+      request->send(400, "text/plain", "Bad Request");
+    }
+  });
+
+  // respond to POST requests on URL /api/v1/session, login in user and set authentication-cookie.
+  web_server.on("/api/v1/session", HTTP_POST, [this](AsyncWebServerRequest *request) {}, NULL,
+  [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+
+    DynamicJsonBuffer jsonBuffer(100);
+    JsonObject& root = jsonBuffer.parseObject((const char*)data);
+
+    if (root.success()) {
+      if (!root.containsKey("username")) {
+        request->send(400, "text/plain", "Bad Request - missing 'username' parameter");
+        return;
+      }
+      if (!root.containsKey("password")) {
+        request->send(400, "text/plain", "Bad Request - missing 'password' parameter");
+        return;
+      }
+
+      auto sessionId = resources.wifi.authenticateSession(root["username"], root["password"]);
+
+      if (sessionId.length() > 0) {
+        auto response = new AsyncJsonResponse();
+        response->addHeader("Cache-Control", "no-store, must-revalidate");
+        response->addHeader("Set-Cookie", "liam-" + Configuration::config.mowerId + "=" + sessionId + "; HttpOnly; Path=/api");
+        response->setCode(200);
+        response->setLength();
+        request->send(response);
+      } else {
+        request->send(401, "text/plain", "Unauthorized");
+      }
     } else {
       request->send(400, "text/plain", "Bad Request");
     }

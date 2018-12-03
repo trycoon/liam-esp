@@ -19,6 +19,7 @@ class Wheel {
     bool wheel_invert;
     uint8_t max_speed;    
     int8_t current_speed;
+    portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED;
     volatile uint32_t odometer;
     void IRAM_ATTR updateOdometer();
 };

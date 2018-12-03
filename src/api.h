@@ -3,8 +3,9 @@
 
 #include <Arduino.h>  // This include is needed to solve this issue: https://github.com/me-no-dev/ESPAsyncWebServer/issues/46
 #include <Ticker.h>
-#include <ArduinoJson.h>
 #include <ESPAsyncWebServer.h>
+#include <AsyncJson.h>
+#include <ArduinoJson.h>
 #include "state_controller.h"
 #include "resources.h"
 

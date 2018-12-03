@@ -1,4 +1,5 @@
 #include <ArduinoLog.h>
+#include <ArduinoJson.h>
 #include "configuration.h"
 #include "log_store.h"
 #include "utils.h"

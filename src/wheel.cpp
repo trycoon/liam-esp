@@ -43,7 +43,9 @@ int8_t Wheel::getSpeed() const {
 }
 
 void IRAM_ATTR Wheel::updateOdometer() {
+  portENTER_CRITICAL_ISR(&mux);
   odometer++;
+  portEXIT_CRITICAL_ISR(&mux);
 }
 
 uint32_t Wheel::getOdometer() const {

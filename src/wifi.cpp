@@ -4,14 +4,15 @@
 #include <time.h>
 #include <SPIFFS.h>
 #include <cassert>
+#include <algorithm>
 #include <ESPmDNS.h>
 #include <ArduinoLog.h>
 #include <ArduinoOTA.h>
 #include <Update.h>
 #include "definitions.h"
-#include "configuration.h"
 #include "log_store.h"
 #include "utils.h"
+#include "hwcrypto/sha.h"
 
 
 // TODO: AVOID "%" in CSS, https://github.com/me-no-dev/ESPAsyncWebServer/pull/366
@@ -543,15 +544,115 @@ AsyncWebSocket& WiFi_Client::getWebSocketServer() {
 }
 
 /**
+ * Parse session-id from cookie
+ * @param request to parse cookie value from
+ * @return an session-id if present, otherwise an empty string.
+ */
+String WiFi_Client::parseSessionFromRequest(AsyncWebServerRequest *request) {
+  String cookieValue = "";
+
+  if (request->hasHeader("Cookie")) {
+    auto cookie = request->getHeader("Cookie")->value();
+    auto cookieKey = "liam-" + Configuration::config.mowerId + "=";
+    auto cookieIndex = cookie.indexOf(cookieKey);
+
+    if (cookieIndex > -1) {
+      auto cookieEndIndex = cookie.indexOf(";", cookieIndex);
+
+      if (cookieEndIndex > -1) {
+        cookieValue = cookie.substring(cookieIndex + cookieKey.length(), cookieEndIndex);
+        cookieValue.trim();
+      } else {
+        cookieValue = cookie.substring(cookieIndex + cookieKey.length());
+        cookieValue.trim();
+      }
+    }
+  }
+
+  return cookieValue;
+}
+/**
  * Check if request is authenticated (user logged in).
- * You could provide an querystring-parameter "apiKey", if apiKey is not provided then we expect BasicAuthentication (https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication) to be used.
+ * You could provide an active session cookie or a querystring-parameter "apiKey", if apiKey is not provided then we expect BasicAuthentication (https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication) to be used.
  */
 bool WiFi_Client::isAuthenticated(AsyncWebServerRequest *request) {
+  auto cookieValue = parseSessionFromRequest(request);
+
+  if (cookieValue.length() > 0) {
+    return std::find(authenticatedSessions.begin(), authenticatedSessions.end(), cookieValue) != authenticatedSessions.end();
+  }
+
   if (request->hasParam("apiKey") && request->getParam("apiKey")->value() == Configuration::config.apiKey) {
     return true;
   }
 
   return request->authenticate(Configuration::config.username.c_str(), Configuration::config.password.c_str());
+}
+
+/**
+ * Check if request is authenticated (user logged in).
+ * This method ONLY checks for an active session cookie, NO apikeys och Basic Authentication!
+ */
+bool WiFi_Client::isAuthenticatedSession(AsyncWebServerRequest *request) {
+  auto cookieValue = parseSessionFromRequest(request);
+
+  if (cookieValue.length() > 0) {
+    return std::find(authenticatedSessions.begin(), authenticatedSessions.end(), cookieValue) != authenticatedSessions.end();
+  }
+
+  return false;
+}
+
+/**
+ * Authenticate a user using username and password.
+ * @param username username to authenticate
+ * @param password password to authenticate
+ * @return an session-id if authentication is successful, otherwise an empty string.
+ */
+String WiFi_Client::authenticateSession(String username, String password) {
+  String sessionId = "";
+
+  if (username == Configuration::config.username.c_str() && password == Configuration::config.password.c_str()) {
+    auto input = username + password;
+    uint8_t inputBuffer[input.length()];
+
+    for (auto i = 0; i < sizeof(inputBuffer); i++) {
+      inputBuffer[i] = input.charAt(i);
+    }
+
+    uint8_t hash[20];
+    esp_sha(esp_sha_type::SHA1, inputBuffer, sizeof(inputBuffer), hash);
+    
+    for (auto i:hash) {
+      String hex = String(i, HEX);
+      if (hex.length() < 2) {
+        hex = "0" + hex;
+      }
+      sessionId += hex;
+    }
+
+    if (std::find(authenticatedSessions.begin(), authenticatedSessions.end(), sessionId) == authenticatedSessions.end()) {
+      authenticatedSessions.push_back(sessionId);
+    }
+
+    Log.notice("Created login session for user \"%s\"." CR, username.c_str());
+  }
+
+  return sessionId;
+}
+
+/**
+ * Remove / logout a session.
+ * It's safe to call upon this even if no session by that id exists.
+ * @param request request that should be cleared from session.
+ */
+void WiFi_Client::removeAuthenticatedSession(AsyncWebServerRequest *request) {
+  auto cookieValue = parseSessionFromRequest(request);
+
+  if (cookieValue.length() > 0) {
+    authenticatedSessions.erase(std::remove(authenticatedSessions.begin(), authenticatedSessions.end(), cookieValue), authenticatedSessions.end());
+    Log.trace("Logged out, removed session." CR);
+  }
 }
 
 void WiFi_Client::process() {
