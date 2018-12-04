@@ -169,7 +169,7 @@ void Api::setupApi() {
       return request->requestAuthentication();
     }
 
-    auto *response = request->beginResponseStream("application/json");
+    auto response = request->beginResponseStream("application/json");
     response->addHeader("Cache-Control", "no-store, must-revalidate");
     DynamicJsonBuffer jsonBuffer(20000);
     JsonObject& root = jsonBuffer.createObject();
@@ -192,7 +192,7 @@ void Api::setupApi() {
       return request->requestAuthentication();
     }
 
-    auto *response = request->beginResponseStream("application/json");
+    auto response = request->beginResponseStream("application/json");
     response->addHeader("Cache-Control", "no-store, must-revalidate");    
     DynamicJsonBuffer jsonBuffer(60000);
     JsonObject& root = jsonBuffer.createObject();
@@ -216,7 +216,7 @@ void Api::setupApi() {
     }
     
     const String host = "http://" + WiFi.localIP().toString();
-    auto *response = request->beginResponseStream("application/json");
+    auto response = request->beginResponseStream("application/json");
     DynamicJsonBuffer jsonBuffer(350);
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
@@ -240,7 +240,7 @@ void Api::setupApi() {
     }
 
     const String host = "http://" + WiFi.localIP().toString();
-    auto *response = request->beginResponseStream("application/json");
+    auto response = request->beginResponseStream("application/json");
     DynamicJsonBuffer jsonBuffer(750);
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");
@@ -275,7 +275,7 @@ void Api::setupApi() {
       return request->requestAuthentication();
     }
 
-    auto *response = request->beginResponseStream("application/json");
+    auto response = request->beginResponseStream("application/json");
     response->addHeader("Cache-Control", "no-store, must-revalidate");
     
     DynamicJsonBuffer jsonBuffer(600);
@@ -296,7 +296,7 @@ void Api::setupApi() {
     esp_chip_info_t chip_info;
     esp_chip_info(&chip_info);
 
-    auto *response = request->beginResponseStream("application/json");
+    auto response = request->beginResponseStream("application/json");
     response->addHeader("Cache-Control", "no-store, must-revalidate");
     DynamicJsonBuffer jsonBuffer(300);
     JsonObject& root = jsonBuffer.createObject();
@@ -325,7 +325,7 @@ void Api::setupApi() {
       return request->requestAuthentication();
     }
 
-    auto *response = request->beginResponseStream("application/json");
+    auto response = request->beginResponseStream("application/json");
     response->addHeader("Cache-Control", "no-store, must-revalidate");
     DynamicJsonBuffer jsonBuffer(50);
     JsonObject& root = jsonBuffer.createObject();
@@ -342,7 +342,7 @@ void Api::setupApi() {
       return request->requestAuthentication();
     }
 
-    auto *response = request->beginResponseStream("application/json");
+    auto response = request->beginResponseStream("application/json");
     response->addHeader("Cache-Control", "no-store, must-revalidate");
     DynamicJsonBuffer jsonBuffer(Definitions::MAX_LOGMESSAGES * 50 + 20);  // just best guess.
     JsonObject& root = jsonBuffer.createObject();
@@ -373,7 +373,7 @@ void Api::setupApi() {
 
     resources.wifi.removeAuthenticatedSession(request);
 
-    AsyncWebServerResponse *response = request->beginResponse(200);
+    auto response = request->beginResponse(200);
     response->addHeader("Set-Cookie", "liam-" + Configuration::config.mowerId + "=null; HttpOnly; Path=/api; Max-Age=0");
     request->send(response);
   });
@@ -390,7 +390,7 @@ void Api::setupApi() {
     }
 
     const String host = "http://" + WiFi.localIP().toString();
-    AsyncResponseStream *response = request->beginResponseStream("application/json");
+    auto response = request->beginResponseStream("application/json");
     DynamicJsonBuffer jsonBuffer(900);
     JsonObject& root = jsonBuffer.createObject();
     JsonObject& links = root.createNestedObject("_links");

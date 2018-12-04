@@ -72,6 +72,8 @@ class WiFi_Client : public Processable {
     void onMqttDisconnect(AsyncMqttClientDisconnectReason reason);
     void onMqttPublish(uint16_t packetId);
     String parseSessionFromRequest(AsyncWebServerRequest *request);
+    void loadAuthenticatedSessions();
+    void saveAuthenticatedSessions();
     void setupOTA();
     void setupMQTT();
     void setupWebServer();

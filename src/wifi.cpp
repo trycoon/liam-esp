@@ -9,6 +9,7 @@
 #include <ArduinoLog.h>
 #include <ArduinoOTA.h>
 #include <Update.h>
+#include <Preferences.h>
 #include "definitions.h"
 #include "log_store.h"
 #include "utils.h"
@@ -52,6 +53,39 @@ String WiFi_Client::renderPlaceholder(const String& placeholder) {
   } else {
     return String();
   }
+}
+
+void WiFi_Client::loadAuthenticatedSessions() {
+  // load saved list of authenticated sessions.
+  Configuration::preferences.begin("liam-esp", true);
+  auto jsonString = Configuration::preferences.getString("authSessions", "[]");
+  Configuration::preferences.end();
+  DynamicJsonBuffer jsonBuffer(300);
+  JsonArray& json = jsonBuffer.parseArray(jsonString);
+  if (json.success()) {
+    Log.notice(F("loaded %i authSessions" CR), json.size());
+
+    for (auto i:json) {
+      authenticatedSessions.push_back(i);
+    }
+  }
+}
+
+void WiFi_Client::saveAuthenticatedSessions() {
+  // persist authenticated sessions in case of power failure.
+  DynamicJsonBuffer jsonBuffer(300);
+  JsonArray& json = jsonBuffer.createArray();
+  for (auto i:authenticatedSessions) {
+    json.add(i);
+  }
+
+  String jsonString;
+  json.printTo(jsonString);
+
+  //TODO: move to Configuration? and introduce a mutex to prevent preferences.begin()/preferences.end() at the same time?
+  Configuration::preferences.begin("liam-esp", false);
+  Configuration::preferences.putString("authSessions", jsonString);
+  Configuration::preferences.end();
 }
 
 String WiFi_Client::getTime() {
@@ -115,6 +149,7 @@ void WiFi_Client::start() {
     Log.notice(F("AP Started, AP SSID: \"%s\", AP IPv4: %s" CR), Definitions::APP_NAME, WiFi.softAPIP().toString().c_str());
   }
 
+  loadAuthenticatedSessions();
   setupOTA();
   setupMQTT();
   connect();
@@ -633,9 +668,9 @@ String WiFi_Client::authenticateSession(String username, String password) {
 
     if (std::find(authenticatedSessions.begin(), authenticatedSessions.end(), sessionId) == authenticatedSessions.end()) {
       authenticatedSessions.push_back(sessionId);
+      saveAuthenticatedSessions();
+      Log.notice(F("Created login session for user \"%s\"." CR), username.c_str());
     }
-
-    Log.notice("Created login session for user \"%s\"." CR, username.c_str());
   }
 
   return sessionId;
@@ -651,7 +686,9 @@ void WiFi_Client::removeAuthenticatedSession(AsyncWebServerRequest *request) {
 
   if (cookieValue.length() > 0) {
     authenticatedSessions.erase(std::remove(authenticatedSessions.begin(), authenticatedSessions.end(), cookieValue), authenticatedSessions.end());
-    Log.trace("Logged out, removed session." CR);
+    saveAuthenticatedSessions();
+    
+    Log.trace(F("Logged out, removed session." CR));
   }
 }
 
