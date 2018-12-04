@@ -17,9 +17,8 @@ namespace Configuration {
     // it's an unique id for every ESP32, also used as MAC-address for network.
     config.mowerId = Utils::uint64String(ESP.getEfuseMac());
 
-    preferences.begin("liam-esp", true);
+    preferences.begin("liam-esp", false);
     auto jsonString = preferences.getString("config", "{}");
-    preferences.end();
     DynamicJsonBuffer jsonBuffer(300);
     JsonObject& json = jsonBuffer.parseObject(jsonString);
 
@@ -124,7 +123,6 @@ namespace Configuration {
 
     preferences.begin("liam-esp", false);
     preferences.putString("config", jsonString);
-    preferences.end();
 
     Log.trace("Saved settings to Flash: %s" CR, jsonString.c_str());
   }
@@ -132,6 +130,5 @@ namespace Configuration {
   void wipe() {
     preferences.begin("liam-esp", false);
     preferences.clear();
-    preferences.end();    
   }
 }

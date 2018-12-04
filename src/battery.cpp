@@ -1,6 +1,5 @@
 #include <math.h>
 #include <sys/time.h>
-#include <Preferences.h>
 #include <ArduinoLog.h>
 #include <vector>
 #include "battery.h"

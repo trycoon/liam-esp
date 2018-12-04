@@ -57,9 +57,9 @@ String WiFi_Client::renderPlaceholder(const String& placeholder) {
 
 void WiFi_Client::loadAuthenticatedSessions() {
   // load saved list of authenticated sessions.
-  Configuration::preferences.begin("liam-esp", true);
+  Configuration::preferences.begin("liam-esp", false);
   auto jsonString = Configuration::preferences.getString("authSessions", "[]");
-  Configuration::preferences.end();
+
   DynamicJsonBuffer jsonBuffer(300);
   JsonArray& json = jsonBuffer.parseArray(jsonString);
   if (json.success()) {
@@ -85,7 +85,6 @@ void WiFi_Client::saveAuthenticatedSessions() {
   //TODO: move to Configuration? and introduce a mutex to prevent preferences.begin()/preferences.end() at the same time?
   Configuration::preferences.begin("liam-esp", false);
   Configuration::preferences.putString("authSessions", jsonString);
-  Configuration::preferences.end();
 }
 
 String WiFi_Client::getTime() {
