@@ -82,7 +82,6 @@ void WiFi_Client::saveAuthenticatedSessions() {
   String jsonString;
   json.printTo(jsonString);
 
-  //TODO: move to Configuration? and introduce a mutex to prevent preferences.begin()/preferences.end() at the same time?
   Configuration::preferences.begin("liam-esp", false);
   Configuration::preferences.putString("authSessions", jsonString);
 }

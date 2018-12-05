@@ -113,7 +113,13 @@ float Battery::getBatteryVoltage() const {
 */
 uint8_t Battery::getBatteryStatus() const {
   auto level = round((batteryVoltage - Definitions::BATTERY_EMPTY) / (Definitions::BATTERY_FULLY_CHARGED - Definitions::BATTERY_EMPTY) * 100);
-  return level > 100 ? 100 : level;
+  if (level < 0) {
+    level = 0;
+  } else if (level > 100) {
+    level = 100;
+  }
+
+  return level;
 }
 
 bool Battery::isCharging() const {

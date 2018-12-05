@@ -169,10 +169,9 @@ void Api::setupApi() {
       return request->requestAuthentication();
     }
 
-    auto response = request->beginResponseStream("application/json");
+    auto response = new AsyncJsonResponse();
     response->addHeader("Cache-Control", "no-store, must-revalidate");
-    DynamicJsonBuffer jsonBuffer(20000);
-    JsonObject& root = jsonBuffer.createObject();
+    JsonObject& root = response->getRoot();
 
     JsonObject& samples = root.createNestedObject("samples");
     JsonArray& time = samples.createNestedArray("time");
@@ -182,7 +181,7 @@ void Api::setupApi() {
       value.add(s.batteryVoltage);
     }
 
-    root.printTo(*response);
+    response->setLength();
     request->send(response);
   });
 
@@ -192,10 +191,9 @@ void Api::setupApi() {
       return request->requestAuthentication();
     }
 
-    auto response = request->beginResponseStream("application/json");
+    auto response = new AsyncJsonResponse();
     response->addHeader("Cache-Control", "no-store, must-revalidate");    
-    DynamicJsonBuffer jsonBuffer(60000);
-    JsonObject& root = jsonBuffer.createObject();
+    JsonObject& root = response->getRoot();
 
     JsonArray& samples = root.createNestedArray("samples");
     for (auto &s: resources.gps.getGpsPositionHistory()) {
@@ -205,7 +203,7 @@ void Api::setupApi() {
         sample["lg"] = s.lng;
     }
 
-    root.printTo(*response);
+    response->setLength();
     request->send(response);
   });
 
@@ -216,9 +214,8 @@ void Api::setupApi() {
     }
     
     const String host = "http://" + WiFi.localIP().toString();
-    auto response = request->beginResponseStream("application/json");
-    DynamicJsonBuffer jsonBuffer(350);
-    JsonObject& root = jsonBuffer.createObject();
+    auto response = new AsyncJsonResponse();
+    JsonObject& root = response->getRoot();
     JsonObject& links = root.createNestedObject("_links");
 
     JsonObject& battery = links.createNestedObject("battery");
@@ -229,7 +226,7 @@ void Api::setupApi() {
     position["href"] = host + "/api/v1/history/position";
     position["method"] = "GET";
 
-    root.printTo(*response);
+    response->setLength();
     request->send(response);
   });
 
@@ -240,9 +237,8 @@ void Api::setupApi() {
     }
 
     const String host = "http://" + WiFi.localIP().toString();
-    auto response = request->beginResponseStream("application/json");
-    DynamicJsonBuffer jsonBuffer(750);
-    JsonObject& root = jsonBuffer.createObject();
+    auto response = new AsyncJsonResponse();
+    JsonObject& root = response->getRoot();
     JsonObject& links = root.createNestedObject("_links");
 
     JsonObject& forward = links.createNestedObject("forward");
@@ -265,7 +261,7 @@ void Api::setupApi() {
     cutter_off["href"] = host + "/api/v1/manual/cutter_off";
     cutter_off["method"] = "PUT";
 
-    root.printTo(*response);
+    response->setLength();
     request->send(response);
   });
 
@@ -275,15 +271,14 @@ void Api::setupApi() {
       return request->requestAuthentication();
     }
 
-    auto response = request->beginResponseStream("application/json");
+    auto response = new AsyncJsonResponse();
     response->addHeader("Cache-Control", "no-store, must-revalidate");
     
-    DynamicJsonBuffer jsonBuffer(600);
-    JsonObject& root = jsonBuffer.createObject();
+    JsonObject& root = response->getRoot();
 
     statusToJson(currentStatus, root);
 
-    root.printTo(*response);
+    response->setLength();
     request->send(response);
   });
 
@@ -296,11 +291,10 @@ void Api::setupApi() {
     esp_chip_info_t chip_info;
     esp_chip_info(&chip_info);
 
-    auto response = request->beginResponseStream("application/json");
+    auto response = new AsyncJsonResponse();
     response->addHeader("Cache-Control", "no-store, must-revalidate");
-    DynamicJsonBuffer jsonBuffer(300);
-    JsonObject& root = jsonBuffer.createObject();
-    
+    JsonObject& root = response->getRoot();
+
     root["name"] = Definitions::APP_NAME;
     root["version"] = Definitions::APP_VERSION;
     root["mowerId"] = Configuration::config.mowerId;
@@ -308,14 +302,13 @@ void Api::setupApi() {
     root["flashChipSize"] = ESP.getFlashChipSize();
     root["chipRevision"] = chip_info.revision;
     root["freeHeap"] = ESP.getFreeHeap();
-    root["apiKey"] = Configuration::config.apiKey.c_str();
-    root["localTime"] = resources.wifi.getTime().c_str();
-    
+    root["apiKey"] = Configuration::config.apiKey;
+    root["localTime"] = resources.wifi.getTime();
     JsonObject& settings = root.createNestedObject("settings");
     settings["batteryFullVoltage"] = Definitions::BATTERY_FULLY_CHARGED;
     settings["batteryEmptyVoltage"] = Definitions::BATTERY_EMPTY;
-    
-    root.printTo(*response);
+
+    response->setLength();
     request->send(response);
   });
 
@@ -325,14 +318,13 @@ void Api::setupApi() {
       return request->requestAuthentication();
     }
 
-    auto response = request->beginResponseStream("application/json");
+    auto response = new AsyncJsonResponse();
     response->addHeader("Cache-Control", "no-store, must-revalidate");
-    DynamicJsonBuffer jsonBuffer(50);
-    JsonObject& root = jsonBuffer.createObject();
+    JsonObject& root = response->getRoot();
 
     root["level"] = Configuration::config.logLevel;
 
-    root.printTo(*response);
+    response->setLength();
     request->send(response);
   });
 
@@ -342,20 +334,19 @@ void Api::setupApi() {
       return request->requestAuthentication();
     }
 
-    auto response = request->beginResponseStream("application/json");
+    auto response = new AsyncJsonResponse();
     response->addHeader("Cache-Control", "no-store, must-revalidate");
-    DynamicJsonBuffer jsonBuffer(Definitions::MAX_LOGMESSAGES * 50 + 20);  // just best guess.
-    JsonObject& root = jsonBuffer.createObject();
+    JsonObject& root = response->getRoot();
    
     JsonArray& loggmessages = root.createNestedArray("messages");
     for (auto &line: resources.logStore.getLogMessages()) {
       // ignore empty lines
       if (line.length() > 0) {
-        loggmessages.add(line.c_str());
+        loggmessages.add(line);
       }
     }
 
-    root.printTo(*response);
+    response->setLength();
     request->send(response);
   });
 
@@ -390,9 +381,8 @@ void Api::setupApi() {
     }
 
     const String host = "http://" + WiFi.localIP().toString();
-    auto response = request->beginResponseStream("application/json");
-    DynamicJsonBuffer jsonBuffer(900);
-    JsonObject& root = jsonBuffer.createObject();
+    auto response = new AsyncJsonResponse();
+    JsonObject& root = response->getRoot();
     JsonObject& links = root.createNestedObject("_links");
 
     JsonObject& history = links.createNestedObject("history");
@@ -435,7 +425,7 @@ void Api::setupApi() {
     system["href"] = host + "/api/v1/system";
     system["method"] = "GET";
 
-    root.printTo(*response);
+    response->setLength();
     request->send(response);
   });
 
@@ -456,7 +446,7 @@ void Api::setupApi() {
 
     if (root.success()) {
       if (root.containsKey("state")) {
-        String state = root["state"].asString();
+        String state = root["state"].as<char*>();
 
         if (stateController.setUserChangableState(state)) {
           request->send(200);

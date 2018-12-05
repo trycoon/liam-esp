@@ -112,7 +112,7 @@ function toggleStateButtons() {
 }
 
 function updateBattery() {
-  if (liam.data.status && liam.data.status.batteryLevel) {
+  if (liam.data.status && liam.data.status.hasOwnProperty('batteryLevel')) {
     let batteryTicks = document.querySelectorAll('.js-battery .js-tick');
   
     if (liam.data.status.isCharging) {

@@ -251,7 +251,7 @@ function updatedStatus() {
     stopMowerButton.hide();
   }
 
-  if (liam.data.status.heading) {
+  if (liam.data.status.hasOwnProperty('heading')) {
     compass.value = liam.data.status.heading;
   }
 }
