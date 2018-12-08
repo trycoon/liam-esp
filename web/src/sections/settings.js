@@ -1,4 +1,6 @@
 import * as api from '../rest.js';
+import * as auth from '../authorisation.js';
+
 let sec = $('.js-section-settings');
 
 export function selected() {
@@ -7,15 +9,21 @@ export function selected() {
         liam.data.system = data;
         sec.find('#apikey').val(data.apiKey);
     })
-    .fail(function(e) {
-        console.error(e.message);
+    .catch(error => {
+        if (error.status === 401) {
+          auth.showLogin().then(() => {
+            selected();
+          });
+        } else {
+            console.error(e.message);
+        }
     });
 
     api.getLoglevel()
     .then(function(data) {
         $(`#loglever option[value="${data.level}"]`).prop('selected', true);
     })
-    .fail(function(e) {
+    .catch(function(e) {
         console.error(e.message);
     });
 }
@@ -26,15 +34,27 @@ export function unselected() {
 
 function restart() {
     api.restart()
-    .fail(function(e) {
-        console.error(e.message);
+    .catch(error => {
+        if (error.status === 401) {
+          auth.showLogin().then(() => {
+            restart();
+          });
+        } else {
+            console.error(e.message);
+        }
     });
 }
 
 function factoryreset() {
     api.factoryreset()
-    .fail(function(e) {
-        console.error(e.message);
+    .catch(error => {
+        if (error.status === 401) {
+          auth.showLogin().then(() => {
+            factoryreset();
+          });
+        } else {
+            console.error(e.message);
+        }
     });
 }
 
@@ -52,7 +72,7 @@ export function init() {
         .then(function() {
             alert("You must reboot system for loglevel changes to be used.")
         })
-        .fail(function(e) {
+        .catch(function(e) {
             console.error(e.message);
         });
     });
@@ -64,11 +84,11 @@ export function init() {
                 liam.data.system = data;
                 sec.find('#apikey').val(data.apiKey);
             })
-            .fail(function(e) {
+            .catch(function(e) {
                 console.error(e.message);
             });
         })
-        .fail(function(e) {
+        .catch(function(e) {
             console.error(e.message);
         });
     });

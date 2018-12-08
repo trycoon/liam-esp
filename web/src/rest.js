@@ -92,3 +92,28 @@ export function setLoglevel(level) {
     })
   });
 }
+
+export function createSession(username, password) {
+  return $.ajax({
+    url: `/api/v1/session`,
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+    },
+    data: JSON.stringify({
+      username: username,
+      password: password
+    })
+  });
+}
+
+export function getSession() {
+  return $.getJSON('/api/v1/session');
+}
+
+export function deleteSession() {
+  return $.ajax({
+    url: `/api/v1/session`,
+    method: 'DELETE'    
+  });
+}

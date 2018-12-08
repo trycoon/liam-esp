@@ -1,32 +1,57 @@
 import * as api from '../rest.js';
+import * as auth from '../authorisation.js';
 
 let sec = $('.js-section-start');
 
 function setLaunchMowerState() {
   api.selectState("LAUNCHING")
-  .fail(function(e) {
-    console.error(e.message);
+  .catch(error => {
+    if (error.status === 401) {
+      auth.showLogin().then(() => {
+        setLaunchMowerState();
+      });
+    } else {
+      console.error(e.message);
+    }
   });
 }
 
 function setMowingState() {
   api.selectState("MOWING")
-  .fail(function(e) {
-    console.error(e.message);
+  .catch(error => {
+    if (error.status === 401) {
+      auth.showLogin().then(() => {
+        setMowingState();
+      });
+    } else {
+      console.error(e.message);
+    }
   });
 }
 
 function setDockingState() {
   api.selectState("DOCKING")
-  .fail(function(e) {
-    console.error(e.message);
+  .catch(error => {
+    if (error.status === 401) {
+      auth.showLogin().then(() => {
+        setDockingState();
+      });
+    } else {
+      console.error(e.message);
+    }
   });
 }
 
 function setStopState() {
   api.selectState("STOP")
-  .fail(function(e) {
-    console.error(e.message);
+  .catch(error => {
+    if (error.status === 401) {
+      auth.showLogin().then(() => {
+        setStopState();
+      });
+    } else {
+      console.error(e.message);
+    }
   });
 }
 

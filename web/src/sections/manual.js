@@ -1,4 +1,5 @@
 import * as api from '../rest.js';
+import * as auth from '../authorisation.js';
 
 const DEADZONE_SIZE = 10; // Joystick center deadzone, to prevent drifting when knob is almost centered in the middle.
 
@@ -32,28 +33,46 @@ export function unselected() {
 
 function stop() {
   api.manual("stop")
-  .fail(() => {
-    // keep on trying if we failed
-    setTimeout(() => {
-      stop();
-    }, 400);
+  .catch(error => {
+    if (error.status === 401) {
+      auth.showLogin().then(() => {
+        stop();
+      });
+    } else {
+      // keep on trying if we failed
+      setTimeout(() => {
+        stop();
+      }, 400);
+    }
   });
 }
 
 function startMowerMotor() {
   api.manual("cutter_on")
-  .fail(function(e) {
-    console.error(e.message);
+  .catch(error => {
+    if (error.status === 401) {
+      auth.showLogin().then(() => {
+        startMowerMotor();
+      });
+    } else {
+      console.error(error.message);
+    }
   });
 }
 
 function stopMowerMotor() {
   api.manual("cutter_off")
-  .fail(() => {
-    // keep on trying if we failed
-    setTimeout(() => {
-      stopMowerMotor();
-    }, 10);
+  .catch(error => {
+    if (error.status === 401) {
+      auth.showLogin().then(() => {
+        stopMowerMotor();
+      });
+    } else {
+      // keep on trying if we failed
+      setTimeout(() => {
+        stopMowerMotor();
+      }, 400);
+    }
   });
 }
 

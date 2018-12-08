@@ -97,6 +97,6 @@ let uptime = new Date(),
     },
     setApiKey: (key) => {
         currentSystem.apiKey = key;
-    }
+    },
   }
   

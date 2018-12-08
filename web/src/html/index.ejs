@@ -11,10 +11,22 @@
   <body>
     <div class="all-wrapper">
       <div id="modal" class="center">
-        <div class="vertical-center">
+        <div class="js-no-connection-modal vertical-center">
           <i class="fas fa-ban fa-10x"></i>
           <h2>No connection with mower!</h2>
           <p>Mower out of range, mower turned off, or WiFi not working?</p>
+        </div>
+        <div class="loginbox js-loginbox">
+          <i class="fas fa-user fa-3x"></i>
+          <h2>Login</h2>
+          <form>
+            <p>Username</p>
+            <input type="text" class="js-username" maxlength="20" placeholder="Enter Username">
+            <p>Password</p>
+            <input type="password" class="js-password" maxlength="20" placeholder="Enter Password">
+            <p class="message js-message"></p>
+            <input type="submit" class="js-submit" value="Login">
+          </form>
         </div>
       </div>
       <nav class="main-nav js-main-nav">

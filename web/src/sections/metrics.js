@@ -43,7 +43,7 @@ function getBatteryHistoryAndRender() {
             }],
         });
     })
-    .fail(function(e) {
+    .catch(function(e) {
         console.error(e.message);
     })
     .always(() => {

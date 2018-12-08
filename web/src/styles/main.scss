@@ -260,6 +260,12 @@ p {
     animation: pulsate 3s ease-out infinite;
     opacity: 0.5;
 }
+.shake {
+    -webkit-animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+    animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+}
 #modal {
     display: none;
     position: fixed;
@@ -272,6 +278,60 @@ p {
     background-color: rgb(0, 0, 0); /* fallback color */
     background-color: rgba(0, 0, 0, 0.8);
 }
+.loginbox {
+    width: 320px;
+    height: 420px;
+    background: #111;
+    color: #fff;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-top: -210px; /* we could have used translate(-50%, -50%); but since we know the size this will do, and it will not interfere with the shake-animation. */
+    margin-left: -160px;
+    
+    padding: 40px 30px;
+    border-radius: 10px;
+    h2 {
+        font-size: 1.5rem;
+    }
+    p {
+        margin: 0;
+        padding: 0;
+        font-weight: bold;
+        font-size: 1rem;
+        text-align: left;
+    }
+    input {
+        width: 100%;
+        margin: 0 0 10px 0;
+        border: none;
+        outline: none;
+        color: #fff;
+    }
+    input[type="text"], input[type="password"] {
+        border-bottom: 1px solid #fff;
+        background: transparent;
+        height: 40px;
+        font-size: 1rem;
+        padding-left: 10px;
+    }
+    input[type="submit"] {
+        height: 40px;
+        margin: 20px 0 20px 0;
+        background: #256b25;
+        font-size: 1.2rem;
+        border-radius: 20px;
+    }
+    input[type="submit"]:hover {
+        cursor: pointer;
+        background: #25ab25;
+    }
+    .message {
+        height: 2rem;
+        color: #f00;
+    }
+}
+
 @-webkit-keyframes pulsate {
     0% {
         opacity: 0.5;
@@ -292,6 +352,40 @@ p {
     }
     100% {
         opacity: 0.5;
+    }
+}
+@-webkit-keyframes shake {
+    10%, 90% {
+      transform: translate3d(-1px, 0, 0);
+    }
+    
+    20%, 80% {
+      transform: translate3d(2px, 0, 0);
+    }
+  
+    30%, 50%, 70% {
+      transform: translate3d(-4px, 0, 0);
+    }
+  
+    40%, 60% {
+      transform: translate3d(4px, 0, 0);
+    }
+}
+@keyframes shake {
+    10%, 90% {
+      transform: translate3d(-1px, 0, 0);
+    }
+    
+    20%, 80% {
+      transform: translate3d(2px, 0, 0);
+    }
+  
+    30%, 50%, 70% {
+      transform: translate3d(-4px, 0, 0);
+    }
+  
+    40%, 60% {
+      transform: translate3d(4px, 0, 0);
     }
 }
 .state-control {

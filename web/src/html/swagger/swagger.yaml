@@ -113,7 +113,7 @@ paths:
       responses:
         '200':
           description: active session available
-        '404':
+        '401':
           description: no session available
     delete:
       tags:
@@ -123,6 +123,17 @@ paths:
       responses:
         '200':
           description: session removed
+  /basic_auth:
+    get:
+      tags:
+        - Authentication
+      description: sign on using HTTP Basic Authentication
+      operationId: getBasicAuth
+      responses:
+        '200':
+          description: authentication succeeded
+        '401':
+          description: authentication failed
   /apikey:
     post:
       tags:

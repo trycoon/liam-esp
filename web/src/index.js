@@ -1,5 +1,6 @@
 import './styles/main.scss'
 import * as api from './rest.js';
+import * as auth from './authorisation.js';
 import * as sectionInfo from './sections/info.js';
 import * as sectionManual from './sections/manual.js';
 import * as sectionMetrics from './sections/metrics.js';
@@ -67,19 +68,17 @@ function showSection(section) {
 }
 
 function showLostConnectionModal() {
+  document.querySelector('.js-no-connection-modal').style.display = 'block';
+  document.querySelector('.js-loginbox').style.display = 'none';
   document.getElementById('modal').style.display = 'block';
 }
 
 function hideLostConnectionModal() {
   document.getElementById('modal').style.display = 'none';
+  document.querySelector('.js-loginbox').style.display = 'none';
 }
 
 function startSubscribingOnStatus() {
-  api.getStatus().done(data => {
-    liam.data.status = data;
-    window.dispatchEvent(new Event('statusUpdated'));
-  });
-
   socket = new ReconnectingWebSocket('ws://' + location.host + '/ws');
 
   socket.addEventListener('open', () => {
@@ -88,14 +87,19 @@ function startSubscribingOnStatus() {
       clearTimeout(socketDisconnectedTimeout);
       socketDisconnectedTimeout = undefined;
     }
-    hideLostConnectionModal();
+    if (!auth.isLoginDialogVisible()) {
+      hideLostConnectionModal();
+    }
   });
 
   socket.addEventListener('close', () => {
     console.info('Lost WS connection.');
     // show lost connection modal if we have not been able to reconnect within 2 seconds.
     socketDisconnectedTimeout = setTimeout(() => {
-      showLostConnectionModal();
+      // if we are not currently logging in, show lost connection warning.
+      if (!auth.isLoginDialogVisible()) {
+        showLostConnectionModal();
+      }
     }, 2000);    
   });
 
@@ -117,19 +121,29 @@ function startSubscribingOnStatus() {
   });  
 }
 
-function setupSections() {
+function initialSetup() {
   // get initial settings and system information.
-  api.getSystem().done(data => {
-    liam.data.system = data;
-  
+  $.when(api.getSystem(), api.getStatus())
+  .done((system, status) => {
+    liam.data.system = system[0];
+    liam.data.status = status[0];
+    showLostConnectionModal();
+
     for (let section in global.liam.sections) {
       global.liam.sections[section].init();
     }
-
+  
+    window.dispatchEvent(new Event('statusUpdated'));
     showSection('start');
     startSubscribingOnStatus();
-  }).catch(() => {
-    setTimeout(setupSections, 500); // retry if failed.
+  }).catch(error => {
+    if (error.status === 401) {
+      auth.showLogin().then(() => {
+        initialSetup();
+      });
+    } else {
+      setTimeout(initialSetup, 500); // retry if failed.
+    }
   });
 }
 
@@ -142,9 +156,7 @@ function init() {
 
   setTheme();
   addClickEffect();
-
-  showLostConnectionModal();
-  setupSections();
+  initialSetup();
 }
 
 // Start application.
