@@ -328,7 +328,7 @@ void WiFi_Client::setupWebServer() {
         Log.notice(F("Updating firmware from file: %s of type %s" CR), filename.c_str(), firmwareUpdateType);
         publish_mqtt("START UPDATING FIRMWARE");
         
-        if (!Update.begin(UPDATE_SIZE_UNKNOWN, firmwareUpdateType == "SPIFFS" ? U_SPIFFS : U_FLASH)) {  // TODO: support update of SPIFFS using "U_SPIFFS"
+        if (!Update.begin(UPDATE_SIZE_UNKNOWN, firmwareUpdateType == "SPIFFS" ? U_SPIFFS : U_FLASH)) {
           Update.printError(Serial);
         }
       }
@@ -400,6 +400,7 @@ void WiFi_Client::connect() {
   Log.trace(F("Connecting to WiFi..." CR));
 
   if (WiFi.getMode() == WIFI_MODE_STA) {
+    WiFi.setAutoReconnect(false); // we handle this ourself.
 
     WiFi.begin(Configuration::config.ssid.c_str(), Configuration::config.wifiPassword.c_str());
     WiFi.setSleep(false); // https://github.com/espressif/arduino-esp32/issues/1484
@@ -428,6 +429,7 @@ void WiFi_Client::connect() {
 // Method is called upon when have a WiFi connection with an IP address (note that this method could be called upon several times).
 void WiFi_Client::onWifiConnect(WiFiEvent_t event, system_event_info_t info) {
 
+  wifiReconnectTimer.detach();
   WiFi.macAddress(mac);
   Log.notice(F("Connected to WiFi accesspoint \"%s\", using IP-address: %s and MAC: %x:%x:%x:%x:%x:%x" CR), WiFi.SSID().c_str(), WiFi.localIP().toString().c_str(), mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
       
@@ -458,8 +460,7 @@ void WiFi_Client::onWifiDisconnect(WiFiEvent_t event, system_event_info_t info) 
 
   WiFi.disconnect(true);  // force disconnect WiFi to get new settings.
 
-  // TODO: change "once" to "attach", in case we fail to reconnect then "onWifiDisconnect" will not be called upon again and no more attempts will be made!
-  wifiReconnectTimer.once<WiFi_Client*>(10, [](WiFi_Client* instance) {
+  wifiReconnectTimer.attach<WiFi_Client*>(10, [](WiFi_Client* instance) {
     instance->connect();
   }, this);
 }
@@ -559,9 +560,9 @@ void WiFi_Client::sendDataWebSocket(String msgType, JsonObject& json, AsyncWebSo
     if (buffer) {
         root.printTo((char*)buffer->get(), len + 1);
         //TODO: would like an Log.isTrace() here!
-        String jsonStr;
-        root.printTo(jsonStr);
-        Log.trace("WS pushed: %s" CR, jsonStr.c_str());
+        //String jsonStr;
+        //root.printTo(jsonStr);
+        //Log.trace("WS pushed: %s" CR, jsonStr.c_str());
 
         if (client) {
           client->text(buffer);
