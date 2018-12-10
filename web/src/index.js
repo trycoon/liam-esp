@@ -79,7 +79,8 @@ function hideLostConnectionModal() {
 }
 
 function startSubscribingOnStatus() {
-  socket = new ReconnectingWebSocket('ws://' + location.host + '/ws');
+  let protocol = location.protocol.indexOf('https') === 0 ? 'wss' : 'ws';
+  socket = new ReconnectingWebSocket(`${protocol}://${location.host}/ws`);
 
   socket.addEventListener('open', () => {
     console.info('Got WS connection.');
