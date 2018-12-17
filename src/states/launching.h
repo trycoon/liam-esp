@@ -3,7 +3,6 @@
 
 #include "abstract_state.h"
 #include "resources.h"
-#include "../scheduler/scheduler.h"
 
 /**
 * State the mower enters when it is heading out from the charging station to begin mowing.
@@ -16,9 +15,6 @@ class Launching : public AbstractState {
     }
     void selected(Definitions::MOWER_STATES lastState);
     void process();
-  
-  private:
-    Scheduler launchSequence;
 };
 
 #endif

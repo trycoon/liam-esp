@@ -37,7 +37,7 @@ IO_Accelerometer io_accelerometer(Wire);
 WiFi_Client wifi;
 Wheel leftWheel(1, Definitions::LEFT_WHEEL_MOTOR_PIN, Definitions::LEFT_WHEEL_MOTOR_DIRECTION_PIN, Definitions::LEFT_WHEEL_ODOMETER_PIN, Definitions::LEFT_WHEEL_MOTOR_INVERTED, Definitions::LEFT_WHEEL_MOTOR_SPEED);
 Wheel rightWheel(2, Definitions::RIGHT_WHEEL_MOTOR_PIN, Definitions::RIGHT_WHEEL_MOTOR_DIRECTION_PIN, Definitions::RIGHT_WHEEL_ODOMETER_PIN, Definitions::RIGHT_WHEEL_MOTOR_INVERTED, Definitions::RIGHT_WHEEL_MOTOR_SPEED);
-WheelController wheelController(leftWheel, rightWheel, io_accelerometer);
+WheelController wheelController(leftWheel, rightWheel);
 Cutter cutter(io_analog);
 BWF bwf;
 GPS gps;

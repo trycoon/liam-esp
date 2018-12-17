@@ -44,7 +44,6 @@ class Battery {
     uint8_t currentMedianIndex;
     void updateBatteryVoltage();
     void updateChargeCurrent();
-    int64_t getEpocTime();
     Ticker batteryVoltageTicker;
     Ticker chargeCurrentTicker;
     std::deque<batterySample> batterySamples;

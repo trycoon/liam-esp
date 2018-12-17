@@ -1,12 +1,31 @@
-#include <math.h>
-#include <sys/time.h>
 #include <ArduinoLog.h>
-#include <vector>
+#include <math.h>
 #include "battery.h"
 #include "definitions.h"
 #include "configuration.h"
+#include "utils.h"
 
 Battery::Battery(IO_Analog& io_analog, TwoWire& w) : io_analog(io_analog), wire(w), lastChargeCurrentReading(0), currentMedian(11, 0), currentMedianIndex(0) {}
+
+
+  /**
+   * Get median value from an array of values
+   */
+  template<typename T>
+  T calculateMedian(std::vector<T> entries) {
+      size_t size = entries.size();
+
+      if (size == 0) {
+          return 0;  // Undefined, really.
+      } else {
+          sort(entries.begin(), entries.end());
+          if (size % 2 == 0) {
+              return (entries[size / 2 - 1] + entries[size / 2]) / 2;
+          } else {
+              return entries[size / 2];
+          }
+      }
+  }
 
 void Battery::start() {
   ina219.begin(&wire);
@@ -28,28 +47,6 @@ void Battery::start() {
   }, this);
 }
 
-int64_t Battery::getEpocTime() {
-  struct timeval tv;
-  gettimeofday(&tv, NULL);
-  return (tv.tv_sec * 1000LL + (tv.tv_usec / 1000LL));
-}
-
-template<typename T>
-T calculateMedian(std::vector<T> entries) {
-  size_t size = entries.size();
-
-  if (size == 0) {
-    return 0;  // Undefined, really.
-  } else {
-    sort(entries.begin(), entries.end());
-    if (size % 2 == 0) {
-      return (entries[size / 2 - 1] + entries[size / 2]) / 2;
-    } else {
-      return entries[size / 2];
-    }
-  }
-}
-
 void Battery::updateBatteryVoltage() {
   float adc_reading = io_analog.getVoltage(Definitions::BATTERY_SENSOR_PIN);
   batteryVoltage = roundf((adc_reading * Definitions::BATTERY_MULTIPLIER) * 100) / 100;  // adjust reading and round to two decimals.
@@ -62,7 +59,7 @@ void Battery::updateBatteryVoltage() {
     batterySamples.pop_front();
   }
   batterySample sample;
-  sample.time = getEpocTime();
+  sample.time = Utils::getEpocTime();
   sample.batteryVoltage = batteryVoltage;
   batterySamples.push_back(sample);
 }
@@ -81,14 +78,14 @@ void Battery::updateChargeCurrent() {
 
     // don't overwrite already existing starttime, we could have been charging with mower turned off.
     if (Configuration::config.startChargeTime == 0) {
-      Configuration::config.startChargeTime = getEpocTime();
+      Configuration::config.startChargeTime = Utils::getEpocTime();
       Configuration::save();
     }
   } else if (!_isCharging && lastChargeCurrentReading >= Definitions::CHARGE_CURRENT_THRESHOLD) {
     
     if (_isFullyCharged) {
       Log.notice("Done charging battery." CR);
-      auto currMillis = getEpocTime();
+      auto currMillis = Utils::getEpocTime();
       Configuration::config.lastFullyChargeTime = currMillis;
       if (Configuration::config.startChargeTime > 0) {
         Configuration::config.lastChargeDuration = currMillis - Configuration::config.startChargeTime;

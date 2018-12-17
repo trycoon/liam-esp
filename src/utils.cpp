@@ -1,3 +1,4 @@
+#include <sys/time.h>
 #include "configuration.h"
 
 namespace Utils {
@@ -26,4 +27,14 @@ namespace Utils {
         ultoa(value, buf, base);
         return String(buf);
     }
+
+    /**
+     * Gets seconds since Unix epoctime (1970-01-01)
+     */
+    int64_t getEpocTime() {
+        struct timeval tv;
+        gettimeofday(&tv, NULL);
+        return (tv.tv_sec * 1000LL + (tv.tv_usec / 1000LL));
+    }
+
 }

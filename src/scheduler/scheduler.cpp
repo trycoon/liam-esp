@@ -15,7 +15,7 @@ Scheduler::Scheduler(bool inSeries) : in_series(inSeries) { }
 * @param <uint32_t> delay delay in milliseconds.
 * @param <bool> repeat when the delay has been reached and the function has been executed, then reschedule the function for another delay milliseconds.
 */
-uint16_t Scheduler::schedule(std::function<void(void)> fn, uint32_t delay, bool repeat) {
+uint16_t Scheduler::schedule(const std::function<void(void)> fn, uint32_t delay, bool repeat) {
 
   // TODO: could this be a inspiration/replacement? https://github.com/espressif/arduino-esp32/pull/1516
   scheduled_fn_t it;

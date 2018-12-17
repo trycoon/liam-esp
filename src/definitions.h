@@ -41,8 +41,10 @@ namespace Definitions {
   extern const uint8_t WHEEL_MOTOR_MIN_SPEED;
   extern const uint8_t WHEEL_MOTOR_TURN_SPEED;
   extern const bool WHEEL_MOTOR_DECREASE_SPEED_AT_CUTTER_LOAD;
+  extern const uint8_t LAUNCH_DISTANCE;
   extern const uint16_t WHEEL_ODOMETERPULSES_PER_ROTATION;
   extern const uint8_t WHEEL_DIAMETER;
+  extern const uint8_t WHEEL_PAIR_DISTANCE;
   extern const uint8_t CUTTER_MOTOR_PIN;
   extern const uint8_t CUTTER_BRAKE_PIN;
   extern const uint8_t CUTTER_LOAD_PIN;

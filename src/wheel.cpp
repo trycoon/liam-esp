@@ -3,9 +3,6 @@
 #include "wheel.h"
 #include "definitions.h"
 
-// https://esp-idf.readthedocs.io/en/v3.0/api-reference/peripherals/ledc.html?highlight=led
-// https://github.com/espressif/arduino-esp32/blob/master/libraries/ESP32/examples/AnalogOut/LEDCSoftwareFade/LEDCSoftwareFade.ino
-
 Wheel::Wheel(uint8_t wheel_id, uint8_t motor_pin, uint8_t motor_dir_pin, uint8_t odometer_pin, bool wheel_invert, uint8_t wheel_max_speed) : wheel_id(wheel_id), motor_pin(motor_pin), motor_dir_pin(motor_dir_pin), odometer_pin(odometer_pin), wheel_invert(wheel_invert), max_speed(constrain(wheel_max_speed, 0, 100)), current_speed(0) {
   pinMode(motor_pin, OUTPUT);
   pinMode(motor_dir_pin, OUTPUT);
@@ -38,7 +35,7 @@ void Wheel::setSpeed(int8_t speed) {
   ledcWrite(wheel_id, duty);
 }
 
-int8_t Wheel::getSpeed() const {
+int8_t Wheel::getSpeed() {
   return current_speed;
 }
 
@@ -48,6 +45,6 @@ void IRAM_ATTR Wheel::updateOdometer() {
   portEXIT_CRITICAL_ISR(&mux);
 }
 
-uint32_t Wheel::getOdometer() const {
+uint32_t Wheel::getOdometer() {
   return odometer;
 }

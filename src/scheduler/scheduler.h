@@ -16,7 +16,7 @@ struct scheduled_fn_t
 class Scheduler {
   public:
     Scheduler(bool inSeries = false);
-    uint16_t schedule(std::function<void(void)> fn, uint32_t time, bool repeat = false);
+    uint16_t schedule(const std::function<void(void)> fn, uint32_t time, bool repeat = false);
     void unschedule(uint16_t id);
     bool isEmpty();
     void clear();
