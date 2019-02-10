@@ -1,4 +1,4 @@
-import * as api from '../rest.js';
+import * as api from '../api.js';
 import * as auth from '../authorisation.js';
 
 let sec = $('.js-section-settings');

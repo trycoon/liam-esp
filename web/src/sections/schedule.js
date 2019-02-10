@@ -1,4 +1,4 @@
-import * as api from '../rest.js';
+import * as api from '../api.js';
 
 export function selected() {
     

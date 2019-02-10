@@ -1,4 +1,4 @@
-import * as api from '../rest.js';
+import * as api from '../api.js';
 const MAX_SAMPLES = 40; // How many points in graph, too many gets hard to read.
 let batteryChart,
     batteryData = [],

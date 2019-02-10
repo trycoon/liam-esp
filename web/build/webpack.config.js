@@ -47,7 +47,7 @@ const config = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['env']
+            presets: ['@babel/preset-env']
           }
         },
       },
@@ -55,14 +55,14 @@ const config = {
         test: /\.css$/,
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
-          use: 'css-loader?minimize=true',
+          use: 'css-loader',
         }),
       },
       {
         test: /\.scss|\.sass$/,
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
-          use: ['css-loader?minimize=true', 'sass-loader'],
+          use: ['css-loader', 'sass-loader'],
         }),
       },
       {

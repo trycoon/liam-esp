@@ -458,7 +458,7 @@ void WiFi_Client::onWifiDisconnect(WiFiEvent_t event, system_event_info_t info) 
 
   mqttReconnectTimer.detach(); // ensure we don't reconnect to MQTT while reconnecting to WiFi
 
-  WiFi.disconnect(true);  // force disconnect WiFi to get new settings.
+  WiFi.disconnect(true);  // force disconnect WiFi to get new settings. TODO: maybe can be removed now that AsyncTCP has this behavior.
 
   wifiReconnectTimer.attach<WiFi_Client*>(10, [](WiFi_Client* instance) {
     instance->connect();

@@ -37,7 +37,7 @@ namespace Definitions
 
   const uint8_t RIGHT_WHEEL_MOTOR_PIN = 17;
   const uint8_t RIGHT_WHEEL_MOTOR_DIRECTION_PIN = 16;
-  const uint8_t RIGHT_WHEEL_ODOMETER_PIN = 14;
+  const uint8_t RIGHT_WHEEL_ODOMETER_PIN = 4;
   const uint8_t RIGHT_WHEEL_MOTOR_SPEED = 100;   // 0-100 (%), used to compensate for drifting motors, lower this value if mower drift to the left.
   const bool RIGHT_WHEEL_MOTOR_INVERTED = true;  // Set to "true" if right wheel runs backward when mower should be running forward.
 
@@ -56,10 +56,10 @@ namespace Definitions
   /*
     Cutter settings
   */
-  const uint8_t CUTTER_MOTOR_PIN = 4;    // Pin to PWM-control motor.
-  const uint8_t CUTTER_BRAKE_PIN = 2;    // Pin for braking cutter motor.
+  const uint8_t CUTTER_MOTOR_PIN = 32;   // Pin to PWM-control motor.
+  const uint8_t CUTTER_BRAKE_PIN = 33;   // Pin for braking cutter motor.
   const uint8_t CUTTER_LOAD_PIN = 36;    // Pin on ADC for measuring cutter motor load.
-  const float CUTTER_LOAD_RESISTOR_MULTIPLIER = 20.0/170.0;   // Setting of RV3-trim resistor divided by size of RV3-trim resistor, e.g. 20/170 (kilo ohm). This is to read the correct cutter load.
+  const float CUTTER_LOAD_RESISTOR_MULTIPLIER = 20.0f/170.0f;   // Setting of RV3-trim resistor divided by size of RV3-trim resistor, e.g. 20/170 (kilo ohm). This is to read the correct cutter load.
   const uint8_t CUTTER_MAX_SPEED = 100;  // 0-100 (%), lower this value if cutter spinning too fast.
   // When the load on the cuttor motor surpasses this limit, the cutter is working too hard cutting the grass (and we should reduce speed of wheels to compensate).
   const uint16_t CUTTER_LOAD_THRESHOLD = 1000;
@@ -67,8 +67,8 @@ namespace Definitions
   /*
     Border Wire Fence settings
   */
-  const uint8_t LEFT_BWF_PIN = 32;
-  const uint8_t RIGHT_BWF_PIN = 33;
+  const uint8_t LEFT_BWF_PIN = 25;
+  const uint8_t RIGHT_BWF_PIN = 26;
   // How long the mower should be running without hitting the border wire, in seconds.
   // This is a safety setting that prevent the mower to escape too far away.
   // If the mower reach this time setting before it reach the border fence it will stop and enter the STUCK-state.
@@ -105,18 +105,17 @@ namespace Definitions
     Factory reset switch
     Pulling this pin LOW will wipe Flash-memory from ALL settings and reboot mower.
   */
-  const uint8_t FACTORY_RESET_PIN = 13;
+  const uint8_t FACTORY_RESET_PIN = 35;
 
   /*
-    GPS (Global Positioning System)
-    Tested with GY-NEO6MV2 (https://www.openimpulse.com/blog/wp-content/uploads/wpsc/downloadables/GY-NEO6MV2-GPS-Module-Datasheet.pdf)
+    GPS positioning system (also using others if available)
     Set GPS_RX_PIN and GPS_TX_PIN to "0" if not used!
   */
   const uint8_t GPS_RX_PIN = 3;  // GPIO3 (RXD0)
   const uint8_t GPS_TX_PIN = 1;  // GPIO1 (TDX0)
 
   // Pulse this pin LOW to pause mower (emergency stop), pulse LOW once more to continue
-  const uint8_t PAUSE_PIN = 15;
+  const uint8_t PAUSE_PIN = 2;
 
   // Pin to drive external buzzer for giving warning/error codes beeps.
   const uint8_t BUZZER_PIN = 27;

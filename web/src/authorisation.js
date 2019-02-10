@@ -1,4 +1,4 @@
-import * as api from './rest.js';
+import * as api from './api.js';
 let submitHandler, loginPromise;
 
 /**

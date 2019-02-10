@@ -89,6 +89,7 @@ void WheelController::stop(bool smooth) {
   leftWheel.setSpeed(0);
   rightWheel.setSpeed(0);
   targetOdometer = 0;
+  reachedTargetCallback = nullptr;
   lastSpeed = 0;
 
   Log.trace(F("WheelController-stop, smooth: %d" CR), smooth);
@@ -114,6 +115,7 @@ void WheelController::process() {
 
     if (reachedTargetCallback != nullptr) {
       reachedTargetCallback();
+      reachedTargetCallback = nullptr;
     }
   }
 }

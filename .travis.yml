@@ -13,39 +13,61 @@
 # * User Guide for `platformio ci` command
 #   < http://docs.platformio.org/page/userguide/cmd_ci.html >
 #
-#
-# Please choice one of the following templates (proposed below) and uncomment
-# it (remove "# " before each line) or use own configuration according to the
-# Travis CI documentation (see above).
-#
 
- language: python
- python:
-     - "2.7"
+language: python
+python:
+    - "2.7"
 
- sudo: false
- cache:
-     directories:
-         - "~/.platformio"
+sudo: false
+cache:
+    directories:
+        - "~/.platformio"
 
 # update Makefile if target boards added
- env:
-     #- PLATFORMIO_BOARD=uno
-     - PLATFORMIO_BOARD=nodemcuv2
+env:
+    global:
+        - CXX=g++-5
+    #- PLATFORMIO_BOARD=uno
+    - PLATFORMIO_BOARD=nodemcuv2
 
- install:
-     - pip install -U platformio
-     #- platformio lib install 44
+addons:
+    apt:
+        sources:
+            - ubuntu-toolchain-r-test
+        packages:
+            - g++-5
+            - lcov
+            - doxygen
+            - doxygen-doc
+            - doxygen-latex
+            - doxygen-gui
+            - graphviz
+            - cppcheck
 
- script:
-     - platformio run
-     #- platformio ci --lib="." --board=nodemcuv2
+install:
+    - pip install -U platformio
+    #- platformio lib install 44
+
+script:
+    - platformio run
+    # Build and run unit tests
+    #- bash test/run_tests.sh
+    # Run static code analysis over the source code
+    - cppcheck --std=c++11 --enable=performance,portability,information --quiet --error-exitcode=1 src/
+    #- platformio ci --lib="." --board=nodemcuv2
+
+after_success:
+    - bash run_coverage.sh
+    # Upload report to codecov
+    #- bash <(curl -s https://codecov.io/bash) -s coverage-reports || echo "Codecov did not collect coverage reports"
+    # Generate documentation
+    - doxygen Doxyfile     
 
  notifications:
     email: false
 
     slack:
-      rooms:
-        secure: <enter secure hash-key for slack-channel here>
-      on_failure: always
-      on_success: change
+        rooms:
+            secure: <enter secure hash-key for slack-channel here>
+        on_failure: always
+        on_success: change
