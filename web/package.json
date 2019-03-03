@@ -27,8 +27,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
-    "babel-loader": "^8.0.5",
     "@babel/preset-env": "*",
+    "babel-loader": "^8.0.5",
     "clean-webpack-plugin": "^1.0.1",
     "compression-webpack-plugin": "^2.0.0",
     "cookies": "^0.7.3",
@@ -44,6 +44,8 @@
     "sass-loader": "^7.1.0",
     "sockjs": "^0.3.19",
     "style-loader": "^0.23.1",
+    "stylelint": "^8.4.0",
+    "stylelint-webpack-plugin": "^0.10.5",
     "url-loader": "^1.1.2",
     "webpack": "^4.29.3",
     "webpack-api-mocker": "^1.6.6",

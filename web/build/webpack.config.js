@@ -9,6 +9,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const apiMocker = require('webpack-api-mocker');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
+const StyleLintPlugin = require('stylelint-webpack-plugin');
 const myIp = require('my-local-ip');
 
 const config = {
@@ -111,6 +112,10 @@ const config = {
       threshold: 4096, // Only assets bigger than this size are processed. In bytes.
       compressionOptions: { level: 9 },
       deleteOriginalAssets: isProd,
+    }),
+    new StyleLintPlugin({
+      configFile: resolve(__dirname, '..', '.stylelintrc'),
+      context: resolve(__dirname, '..', 'src', 'styles'),
     }),
   ],
 };
