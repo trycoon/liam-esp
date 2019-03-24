@@ -104,8 +104,15 @@ void setup() {
   Wire.setTimeout(500);   // milliseconds
   Wire.setClock(400000);  // 400 kHz I2C speed
   scan_I2C();
+
+  // set up GPS
+  //gps.init();
+
+  // start subsystems up
   delay(100);
+
   io_accelerometer.start();
+  gps.start();
   battery.start();
 
   auto lastState = Configuration::config.lastState;

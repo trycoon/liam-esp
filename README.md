@@ -1,4 +1,4 @@
-# liam-esp
+# Liam-ESP
 [![license](https://img.shields.io/github/license/trycoon/liam-esp.svg?maxAge=3600)](https://opensource.org/licenses/MIT)
 
 ## Overview
@@ -10,8 +10,8 @@ Here are some of the features of this project:
 - Automatic mowing of lawn using a two wheel robot
 - Support for limiting mower movement using a Buried Wire Fence (virtual wall)
 - WiFi connected (can operate when signal is weak/lost, will reconnect when signal is available)
-- Easy to use REST-based API, self explaining (HATEOAS compatible), with Swagger support.  
-- Monitor mower using MQTT protocol (works with most Home automation systems)
+- Easy to use [REST-based API](documentation/api.md), self explaining (HATEOAS compatible), with Swagger support.  
+- Monitor mower using [MQTT protocol](documentation/api.md) (works with most Home automation systems)
 - NTP time support, making scheduling of mowing a breeze
 - Integrated Web UI for controlling and monitoring mower
 - Support accelerometer, gyroscope, and e-compass to keep mower on a straight line, and detect if mower are flipped over (safety reasons)
@@ -52,13 +52,12 @@ Then exit back to the project root directory and run:
 
 Press the "Reset" button on the ESP32 board and you should now be able to visit the mowers [user interface](http://liam-esp.local) using a webbrowser.
 
-## Error decoding
+## Debugging and faultfinding
 
-xtensa-esp32-elf-addr2line -pfiaC -e build/PROJECT.elf ADDRESS
+[See debugging section](documentation/debugging.md)
 
 ## TODO
 
-TODO: check if we could use a PID-library to tune BWF readings when docking. https://github.com/br3ttb/Arduino-PID-Library
 TODO: Multithreading on ESP32, processable.h-interface and let each class use this one instead: https://github.com/copercini/esp32-iot-examples/blob/master/multiloop/multiloop.ino, if not working then look at this: https://www.arduino.cc/en/Reference/Scheduler or this (works even in Arduino-mode): http://www.freertos.org/a00125.html
 TODO: see this for inspiration: https://bitbucket.org/xoseperez/espurna/src
 

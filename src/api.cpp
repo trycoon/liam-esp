@@ -163,6 +163,32 @@ void Api::setupApi() {
     instance->collectAndPushNewStatus();     
   }, this);
 
+  // start listening on WebSocket events.
+  resources.wifi.getWebSocketServer().onEvent([this](AsyncWebSocket* server, AsyncWebSocketClient* client, AwsEventType type, void* arg, uint8_t* data, size_t len) {
+    if (type == WS_EVT_CONNECT) {
+      //client connected
+      Log.trace("ws[%s][%u] connect" CR, server->url(), client->id());
+    } else if (type == WS_EVT_DISCONNECT) {
+      //client disconnected
+      Log.trace("ws[%s][%u] disconnect: %u" CR, server->url(), client->id());
+    } else if (type == WS_EVT_ERROR) {
+      //error was received from the other end
+      Log.error("ws[%s][%u] error(%u): %s" CR, server->url(), client->id(), *((uint16_t*)arg), (char*)data);
+    } else if (type == WS_EVT_DATA) {
+       //data packet
+      AwsFrameInfo* info = (AwsFrameInfo*)arg;
+
+      if (info->final && info->index == 0 && info->len == len) {
+        //the whole message is in a single frame and we got all of it's data
+        Log.notice("ws[%s][%u] %s-message[%llu]: " CR, server->url(), client->id(), (info->opcode == WS_TEXT)?"text":"binary", info->len);
+        if (info->opcode == WS_TEXT) {
+          data[len] = 0;
+          Log.notice("%s" CR, (char*)data);
+        }
+      }
+    }
+  });
+
   // respond to GET requests on URL /api/v1/history/battery
   web_server.on("/api/v1/history/battery", HTTP_GET, [this](AsyncWebServerRequest *request) {
     if (!resources.wifi.isAuthenticated(request)) {

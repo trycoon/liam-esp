@@ -22,9 +22,9 @@ void IRAM_ATTR IO_Accelerometer::interruptHandler() { // IRAM_ATTR tells the com
 
 void IO_Accelerometer::start() {
   attachInterrupt(digitalPinToInterrupt(Definitions::IO_ACCELEROMETER_INT_PIN), std::bind(&IO_Accelerometer::interruptHandler, this), RISING);
-  available = em7180.begin();
+//  available = em7180.begin();
 
-  if (!available) {
+/*  if (!available) {
     Log.error(F("Failed to initialize gyro/accelerometer/compass, check connections! Error: %s" CR), em7180.getErrorString());
   } else {
     Log.notice(F("Gyro/accelerometer/compass init success." CR));
@@ -32,7 +32,7 @@ void IO_Accelerometer::start() {
     sensorReadingTicker.attach_ms<IO_Accelerometer*>(200, [](IO_Accelerometer* instance) {
       instance->getReadings();
     }, this);
-  }
+  }*/
 }
 
 bool IO_Accelerometer::isAvailable() const {
@@ -103,6 +103,7 @@ void IO_Accelerometer::getReadings() {
         currentOrientation.roll = roundf(roll);
         currentOrientation.pitch = roundf(pitch);
         currentOrientation.heading = roundf(yaw);
+        Log.notice("%d", currentOrientation.heading);
       }
     }
 

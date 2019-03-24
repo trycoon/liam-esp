@@ -1,4 +1,4 @@
-import * as api from '../rest.js';
+import * as api from '../api.js';
 import * as auth from '../authorisation.js';
 
 const DEADZONE_SIZE = 10; // Joystick center deadzone, to prevent drifting when knob is almost centered in the middle.
@@ -198,13 +198,13 @@ function initJoystick(evt) {
       }
 
       sendCommandTimer = setTimeout(() => {
-        api.manual(forward ? "forward" : "backward", {
+        api.socketSend(forward ? "forward" : "backward", {
           speed: joyknob.speed,
           turnrate: joyknob.turnrate,
           smooth: true
         });
 
-      }, 100);
+      }, 80);
     }
   }
   
