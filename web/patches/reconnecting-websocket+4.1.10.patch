@@ -1,0 +1,13 @@
+diff --git a/node_modules/reconnecting-websocket/reconnecting-websocket.ts b/node_modules/reconnecting-websocket/reconnecting-websocket.ts
+index a93b2f4..971bdd2 100644
+--- a/node_modules/reconnecting-websocket/reconnecting-websocket.ts
++++ b/node_modules/reconnecting-websocket/reconnecting-websocket.ts
+@@ -292,7 +292,7 @@ export default class ReconnectingWebSocket {
+             minReconnectionDelay = DEFAULT.minReconnectionDelay,
+             maxReconnectionDelay = DEFAULT.maxReconnectionDelay,
+         } = this._options;
+-        let delay = minReconnectionDelay;
++        let delay = 0;
+         if (this._retryCount > 0) {
+             delay =
+                 minReconnectionDelay * Math.pow(reconnectionDelayGrowFactor, this._retryCount - 1);
