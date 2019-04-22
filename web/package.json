@@ -17,24 +17,27 @@
   },
   "scripts": {
     "dev": "webpack-dev-server --hot --inline --config build/webpack.config.js",
-    "build": "rimraf ./dist && NODE_ENV=production webpack --config build/webpack.config.js"
+    "build": "rimraf ./dist && NODE_ENV=production webpack --config build/webpack.config.js",
+    "postinstall": "patch-package"
   },
   "homepage": "https://github.com/trycoon/liam-esp",
   "dependencies": {
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
+    "patch-package": "^6.1.2",
     "reconnecting-websocket": "^4.1.10"
   },
   "devDependencies": {
-    "@babel/core": "^7.2.2",
-    "@babel/preset-env": "*",
+    "@babel/core": "^7.4.3",
+    "@babel/preset-env": "^7.4.3",
     "babel-loader": "^8.0.5",
     "clean-webpack-plugin": "^1.0.1",
     "compression-webpack-plugin": "^2.0.0",
     "cookies": "^0.7.3",
     "copy-webpack-plugin": "^4.6.0",
-    "css-loader": "^2.1.0",
-    "eslint-plugin-import": "^2.16.0",
+    "css-loader": "^2.1.1",
+    "eslint-plugin-import": "^2.17.2",
+    "eslint": "^5.16.0",
     "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "file-loader": "^3.0.1",
     "html-webpack-plugin": "^3.2.0",
@@ -47,9 +50,9 @@
     "stylelint": "^8.4.0",
     "stylelint-webpack-plugin": "^0.10.5",
     "url-loader": "^1.1.2",
-    "webpack": "^4.29.3",
+    "webpack": "^4.30.0",
     "webpack-api-mocker": "^1.6.6",
-    "webpack-cli": "^3.2.3",
-    "webpack-dev-server": "^3.1.14"
+    "webpack-cli": "^3.3.1",
+    "webpack-dev-server": "^3.3.1"
   }
 }

@@ -1,7 +1,17 @@
 import * as api from '../api.js';
 import * as auth from '../authorisation.js';
 
-let sec = $('.js-section-start');
+const sec = $('.js-section-start'),
+      mower3D_perspectiveRotation = THREE.Math.degToRad(30);  // rotate 30⁰ to give better 3rd-person perspective
+
+let renderer3D,
+    camera3D,
+    scene3D,
+    mower3D,
+    leftWheel,
+    rightWheel,
+    requestAnimationInstance,
+    isModelAvailable3D = false;
 
 function setLaunchMowerState() {
   api.selectState("LAUNCHING")
@@ -202,10 +212,135 @@ function updatedStatus() {
   updateBattery();
 }
 
+function initModel3D(canvas) {
+
+  try {
+    
+    let canvasWidth = $('.js-main').width(),
+        canvasHeight = canvasWidth;
+
+    scene3D = new THREE.Scene();
+
+    renderer3D = new THREE.WebGLRenderer({
+      antialias: true,
+      canvas: canvas
+    });
+
+    renderer3D.setPixelRatio(window.devicePixelRatio);
+    renderer3D.setSize(canvasWidth, canvasHeight);
+    renderer3D.setClearColor(0xefefef, 1);
+    //renderer3D.shadowMap.enabled = true;
+    renderer3D.gammaOutput = true;
+    renderer3D.physicallyCorrectLights = true;
+
+    //Camera
+    camera3D = new THREE.PerspectiveCamera(45, canvasWidth / canvasHeight, 0.1, 500);
+    camera3D.position.z = 12; // move camera back some distance, soo that we don't end up in the middle of the model 
+    scene3D.add(camera3D);
+
+    let ambientLight = new THREE.AmbientLight(0xcccccc, 0.8);
+    ambientLight.name = "ambientLight"
+    scene3D.add( ambientLight );
+
+    let dirLight = new THREE.DirectionalLight(0xffffff, 2);
+    dirLight.position.multiplyScalar(50);
+    dirLight.name = "dirlight";
+    dirLight.castShadow = true;
+    camera3D.add(dirLight);
+
+    let grid3D = new THREE.GridHelper(50, 50, 0xFF4444, 0x404040);
+    grid3D.rotation.x = mower3D_perspectiveRotation;
+    scene3D.add(grid3D);
+
+    //Loader for the model
+    const loader = new THREE.GLTFLoader();
+
+    // Optional: Provide a DRACOLoader instance to decode compressed mesh data
+    //THREE.DRACOLoader.setDecoderPath( '/examples/js/libs/draco' );
+    //loader.setDRACOLoader( new THREE.DRACOLoader() );
+
+    loader.load('https://smart-home.rocks/liam/3d_mower.glb',
+      // called when model has been loaded
+      function (gltf) {    
+        mower3D = gltf.scene;
+        mower3D.position.set(0, 0, 1);
+        mower3D.rotation.set(mower3D_perspectiveRotation, THREE.Math.degToRad(180), 0); // align mower with grid and in front-facing direction
+        mower3D.scale.set (10, 10, 10);
+
+        // TODO: the naming and parenting between wheel and tire should be done when exporting model-file, not here.
+        leftWheel = mower3D.getObjectByName('wheel001_Untitled005');
+        rightWheel = mower3D.getObjectByName('wheel_Untitled016');
+
+        let leftTire = mower3D.getObjectByName('tire001_Untitled006');
+        let rightTire = mower3D.getObjectByName('tire_Untitled017');
+
+        mower3D.remove(leftTire);
+        mower3D.remove(rightTire);
+
+        leftTire.parent = leftWheel;
+        rightTire.parent = rightWheel;
+        leftWheel.children.push(leftTire);
+        rightWheel.children.push(rightTire);
+        
+        mower3D.traverse((o) => {
+          if (o.isMesh) {
+            //o.geometry.scale( -1, 1, 1 );
+            console.log(o.name);
+          }
+        });
+
+        scene3D.add(mower3D);
+
+        isModelAvailable3D = true;
+        drawModel3D();
+      },
+      // called when loading is in progresses
+      function(xhr) {
+        if ( xhr.lengthComputable ) {
+          console.info(`3D model, ${Math.round(xhr.loaded / xhr.total * 100, 2)}% loaded`);
+        }  
+      },
+      // called when loading has errors
+      function(error) {    
+        console.warn('Failed to load 3D model. Stacktrace: ' + error.stack);
+      }
+    );
+     
+    window.addEventListener('resize', onWindowResize, false);
+    
+    function onWindowResize() {
+      canvasWidth = $('.js-main').width();
+      canvasHeight = canvasWidth;
+
+      camera3D.aspect = canvasWidth / canvasHeight;
+      camera3D.updateProjectionMatrix();
+      renderer3D.setSize(canvasWidth, canvasHeight);
+    }
+  } catch (err) {
+    console.warn( 'Failed to init 3D-model view, ignoring displaying 3D representation. Stacktrace: ' + err.stack);
+  }
+}
+
+function drawModel3D() {
+  // TODO: update model here.
+  mower3D.rotation.z = THREE.Math.degToRad(liam.data.status.roll);
+  mower3D.rotation.x = mower3D_perspectiveRotation + THREE.Math.degToRad(liam.data.status.pitch);
+  //leftWheel.rotation.x += THREE.Math.degToRad(3 / 100 * liam.data.status.leftWheelSpd);
+  //rightWheel.rotation.x += THREE.Math.degToRad(3 / 100 * liam.data.status.rightWheelSpd);
+
+  camera3D.lookAt(scene3D.position);
+  renderer3D.render(scene3D, camera3D);
+  requestAnimationInstance = requestAnimationFrame(drawModel3D);
+}
+
 export function selected() {
+  if (isModelAvailable3D) {
+    drawModel3D();
+  }
 }
 
 export function unselected() {
+  window.cancelAnimationFrame(requestAnimationInstance);
 }
 
 export function init() {
@@ -226,21 +361,6 @@ export function init() {
     setStopState();
   });
 
-  //https://github.com/kchapelier/PRWM
-  //https://www.youtube.com/watch?v=kB0ZVUrI4Aw
-  let mower3dCanvas = document.querySelector('.js-gl3dmodel');
-  let gl = mower3dCanvas.getContext('webgl');
-
-  if (!gl) {
-    gl = mower3dCanvas.getContext('experimental-webgl');
-  }
-
-  if (!gl) {
-    console.error('Browser does not support WebGL, 3D preview of mower will not be available.');
-    return;
-  }
-  
-  gl.clearColor(0.1, 0.13, 0.15, 1.0);
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
+  let mower3dCanvas = document.querySelector('.js-model3D'); 
+  initModel3D(mower3dCanvas);
 }

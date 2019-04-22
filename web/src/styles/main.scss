@@ -185,8 +185,13 @@ p {
     /* Navigation width in percent of viewport */
     grid-template-columns: 15vw 100vw - 15vw;
     @media (min-width: 1280px) {
-    grid-template-columns: 4vw 100vw - 4vw;
+      grid-template-columns: 4vw 100vw - 4vw;
     }
+
+    -webkit-animation: fadein 2s; /* Safari, Chrome and Opera > 12.1 */
+    -webkit-animation-fill-mode: forwards;
+    animation: fadein 2s;
+    animation-fill-mode: forwards;
 }
 
 /* Navigation menu */
@@ -389,65 +394,47 @@ p {
     }
 }
 
+@keyframes fadein {
+  from { opacity: 0; }
+  
+  to   { opacity: 1; }
+}
+@-webkit-keyframes fadein {
+  from { opacity: 0; }
+
+  to   { opacity: 1; }
+}
 @-webkit-keyframes pulsate {
-    0% {
-        opacity: 0.5;
-    }
+    0% {opacity: 0.5;}
 
-    50% {
-        opacity: 1.0;
-    }
+    50% { opacity: 1.0; }
 
-    100% {
-        opacity: 0.5;
-    }
+    100% { opacity: 0.5; }
 }
 @keyframes pulsate {
-    0% {
-        opacity: 0.5;
-    }
+    0% { opacity: 0.5; }
     
-    50% {
-        opacity: 1.0;
-    }
+    50% { opacity: 1.0; }
 
-    100% {
-        opacity: 0.5;
-    }
+    100% { opacity: 0.5; }
 }
 @-webkit-keyframes shake {
-    10%, 90% {
-      transform: translate3d(-1px, 0, 0);
-    }
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
     
-    20%, 80% {
-      transform: translate3d(2px, 0, 0);
-    }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
   
-    30%, 50%, 70% {
-      transform: translate3d(-4px, 0, 0);
-    }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
   
-    40%, 60% {
-      transform: translate3d(4px, 0, 0);
-    }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
 }
 @keyframes shake {
-    10%, 90% {
-      transform: translate3d(-1px, 0, 0);
-    }
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
     
-    20%, 80% {
-      transform: translate3d(2px, 0, 0);
-    }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
   
-    30%, 50%, 70% {
-      transform: translate3d(-4px, 0, 0);
-    }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
   
-    40%, 60% {
-      transform: translate3d(4px, 0, 0);
-    }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
 }
 
 .state-control {
@@ -543,7 +530,7 @@ p {
   overflow-x: scroll;
 }
 
-/* 3D model */
-.gl3dmodel {
+.model3D {
+  display: block;
   width: 100%;
 }

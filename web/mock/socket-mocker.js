@@ -25,13 +25,13 @@ module.exports = (port) => {
   httpServer.listen(port, '0.0.0.0');
 
   setInterval(() => {
-    clients.forEach((client, id) => {
+    clients.forEach((client) => {
       client.write(JSON.stringify({
         type: "status",
-        payload: data.getCurrentState()
+        payload: data.getCurrentState(),
       }));
     });
   }, 2000);
-}
+};
 
 

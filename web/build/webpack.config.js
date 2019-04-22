@@ -10,6 +10,7 @@ const apiMocker = require('webpack-api-mocker');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
 const StyleLintPlugin = require('stylelint-webpack-plugin');
+// eslint-disable-next-line no-unused-vars
 const myIp = require('my-local-ip');
 
 const config = {
@@ -48,8 +49,8 @@ const config = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env']
-          }
+            presets: ['@babel/preset-env'],
+          },
         },
       },
       {
@@ -87,7 +88,7 @@ const config = {
 
   plugins: [
     new CleanWebpackPlugin(resolve(__dirname, '..', '..', 'data'), {
-      allowExternal: true
+      allowExternal: true,
     }),
     new HtmlWebpackPlugin({
       template: resolve(__dirname, '..', 'src', 'html', 'index.ejs'),
@@ -98,13 +99,13 @@ const config = {
     }),
     new webpack.optimize.ModuleConcatenationPlugin(), // Scope Hoisting: https://www.codementor.io/drewpowers/high-performance-webpack-config-for-front-end-delivery-90sqic1qa#1-scope-hoisting
     new webpack.optimize.LimitChunkCountPlugin({
-      maxChunks: 1
+      maxChunks: 1,
     }),
     new CopyWebpackPlugin([
       {
         from: resolve(__dirname, '..', 'src', 'html', 'swagger'),
-        to: resolve(__dirname, '..', '..', 'data')
-      }
+        to: resolve(__dirname, '..', '..', 'data'),
+      },
     ]),
     new CompressionPlugin({
       test: /(\.html|\.js|\.css|\.yaml)$/i,
@@ -138,7 +139,7 @@ if (!isProd) {
     before(app) {
       apiMocker(app, resolve(__dirname, '..', 'mock', 'api-mocker.js'));
       require(resolve(__dirname, '..', 'mock', 'socket-mocker.js'))(8081);
-    }
+    },
   };
 } else {
   // Add buildcheck if any resources grow too big, the embeded system has very limited space.

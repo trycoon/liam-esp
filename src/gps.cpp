@@ -18,270 +18,96 @@
 //https://github.com/Ultimaker/CuraEngine/blob/master/src/infill.cpp
 // C++ to Javascript transpilator: http://kripken.github.io/emscripten-site/docs/getting_started/Tutorial.html
 
-GPS::GPS() : gpsSerial(2), gps(gpsSerial) {}
+GPS::GPS() {}
 
 bool GPS::isEnabled() {
   return Definitions::GPS_RX_PIN > 0 && Definitions::GPS_TX_PIN > 0;
 }
 
 void GPS::init() {
-  // Most of the following init-code have been grabbed from here: https://github.com/loginov-rocks/UbxGps/blob/master/extras/Configuration/Auto-configuration-Mega/Auto-configuration-Mega.ino
-  if (isEnabled()) {
-    
-    // Restore the receiver default configuration, just to get us to a known state.
-    for (byte i = 0; i < sizeof(possibleBaudrates) / sizeof(*possibleBaudrates); i++) {
-        Log.trace(F("Trying to restore GPS module to defaults at %d baudrate." CR), possibleBaudrates[i]);
-
-        if (i != 0) {
-            delay(100);
-            gpsSerial.flush();
-        }
-
-        gpsSerial.begin(possibleBaudrates[i], SERIAL_8N1, Definitions::GPS_RX_PIN, Definitions::GPS_TX_PIN);
-        restoreDefaults();
-    }
-
-    Log.trace(F("Switched GPS module to the default baudrate: %d." CR), GPS_DEFAULT_BAUDRATE);
-    delay(100);
-    gpsSerial.flush();
-    gpsSerial.begin(GPS_DEFAULT_BAUDRATE, SERIAL_8N1, Definitions::GPS_RX_PIN, Definitions::GPS_TX_PIN);
-
-    // Disable unnecessary NMEA messages from GPS.
-    Log.trace(F("Disabling NMEA messages..." CR));
-    disableNmea();
-
-    // Switch the receiver serial to the wanted baudrate.
-    if (GPS_BAUDRATE != GPS_DEFAULT_BAUDRATE) {
-        Log.trace(F("Switching GPS module to the wanted baudrate: %d." CR), GPS_BAUDRATE);
-
-        changeBaudrate();
-
-        delay(100);
-        gpsSerial.flush();
-        gpsSerial.begin(GPS_BAUDRATE, SERIAL_8N1, Definitions::GPS_RX_PIN, Definitions::GPS_TX_PIN);
-    }
-
-    // Increase receiver frequency to 100 ms (10 Hz).
-    Log.trace(F("Changing GPS receiver frequency to 10 Hz (100 ms)..." CR));
-    changeFrequency();
-
-    // Enable NAV-PVT messages.
-    Log.trace(F("Enabling GPS receiver NAV-PVT messages..." CR));
-    enableNavPvt();
-
-    Log.notice(F("GPS receiver configuration complete." CR));
-
-    delay(100);
-    gpsSerial.flush();
+ if (gps.begin() == false) //Connect to the Ublox module using Wire port
+  {
+    Log.warning(F("Ublox GPS not detected at default I2C address. Please check wiring, and restart mower!"));
+    while (1);
   }
+
+  Serial.print(F("Version: "));
+  byte versionHigh = gps.getProtocolVersionHigh();
+  Serial.print(versionHigh);
+  Serial.print(".");
+  byte versionLow = gps.getProtocolVersionLow();
+  Serial.print(versionLow);
+
+  gps.setI2COutput(COM_TYPE_UBX); //Set the I2C port to output UBX only (turn off NMEA noise)
+  gps.setNavigationFrequency(10); //Set output to 10 times a second
+  gps.saveConfiguration(); //Save the current settings to flash and BBR
+  
+  byte rate = gps.getNavigationFrequency(); //Get the update rate of this module
+  Serial.print("Current update rate:");
+  Serial.println(rate);
+
 }
 
 void GPS::start() {
   if (isEnabled()) {
-    if (gps.ready()) {
-        /*snprintf(datetime, DATETIME_LENGTH, DATETIME_FORMAT, gps.year, gps.month, gps.day, gps.hour, gps.min, gps.sec);
+  //Query module only every second. Doing it more often will just cause I2C traffic.
+  if (millis() - lastTime > 1000)
+  {
+    lastTime = millis(); //Update the timer
 
-        Serial.print(datetime);
-        Serial.print(',');*/
-        Serial.print(gps.lon / 10000000.0, 7);
-        Serial.print(',');
-        Serial.print(gps.lat / 10000000.0, 7);
-        Serial.print(',');
-        Serial.print(gps.height / 1000.0, 3);
-        Serial.print(',');
-        Serial.print(gps.gSpeed * 0.0036, 5);
-        Serial.print(',');
-        Serial.print(gps.heading / 100000.0, 5);
-        Serial.print(',');
-        Serial.print(gps.fixType);
-        Serial.print(',');
-        Serial.println(gps.numSV);
-    }
+    /* Note: Long/lat are large numbers because they are * 10^7. To convert lat/long
+    to something google maps understands simply divide the numbers by 1,000,000. We
+    do this so that we don't have to use floating point numbers. */
+    long latitude = gps.getLatitude();
+    Serial.print(F("Lat: "));
+    Serial.print(latitude);
+
+    long longitude = gps.getLongitude();
+    Serial.print(F(" Long: "));
+    Serial.print(longitude);
+
+    long altitude = gps.getAltitude();
+    Serial.print(F(" Alt: "));
+    Serial.print(altitude);
+
+    long speed = gps.getGroundSpeed();
+    Serial.print(F(" Speed: "));
+    Serial.print(speed);
+    Serial.print(F(" (mm/s)"));
+
+    long heading = gps.getHeading();
+    Serial.print(F(" Heading: "));
+    Serial.print(heading);
+    Serial.print(F(" (degrees * 10^-5)"));
+
+    int pDOP = gps.getPDOP();
+    Serial.print(F(" pDOP: "));
+    Serial.print(pDOP / 100.0, 2);
+
+    byte fixType = gps.getFixType();
+    Serial.print(F(" Fix: "));
+    if(fixType == 0) Serial.print(F("No fix"));
+    else if(fixType == 1) Serial.print(F("Dead reckoning"));
+    else if(fixType == 2) Serial.print(F("2D"));
+    else if(fixType == 3) Serial.print(F("3D"));
+    else if(fixType == 4) Serial.print(F("GNSS+Dead reckoning"));
+
+    byte RTK = gps.getCarrierSolutionType();
+    Serial.print(" RTK: ");
+    Serial.print(RTK);
+    if (RTK == 1) Serial.print(F("High precision float fix!"));
+    if (RTK == 2) Serial.print(F("High precision fix!"));
+    Serial.println();
+    
+    long accuracy = gps.getPositionAccuracy();
+    Serial.print(F(" 3D Positional Accuracy: "));
+    Serial.print(accuracy);
+    Serial.println(F("mm"));
+
+    // Denna skall vi använda sedan: https://github.com/sparkfun/SparkFun_Ublox_Arduino_Library/blob/master/examples/Example13_AutoPVT/Example13_AutoPVT.ino
+
   }
-}
-
-// Send a packet to the receiver to restore default configuration.
-void GPS::restoreDefaults() {
-    // CFG-CFG packet.
-    byte packet[] = {
-        0xB5, // sync char 1
-        0x62, // sync char 2
-        0x06, // class
-        0x09, // id
-        0x0D, // length
-        0x00, // length
-        0xFF, // payload
-        0xFF, // payload
-        0x00, // payload
-        0x00, // payload
-        0x00, // payload
-        0x00, // payload
-        0x00, // payload
-        0x00, // payload
-        0xFF, // payload
-        0xFF, // payload
-        0x00, // payload
-        0x00, // payload
-        0x17, // payload
-        0x2F, // CK_A
-        0xAE, // CK_B
-    };
-
-    sendPacket(packet, sizeof(packet));
-}
-
-// Send a set of packets to the receiver to disable NMEA messages.
-void GPS::disableNmea() {
-    // Array of two bytes for CFG-MSG packets payload.
-    byte messages[][2] = {
-        {0xF0, 0x0A},
-        {0xF0, 0x09},
-        {0xF0, 0x00},
-        {0xF0, 0x01},
-        {0xF0, 0x0D},
-        {0xF0, 0x06},
-        {0xF0, 0x02},
-        {0xF0, 0x07},
-        {0xF0, 0x03},
-        {0xF0, 0x04},
-        {0xF0, 0x0E},
-        {0xF0, 0x0F},
-        {0xF0, 0x05},
-        {0xF0, 0x08},
-        {0xF1, 0x00},
-        {0xF1, 0x01},
-        {0xF1, 0x03},
-        {0xF1, 0x04},
-        {0xF1, 0x05},
-        {0xF1, 0x06},
-    };
-
-    // CFG-MSG packet buffer.
-    byte packet[] = {
-        0xB5, // sync char 1
-        0x62, // sync char 2
-        0x06, // class
-        0x01, // id
-        0x03, // length
-        0x00, // length
-        0x00, // payload (first byte from messages array element)
-        0x00, // payload (second byte from messages array element)
-        0x00, // payload (not changed in the case)
-        0x00, // CK_A
-        0x00, // CK_B
-    };
-
-    byte packetSize = sizeof(packet);
-
-    // Offset to the place where payload starts.
-    byte payloadOffset = 6;
-
-    // Iterate over the messages array.
-    for (byte i = 0; i < sizeof(messages) / sizeof(*messages); i++) {
-        // Copy two bytes of payload to the packet buffer.
-        for (byte j = 0; j < sizeof(*messages); j++) {
-            packet[payloadOffset + j] = messages[i][j];
-        }
-
-        // Set checksum bytes to the null.
-        packet[packetSize - 2] = 0x00;
-        packet[packetSize - 1] = 0x00;
-
-        // Calculate checksum over the packet buffer excluding sync (first two) and checksum chars (last two).
-        for (byte j = 0; j < packetSize - 4; j++) {
-            packet[packetSize - 2] += packet[2 + j];
-            packet[packetSize - 1] += packet[packetSize - 2];
-        }
-
-        sendPacket(packet, packetSize);
-    }
-}
-
-// Send a packet to the receiver to change baudrate to 115200.
-void GPS::changeBaudrate() {
-    // CFG-PRT packet.
-    byte packet[] = {
-        0xB5, // sync char 1
-        0x62, // sync char 2
-        0x06, // class
-        0x00, // id
-        0x14, // length
-        0x00, // length
-        0x01, // payload
-        0x00, // payload
-        0x00, // payload
-        0x00, // payload
-        0xD0, // payload
-        0x08, // payload
-        0x00, // payload
-        0x00, // payload
-        0x00, // payload
-        0xC2, // payload
-        0x01, // payload
-        0x00, // payload
-        0x07, // payload
-        0x00, // payload
-        0x03, // payload
-        0x00, // payload
-        0x00, // payload
-        0x00, // payload
-        0x00, // payload
-        0x00, // payload
-        0xC0, // CK_A
-        0x7E, // CK_B
-    };
-
-    sendPacket(packet, sizeof(packet));
-}
-
-// Send a packet to the receiver to change frequency to 100 ms.
-void GPS::changeFrequency() {
-    // CFG-RATE packet.
-    byte packet[] = {
-        0xB5, // sync char 1
-        0x62, // sync char 2
-        0x06, // class
-        0x08, // id
-        0x06, // length
-        0x00, // length
-        0x64, // payload
-        0x00, // payload
-        0x01, // payload
-        0x00, // payload
-        0x01, // payload
-        0x00, // payload
-        0x7A, // CK_A
-        0x12, // CK_B
-    };
-
-    sendPacket(packet, sizeof(packet));
-}
-
-// Send a packet to the receiver to enable NAV-PVT messages.
-void GPS::enableNavPvt() {
-    // CFG-MSG packet.
-    byte packet[] = {
-        0xB5, // sync char 1
-        0x62, // sync char 2
-        0x06, // class
-        0x01, // id
-        0x03, // length
-        0x00, // length
-        0x01, // payload
-        0x07, // payload
-        0x01, // payload
-        0x13, // CK_A
-        0x51, // CK_B
-    };
-
-    sendPacket(packet, sizeof(packet));
-}
-
-// Send the packet specified to the receiver.
-void GPS::sendPacket(const byte *packet, byte len) {
-    for (byte i = 0; i < len; i++) {
-        gpsSerial.write(packet[i]);
-    }
+  }
 }
 
 const std::deque<gpsPosition>& GPS::getGpsPositionHistory() const {
