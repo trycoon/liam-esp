@@ -11,8 +11,8 @@ let uptime = new Date(),
       wifiSignal: Math.floor(Math.random() * (-30 - -90 + 1)) + -90,
       cutterLoad: Math.round(Math.random() * 100),
       uptime: uptime,
-      leftWheelSpd: 80,
-      rightWheelSpd: 80,
+      leftWheelSpd: 0,
+      rightWheelSpd: 0,
       pitch: 0,
       roll: 0,
       heading: 0,
@@ -44,6 +44,8 @@ module.exports = {
     state.pitch = Math.floor(Math.random() * 90) - 45;
     state.uptime = Math.round((new Date().getTime() - uptime.getTime()) / 1000);
     state.wifiSignal = Math.floor(Math.random() * (-30 - -90 + 1)) + -90;
+    state.leftWheelSpd = Math.round(-100 + Math.random() * (100 - -100));  // -100 to 100
+    state.rightWheelSpd = Math.round(-100 + Math.random() * (100 - -100)); // -100 to 100
 
     return state;
   },

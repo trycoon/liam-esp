@@ -252,12 +252,15 @@ function initModel3D(canvas) {
     grid3D.rotation.x = mower3D_perspectiveRotation;
     scene3D.add(grid3D);
 
+    //scene3D.fog = new THREE.Fog(0x72645b, 2, 100);
+
     //Loader for the model
     const loader = new THREE.GLTFLoader();
+    const dracoLoader = new THREE.DRACOLoader();
 
-    // Optional: Provide a DRACOLoader instance to decode compressed mesh data
-    //THREE.DRACOLoader.setDecoderPath( '/examples/js/libs/draco' );
-    //loader.setDRACOLoader( new THREE.DRACOLoader() );
+    THREE.DRACOLoader.setDecoderPath('https://smart-home.rocks/liam/');
+    //dracoLoader.setVerbosity(1);  // Verbose console logging.
+    loader.setDRACOLoader(dracoLoader);
 
     loader.load('https://smart-home.rocks/liam/3d_mower.glb',
       // called when model has been loaded
@@ -267,27 +270,25 @@ function initModel3D(canvas) {
         mower3D.rotation.set(mower3D_perspectiveRotation, THREE.Math.degToRad(180), 0); // align mower with grid and in front-facing direction
         mower3D.scale.set (10, 10, 10);
 
-        // TODO: the naming and parenting between wheel and tire should be done when exporting model-file, not here.
-        leftWheel = mower3D.getObjectByName('wheel001_Untitled005');
-        rightWheel = mower3D.getObjectByName('wheel_Untitled016');
+        // TODO: parenting between wheel and tire should be done when exporting model, not here.
+        leftWheel = mower3D.getObjectByName('wheel_left');
+        rightWheel = mower3D.getObjectByName('wheel_right');
 
-        let leftTire = mower3D.getObjectByName('tire001_Untitled006');
-        let rightTire = mower3D.getObjectByName('tire_Untitled017');
+        let leftTire = mower3D.getObjectByName('tire_left');
+        let rightTire = mower3D.getObjectByName('tire_right');
 
-        mower3D.remove(leftTire);
-        mower3D.remove(rightTire);
+        attachModel(leftTire, mower3D, leftWheel);
+        attachModel(rightTire, mower3D, rightWheel);
+        // TODO: to get the tires back on the wheels. This should not need to be hardcoded.
+        leftTire.position.set(38,0,0);
+        rightTire.position.set(38,0,0);
 
-        leftTire.parent = leftWheel;
-        rightTire.parent = rightWheel;
-        leftWheel.children.push(leftTire);
-        rightWheel.children.push(rightTire);
-        
-        mower3D.traverse((o) => {
+        /*mower3D.traverse((o) => {
           if (o.isMesh) {
             //o.geometry.scale( -1, 1, 1 );
             console.log(o.name);
           }
-        });
+        });*/
 
         scene3D.add(mower3D);
 
@@ -321,12 +322,38 @@ function initModel3D(canvas) {
   }
 }
 
+/**
+ * Detaches the object from the parent and adds it back to the scene without moving in worldspace.
+ * @param {*} child 
+ * @param {*} parent 
+ * @param {*} scene 
+ */
+function detachModel(child, parent, scene) {
+  child.applyMatrix(parent.matrixWorld);
+  parent.remove(child);
+  parent.updateMatrixWorld();
+  scene.add(child);
+}
+
+/**
+ * Attaches the object to the parent without the moving the object in the worldspace.
+ * @param {*} child 
+ * @param {*} scene 
+ * @param {*} parent 
+ */
+function attachModel(child, scene, parent) {
+  child.applyMatrix(new THREE.Matrix4().getInverse(parent.matrixWorld));
+  scene.remove(child);
+  parent.add(child);
+  parent.updateMatrixWorld();
+}
+
 function drawModel3D() {
-  // TODO: update model here.
+  // update model here.
   mower3D.rotation.z = THREE.Math.degToRad(liam.data.status.roll);
   mower3D.rotation.x = mower3D_perspectiveRotation + THREE.Math.degToRad(liam.data.status.pitch);
-  //leftWheel.rotation.x += THREE.Math.degToRad(3 / 100 * liam.data.status.leftWheelSpd);
-  //rightWheel.rotation.x += THREE.Math.degToRad(3 / 100 * liam.data.status.rightWheelSpd);
+  leftWheel.rotation.x += THREE.Math.degToRad(3 / 100 * liam.data.status.leftWheelSpd);
+  rightWheel.rotation.x += THREE.Math.degToRad(3 / 100 * liam.data.status.rightWheelSpd);
 
   camera3D.lookAt(scene3D.position);
   renderer3D.render(scene3D, camera3D);
