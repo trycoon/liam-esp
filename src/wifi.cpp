@@ -17,7 +17,7 @@
 
 
 // TODO: AVOID "%" in CSS, https://github.com/me-no-dev/ESPAsyncWebServer/pull/366
-static const char SETUP_HTML[] PROGMEM = "<!DOCTYPE html><html lang=\"en\"><head><meta name=\"viewport\" content=\"width=device-width,initial-scale=1,user-scalable=no\"><title>Liam-ESP</title><style>fieldset{padding:1em;font:0.8em/1 sans-serif;margin:1em}legend{padding:0.2em 0.5em;border:1px solid black;font-size:0.9em}label{float:left;margin-right:0.5em;padding-top:0.2em;text-align:right;font-weight:bold;width:6em}input{margin-bottom:0.4em;padding-left: 0.2em;}.center{display:block;margin-right:auto;margin-left:auto;text-align:center}a:link{text-decoration:none;}button,.button{border:0;border-radius:0.3rem;background-color:#1fa3ec;color:#fff;line-height:2rem;font-size:1.1rem;width:6em;}</style></head><body><h1 class=\"center\">Setup</h1><form action=\"/setup\" method=\"post\"><fieldset><legend>WiFi</legend><label>SSID: </label><input type=\"text\" name=\"SSID\" length=32 value=\"%SSID%\" required><br><label>Password: </label><input type=\"password\" name=\"WIFI_PASSWORD\" length=64 value=\"%WIFI_PASSWORD%\"></fieldset><fieldset><legend>Administrator</legend><label>Username: </label><input type=\"text\" name=\"USERNAME\" length=20 value=\"%USERNAME%\" required><br><label>Password: </label><input type=\"password\" name=\"PASSWORD\" length=20 value=\"%PASSWORD%\" required></fieldset><fieldset><legend>Time</legend><label>NTP-server: </label><input type=\"text\" name=\"NTP_SERVER\" length=40 value=\"%NTP_SERVER%\"><br><label>Time zone: </label><input type=\"number\" name=\"GMT\"  min=\"-12\" max=\"12\" value=\"%GMT%\">&nbsp;<a href=\"https://upload.wikimedia.org/wikipedia/commons/e/e8/Standard_World_Time_Zones.png\" target=\"_blank\">&nbsp;i&nbsp;</a></fieldset><fieldset><legend>MQTT</legend><label>Server IP: </label><input type=\"text\" name=\"MQTT_SERVER\" placeholder=\"leave blank if not used\" length=64 value=\"%MQTT_SERVER%\"><br><label>Port: </label><input type=\"number\" name=\"MQTT_PORT\" placeholder=\"leave blank if not used\" min=\"1024\" max=\"65535\" value=\"%MQTT_PORT%\"><br><label>Subscribe: </label><input type=\"text\" name=\"MQTT_TOPIC\" placeholder=\"leave blank if not used\" length=200 value=\"%MQTT_TOPIC%\"><br><label>Command: </label><input type=\"text\" name=\"MQTT_TOPIC_COMMAND\" placeholder=\"leave blank if not used\" length=200 value=\"%MQTT_TOPIC_COMMAND%\"></fieldset><input type=\"submit\" value=\"Save\" class=\"center button\"></form></body></html>";
+static const char SETUP_HTML[] PROGMEM = "<!DOCTYPE html><html lang=\"en\"><head><meta name=\"viewport\" content=\"width=device-width,initial-scale=1,user-scalable=no\"><title>Liam-ESP</title><style>fieldset{padding:1em;font:0.8em/1 sans-serif;margin:1em}legend{padding:0.2em 0.5em;border:1px solid black;font-size:0.9em}label{float:left;margin-right:0.5em;padding-top:0.2em;text-align:right;font-weight:bold;width:6em}input{margin-bottom:0.4em;padding-left: 0.2em;}.center{display:block;margin-right:auto;margin-left:auto;text-align:center}a:link{text-decoration:none;}button,.button{border:0;border-radius:0.3rem;background-color:#1fa3ec;color:#fff;line-height:2rem;font-size:1.1rem;width:6em;}</style></head><body><h1 class=\"center\">Setup</h1><form action=\"/setup\" method=\"post\"><fieldset><legend>WiFi</legend><label>SSID: </label><input type=\"text\" list=\"availSSID\" id=\"SSID\" name=\"SSID\" length=32 value=\"%SSID%\" required><datalist id=\"availSSID\">%availSSID%</datalist><br><label>Password: </label><input type=\"password\" name=\"WIFI_PASSWORD\" length=64 value=\"%WIFI_PASSWORD%\"></fieldset><fieldset><legend>Administrator</legend><label>Username: </label><input type=\"text\" name=\"USERNAME\" length=20 value=\"%USERNAME%\" required><br><label>Password: </label><input type=\"password\" name=\"PASSWORD\" length=20 value=\"%PASSWORD%\" required></fieldset><fieldset><legend>Time</legend><label>NTP-server: </label><input type=\"text\" name=\"NTP_SERVER\" length=40 value=\"%NTP_SERVER%\"><br><label>Time zone: </label><input type=\"number\" name=\"GMT\"  min=\"-12\" max=\"12\" value=\"%GMT%\">&nbsp;<a href=\"https://smart-home.rocks/liam/Standard_Time_Zones_of_the_World.png\" target=\"_blank\">&nbsp;i&nbsp;</a></fieldset><fieldset><legend>MQTT</legend><label>Server IP: </label><input type=\"text\" name=\"MQTT_SERVER\" placeholder=\"leave blank if not used\" length=64 value=\"%MQTT_SERVER%\"><br><label>Port: </label><input type=\"number\" name=\"MQTT_PORT\" placeholder=\"leave blank if not used\" min=\"1024\" max=\"65535\" value=\"%MQTT_PORT%\"><br><label>Subscribe: </label><input type=\"text\" name=\"MQTT_TOPIC\" placeholder=\"leave blank if not used\" length=200 value=\"%MQTT_TOPIC%\"><br><label>Command: </label><input type=\"text\" name=\"MQTT_TOPIC_COMMAND\" placeholder=\"leave blank if not used\" length=200 value=\"%MQTT_TOPIC_COMMAND%\"></fieldset><input type=\"submit\" value=\"Save\" class=\"center button\"></form></body></html>";
 static const char NO_WEB_UI[] PROGMEM = "Web interface is not available. See README.md for instructions about how to flash interface into mower.";
 WiFi_Client* WiFi_Client::Instance = nullptr;
 
@@ -50,10 +50,56 @@ String WiFi_Client::renderPlaceholder(const String& placeholder) {
     return Configuration::config.wifiPassword;
   } else if (placeholder == "SSID") {
     return Configuration::config.ssid;
+  } else if (placeholder == "availSSID") {
+    String options = "";
+
+    for (auto n: Instance->availableSSID) {
+      options += "<option value=\"" + n.ssid + "\">" + n.ssid + "(ch" + n.channel + ", " + n.rssi + (n.isSecure ? "dBm *)" : "dBm)") + "</option>";
+    }
+
+    return options;
   } else {
     return String();
   }
 }
+
+/**
+ * Scans for available WiFi accesspoints and return a list of names.
+ */
+void WiFi_Client::scanForSSID() {
+  auto scanStartTime = millis();
+  auto total = WiFi.scanNetworks();
+  availableSSID.clear();
+
+  for (auto i = 0; i < total; i++) {
+    scannedNetwork network;
+    network.ssid = WiFi.SSID(i);
+    network.rssi = WiFi.RSSI(i);
+    network.channel = WiFi.channel(i);
+    network.isSecure = WiFi.encryptionType(i) == WIFI_AUTH_OPEN;
+    bool betterExists = false;
+
+    for (auto existing = availableSSID.begin(); existing != availableSSID.end();) {
+      if (existing->ssid == network.ssid && existing->rssi > network.rssi) {
+        // we found an accesspoint with same SSID but with weaker signal (higher RSSI), remove it and use this one instead.
+        existing = availableSSID.erase(existing);
+      } else if (existing->ssid == network.ssid && existing->rssi <= network.rssi) {
+        // we found an accesspoint with same SSID but with stronger signal (lower RSSI), skip this one.
+        betterExists = true;
+        break;
+      } else {
+        ++existing;
+      }
+    }
+
+    if (!betterExists) {
+      availableSSID.push_back(network);
+    }
+  }
+
+  Log.notice(F("Scan for available WiFi networks done, found %d after %dms." CR), availableSSID.size(), (millis() - scanStartTime));
+}
+
 
 void WiFi_Client::loadAuthenticatedSessions() {
   // load saved list of authenticated sessions.
@@ -137,6 +183,8 @@ void WiFi_Client::WiFiEvent(WiFiEvent_t event, system_event_info_t info) {
 void WiFi_Client::start() {
 
   WiFi.onEvent(WiFiEvent);
+
+  scanForSSID();
 
   // if SSID settings exists in our configuration then connect to that accesspoint, otherwise start own accesspoint to provide setup-page.
   if (Configuration::config.ssid.length() > 0) {
@@ -249,6 +297,7 @@ void WiFi_Client::setupWebServer() {
 
     web_server.on("/setup", HTTP_GET, [](AsyncWebServerRequest *request) {
       // TODO: list available accesspoints to choose between. https://github.com/switchdoclabs/SDL_ESP32_BC24_GETIP/blob/master/WiFiManager.cpp#L436
+      Log.verbose(F("webserver serving /setup" CR));
       request->send_P(200, "text/html", SETUP_HTML, renderPlaceholder);
     });
     // Handle Post-back form from setup page.
@@ -303,7 +352,7 @@ void WiFi_Client::setupWebServer() {
       response->addHeader("Location", "/");
       request->send(response);
 
-      sleep(50);
+      delay(50);
       ESP.restart();
     });
 
@@ -315,7 +364,7 @@ void WiFi_Client::setupWebServer() {
       response->addHeader("Location", "/");
       request->send(response);
 
-      sleep(50);
+      delay(50);
       ESP.restart();
     }, [this](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
       if (!isAuthenticated(request)) {
@@ -397,10 +446,10 @@ bool WiFi_Client::isMQTT_enabled() {
 
 // Call upon this method to connect/reconnect WiFi
 void WiFi_Client::connect() {
-  Log.trace(F("Connecting to WiFi..." CR));
-
   if (WiFi.getMode() == WIFI_MODE_STA) {
     WiFi.setAutoReconnect(false); // we handle this ourself.
+
+    Log.notice(F("Connecting WiFi to accesspoint \"%s\"..." CR), Configuration::config.ssid);
 
     WiFi.begin(Configuration::config.ssid.c_str(), Configuration::config.wifiPassword.c_str());
     WiFi.setSleep(false); // https://github.com/espressif/arduino-esp32/issues/1484
@@ -431,7 +480,7 @@ void WiFi_Client::onWifiConnect(WiFiEvent_t event, system_event_info_t info) {
 
   wifiReconnectTimer.detach();
   WiFi.macAddress(mac);
-  Log.notice(F("Connected to WiFi accesspoint \"%s\", using IP-address: %s and MAC: %x:%x:%x:%x:%x:%x" CR), WiFi.SSID().c_str(), WiFi.localIP().toString().c_str(), mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+  Log.notice(F("Connected to WiFi accesspoint \"%s\" on channel: %d, using IP-address: %s and MAC: %x:%x:%x:%x:%x:%x" CR), WiFi.SSID().c_str(), WiFi.channel, WiFi.localIP().toString().c_str(), mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
       
   if (!wifiStartedOnce) {
     // Annonce us on WiFi network using Multicast DNS and also support updating firmware over WiFi.
@@ -454,7 +503,7 @@ void WiFi_Client::onWifiConnect(WiFiEvent_t event, system_event_info_t info) {
 
 // Method is called upon when WiFi connection is lost, it will try to reconnect.
 void WiFi_Client::onWifiDisconnect(WiFiEvent_t event, system_event_info_t info) {
-  Log.notice(F("Disconnected from WiFi." CR));
+  Log.notice(F("Disconnected from WiFi, reason: %d." CR), info.disconnected.reason);
 
   mqttReconnectTimer.detach(); // ensure we don't reconnect to MQTT while reconnecting to WiFi
 

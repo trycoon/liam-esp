@@ -22,6 +22,13 @@ struct MQTT_Message {
   std::string topic;
 };
 
+struct scannedNetwork {
+  String ssid;
+  int32_t channel;
+  int32_t rssi;
+  bool isSecure;
+};
+
 using cb_mqttMessage = std::function<void(char* topic, char* payload, size_t length)>;
 
 class WiFi_Client : public Processable {
@@ -52,7 +59,8 @@ class WiFi_Client : public Processable {
     Ticker flushQueueTimer;
     std::queue<MQTT_Message> msgQueue;
     byte mac[6];
-    
+    std::vector<scannedNetwork> availableSSID;
+
     AsyncWebServer web_server;
     AsyncWebSocket ws;
     DNSServer dnsServer;
@@ -74,6 +82,7 @@ class WiFi_Client : public Processable {
     String parseSessionFromRequest(AsyncWebServerRequest *request);
     void loadAuthenticatedSessions();
     void saveAuthenticatedSessions();
+    void scanForSSID();
     void setupOTA();
     void setupMQTT();
     void setupWebServer();
