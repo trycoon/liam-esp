@@ -146,44 +146,44 @@ String WiFi_Client::getTime() {
 }
 
 // WiFi status eventhandler, called upon when WiFi connection change status.
-void WiFi_Client::WiFiEvent(WiFiEvent_t event, system_event_info_t info) {
-    switch(event) {
-      case SYSTEM_EVENT_AP_START: {
-        // When we run as an accesspoint
-        WiFi.softAPsetHostname(Definitions::APP_NAME);
-        WiFi.softAPenableIpV6();
-        break;
-      case SYSTEM_EVENT_STA_START:
-        // When we run in Station-mode (are connected to an accesspoint as client)
-        WiFi.setHostname(Definitions::APP_NAME);
-        break;
-      case SYSTEM_EVENT_STA_CONNECTED:
-        WiFi.enableIpV6();
-        break;
-      case SYSTEM_EVENT_AP_STA_GOT_IP6:
-        //both interfaces get the same event
-        Log.trace("STA IPv6: %s, AP IPv6: %s" CR, WiFi.localIPv6().toString().c_str(), WiFi.softAPIPv6().toString().c_str());
-        break;
-      case SYSTEM_EVENT_STA_GOT_IP:
-        Instance->onWifiConnect(event, info);
-        break;
-      case SYSTEM_EVENT_STA_LOST_IP:
-        Instance->onWifiDisconnect(event, info);
-        break;
-      case SYSTEM_EVENT_STA_DISCONNECTED:
-        Instance->onWifiDisconnect(event, info);
-        break;
-      default:
-        break; // just to prevent us from getting compile warnings.
-    }
+void WiFi_Client::WiFiEvent(WiFiEvent_t event, WiFiEventInfo_t info) {
+  Log.trace(F("[WiFi-event] event: %d" CR), event);
+
+  switch(event) {
+    case SYSTEM_EVENT_AP_START:
+      // When we run as an accesspoint
+      WiFi.softAPsetHostname(Definitions::APP_NAME);
+      WiFi.softAPenableIpV6();
+      break;
+    case SYSTEM_EVENT_STA_START:
+      // When we run in Station-mode (are connected to an accesspoint as client)
+      WiFi.setHostname(Definitions::APP_NAME);
+      break;
+    case SYSTEM_EVENT_STA_CONNECTED:
+      WiFi.enableIpV6();
+      break;
+    case SYSTEM_EVENT_AP_STA_GOT_IP6:
+      //both interfaces get the same event
+      Log.trace("STA IPv6: %s, AP IPv6: %s" CR, WiFi.localIPv6().toString().c_str(), WiFi.softAPIPv6().toString().c_str());
+      break;
+    case SYSTEM_EVENT_STA_GOT_IP:
+      Instance->onWifiConnect(event, info);
+      break;
+    case SYSTEM_EVENT_STA_LOST_IP:
+      Instance->onWifiDisconnect(event, info);
+      break;
+    case SYSTEM_EVENT_STA_DISCONNECTED:
+      Instance->onWifiDisconnect(event, info);
+      break;
+    default:
+      break; // just to prevent us from getting compile warnings.
   }
 }
 
 // Setup and connect WiFi, should only be called upon once.
 void WiFi_Client::start() {
-
+    
   WiFi.onEvent(WiFiEvent);
-
   scanForSSID();
 
   // if SSID settings exists in our configuration then connect to that accesspoint, otherwise start own accesspoint to provide setup-page.
@@ -197,7 +197,7 @@ void WiFi_Client::start() {
 
   loadAuthenticatedSessions();
   setupOTA();
-  setupMQTT();
+  //setupMQTT();
   connect();
   setupWebServer();
 }
@@ -352,7 +352,6 @@ void WiFi_Client::setupWebServer() {
       response->addHeader("Location", "/");
       request->send(response);
 
-      delay(50);
       ESP.restart();
     });
 
@@ -364,7 +363,6 @@ void WiFi_Client::setupWebServer() {
       response->addHeader("Location", "/");
       request->send(response);
 
-      delay(50);
       ESP.restart();
     }, [this](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
       if (!isAuthenticated(request)) {
@@ -446,15 +444,18 @@ bool WiFi_Client::isMQTT_enabled() {
 
 // Call upon this method to connect/reconnect WiFi
 void WiFi_Client::connect() {
+  
   if (WiFi.getMode() == WIFI_MODE_STA) {
     WiFi.setAutoReconnect(false); // we handle this ourself.
 
-    Log.notice(F("Connecting WiFi to accesspoint \"%s\"..." CR), Configuration::config.ssid);
+    Log.notice(F("Connecting WiFi to accesspoint \"%s\"..." CR), Configuration::config.ssid.c_str());
 
     WiFi.begin(Configuration::config.ssid.c_str(), Configuration::config.wifiPassword.c_str());
     WiFi.setSleep(false); // https://github.com/espressif/arduino-esp32/issues/1484
     
   } else {
+    Log.notice(F("Liam setup as accesspoint(\"liam\") for initial configuration." CR));
+
     // If no SSID is defined, then start up with captive portal and default password "liam".
     WiFi.begin(Definitions::APP_NAME, "liam");
 
@@ -476,12 +477,12 @@ void WiFi_Client::connect() {
 }
 
 // Method is called upon when have a WiFi connection with an IP address (note that this method could be called upon several times).
-void WiFi_Client::onWifiConnect(WiFiEvent_t event, system_event_info_t info) {
+void WiFi_Client::onWifiConnect(WiFiEvent_t event, WiFiEventInfo_t info) {
 
   wifiReconnectTimer.detach();
   WiFi.macAddress(mac);
-  Log.notice(F("Connected to WiFi accesspoint \"%s\" on channel: %d, using IP-address: %s and MAC: %x:%x:%x:%x:%x:%x" CR), WiFi.SSID().c_str(), WiFi.channel, WiFi.localIP().toString().c_str(), mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-      
+  Log.notice(F("Connected to WiFi accesspoint \"%s\" on channel: %d, using IP-address: %s and MAC: %x:%x:%x:%x:%x:%x" CR), WiFi.SSID().c_str(), WiFi.channel(), WiFi.localIP().toString().c_str(), mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+     
   if (!wifiStartedOnce) {
     // Annonce us on WiFi network using Multicast DNS and also support updating firmware over WiFi.
     ArduinoOTA.begin();
@@ -493,7 +494,7 @@ void WiFi_Client::onWifiConnect(WiFiEvent_t event, system_event_info_t info) {
   }
 
   // Get time from NTP server.
-  configTime(Configuration::config.gmt.toInt() * 3600, 0, Configuration::config.ntpServer.c_str()); // second parameter is daylight offset (3600 = summertime)
+  configTime(Configuration::config.gmt.toInt() * 3600, 1 * 3600, Configuration::config.ntpServer.c_str()); // second parameter is daylight offset (3600 = summertime)
   Log.notice("Time: %s" CR, getTime().c_str());
 
   if (isMQTT_enabled()) {
@@ -502,12 +503,10 @@ void WiFi_Client::onWifiConnect(WiFiEvent_t event, system_event_info_t info) {
 }
 
 // Method is called upon when WiFi connection is lost, it will try to reconnect.
-void WiFi_Client::onWifiDisconnect(WiFiEvent_t event, system_event_info_t info) {
+void WiFi_Client::onWifiDisconnect(WiFiEvent_t event, WiFiEventInfo_t info) {
   Log.notice(F("Disconnected from WiFi, reason: %d." CR), info.disconnected.reason);
 
   mqttReconnectTimer.detach(); // ensure we don't reconnect to MQTT while reconnecting to WiFi
-
-  WiFi.disconnect(true);  // force disconnect WiFi to get new settings. TODO: maybe can be removed now that AsyncTCP has this behavior.
 
   wifiReconnectTimer.attach<WiFi_Client*>(10, [](WiFi_Client* instance) {
     instance->connect();
@@ -654,6 +653,7 @@ String WiFi_Client::parseSessionFromRequest(AsyncWebServerRequest *request) {
 
   return cookieValue;
 }
+
 /**
  * Check if request is authenticated (user logged in).
  * You could provide an active session cookie or a querystring-parameter "apiKey", if apiKey is not provided then we expect BasicAuthentication (https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication) to be used.
@@ -665,7 +665,7 @@ bool WiFi_Client::isAuthenticated(AsyncWebServerRequest *request) {
     return std::find(authenticatedSessions.begin(), authenticatedSessions.end(), cookieValue) != authenticatedSessions.end();
   }
 
-  if (request->hasParam("apiKey") && request->getParam("apiKey")->value() == Configuration::config.apiKey) {
+  if (request->hasParam("apiKey") && (Configuration::config.apiKey.length() > 0 && request->getParam("apiKey")->value() == Configuration::config.apiKey)) {
     return true;
   }
 

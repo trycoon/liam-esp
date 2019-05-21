@@ -41,6 +41,7 @@ class Api {
     void collectAndPushNewStatus();
     void statusToJson(statusResponse& obj, JsonObject& json);
     void onMqttMessage(char* topic, char* payload, size_t length);
+    void actOnWsRequest(String type, JsonObject& payload);
 };
 
 #endif

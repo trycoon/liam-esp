@@ -1,6 +1,7 @@
 import './styles/main.scss'
 import * as api from './api.js';
 import * as auth from './authorisation.js';
+import * as sectionMap from './sections/map.js';
 import * as sectionInfo from './sections/info.js';
 import * as sectionManual from './sections/manual.js';
 import * as sectionMetrics from './sections/metrics.js';
@@ -22,6 +23,7 @@ global.liam = {
     settings: sectionSettings,
     schedule: sectionSchedule,
     info: sectionInfo,
+    map: sectionMap,
   }
 };
 

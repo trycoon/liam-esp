@@ -284,9 +284,9 @@ p {
 .button.active {
   line-height: 32px;
   color: #ccc;
-  background-color: #b42f32;
+  background-color: #33b42f;
   border-color: #1c1c1c #202020 #222;
-  background-image: linear-gradient(to bottom, #a3161a, #b63335 60%, #bf4749);
+  background-image: linear-gradient(to bottom, #3ea316, #4db633 60%, #5fbf47);
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3), 0 1px rgba(255, 255, 255, 0.09);
 }
 
@@ -530,7 +530,46 @@ p {
   overflow-x: scroll;
 }
 
+/* Firmware update form */
+.firmwareUpdate {
+  width: 70vw;
+}
+
+/* 3D representation */
 .model3D {
   display: block;
   width: 100%;
+}
+
+/* Mowing schedule */
+.mower_schedule {
+  input[type=checkbox] {
+    display: none;
+  }
+
+  input[type=checkbox]:checked + label {
+    background: #2AD705;
+    color: #ffffff;
+  }
+
+  .day {
+    display: inline-block;
+    vertical-align: middle;
+    background-color: #333;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    width: 40px;
+  }
+
+  .button {
+    width: 20vw;
+  }
+}
+
+/* Mower map */
+.map {
+  display: block;
+  width: 100%;
+  height: auto;
 }

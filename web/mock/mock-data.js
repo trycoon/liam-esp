@@ -1,5 +1,7 @@
+const moveSequence = require('./moveSequence.json');
 let uptime = new Date(),
     loglevel = 4,
+    seqPos = 0,
     currentState = {
       state: 'DOCKED',
       isCharging: false,
@@ -40,13 +42,24 @@ module.exports = {
     state.batteryLevel  = Math.round(Math.random() * 100);
     state.cutterLoad = Math.round(Math.random() * 100);
     state.heading = Math.floor(Math.random() * 90) - 45;
-    state.roll = Math.floor(Math.random() * 90) - 45;
-    state.pitch = Math.floor(Math.random() * 90) - 45;
+
+    let currSequence = moveSequence[seqPos];
+    state.roll = currSequence.r || 0;
+    state.pitch = currSequence.p || 0;
+    state.leftWheelSpd = currSequence.lw || 0;
+    state.rightWheelSpd = currSequence.rw || currSequence.lw;
+    
     state.uptime = Math.round((new Date().getTime() - uptime.getTime()) / 1000);
     state.wifiSignal = Math.floor(Math.random() * (-30 - -90 + 1)) + -90;
+    
+    // random movement and rotation if needed.
+    /*state.roll = Math.floor(Math.random() * 90) - 45;
+    state.pitch = Math.floor(Math.random() * 90) - 45;
     state.leftWheelSpd = Math.round(-100 + Math.random() * (100 - -100));  // -100 to 100
-    state.rightWheelSpd = Math.round(-100 + Math.random() * (100 - -100)); // -100 to 100
-
+    state.rightWheelSpd = Math.round(-100 + Math.random() * (100 - -100)); // -100 to 100*/
+    seqPos = (seqPos + 1) % moveSequence.length;
+    console.log(`current movesequence: ${seqPos}`);
+    
     return state;
   },
   getCurrentSystem: () => {

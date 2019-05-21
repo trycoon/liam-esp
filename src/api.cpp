@@ -74,7 +74,6 @@ void Api::collectAndPushNewStatus() {
     currentStatus.cutterRotating = resources.cutter.isCutting();
     statusChanged = true;
   }
-
   auto stat = resources.wheelController.getStatus();
   if (currentStatus.leftWheelSpd != stat.leftWheelSpeed) {
     currentStatus.leftWheelSpd = stat.leftWheelSpeed;
@@ -84,12 +83,14 @@ void Api::collectAndPushNewStatus() {
     currentStatus.rightWheelSpd = stat.rightWheelSpeed;
     statusChanged = true;
   }
-  auto wifiSignal = WiFi.RSSI();
-  if (currentStatus.wifiSignal != wifiSignal) {
-    currentStatus.wifiSignal = wifiSignal;
-    statusChanged = true;
+  // we have to check that we are connected before we try to get WiFi signal, otherwise it will freeze up.
+  if (WiFi.status() == WL_CONNECTED) {
+    auto wifiSignal = WiFi.RSSI();
+    if (currentStatus.wifiSignal != wifiSignal) {
+      currentStatus.wifiSignal = wifiSignal;
+      statusChanged = true;
+    }
   }
-
   auto orient = resources.accelerometer.getOrientation();
   if (currentStatus.pitch != orient.pitch) {
     currentStatus.pitch = orient.pitch;
@@ -167,23 +168,29 @@ void Api::setupApi() {
   resources.wifi.getWebSocketServer().onEvent([this](AsyncWebSocket* server, AsyncWebSocketClient* client, AwsEventType type, void* arg, uint8_t* data, size_t len) {
     if (type == WS_EVT_CONNECT) {
       //client connected
-      Log.trace("ws[%s][%u] connect" CR, server->url(), client->id());
+      Log.trace(F("ws[%s][%u] connected" CR), server->url(), client->id());
     } else if (type == WS_EVT_DISCONNECT) {
       //client disconnected
-      Log.trace("ws[%s][%u] disconnect: %u" CR, server->url(), client->id());
+      Log.trace(F("ws[%s][%u] disconnected" CR), server->url(), client->id());
     } else if (type == WS_EVT_ERROR) {
       //error was received from the other end
-      Log.error("ws[%s][%u] error(%u): %s" CR, server->url(), client->id(), *((uint16_t*)arg), (char*)data);
+      Log.error(F("ws[%s][%u] error(%u): %s" CR), server->url(), client->id(), *((uint16_t*)arg), (char*)data);
     } else if (type == WS_EVT_DATA) {
        //data packet
       AwsFrameInfo* info = (AwsFrameInfo*)arg;
 
       if (info->final && info->index == 0 && info->len == len) {
         //the whole message is in a single frame and we got all of it's data
-        Log.notice("ws[%s][%u] %s-message[%llu]: " CR, server->url(), client->id(), (info->opcode == WS_TEXT)?"text":"binary", info->len);
         if (info->opcode == WS_TEXT) {
           data[len] = 0;
-          Log.notice("%s" CR, (char*)data);
+          Log.trace("received ws-msg:\"%s\", size: %d" CR, (char*)data, len);
+
+          DynamicJsonBuffer jsonBuffer(len);
+          JsonObject& root = jsonBuffer.parseObject((const char*)data);
+
+          if (root.success() && root.containsKey("type") && root.containsKey("payload")) {
+            actOnWsRequest(root["type"], root["payload"]);
+          }
         }
       }
     }
@@ -529,6 +536,7 @@ void Api::setupApi() {
       }
       
       resources.wheelController.forward(root["turnrate"], root["speed"], root["smooth"]);
+
       request->send(200);
     } else {
       request->send(400, "text/plain", "Bad Request");
@@ -564,6 +572,7 @@ void Api::setupApi() {
       }
       
       resources.wheelController.backward(root["turnrate"], root["speed"], root["smooth"]);
+
       request->send(200);
     } else {
       request->send(400, "text/plain", "Bad Request");
@@ -577,8 +586,8 @@ void Api::setupApi() {
     }
 
     stateController.setState(Definitions::MOWER_STATES::MANUAL);
-
     resources.wheelController.stop(true);
+
     request->send(200);
   }, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
     // nothing.
@@ -591,8 +600,8 @@ void Api::setupApi() {
     }
 
     stateController.setState(Definitions::MOWER_STATES::MANUAL);
-
     resources.cutter.start();
+
     request->send(200);    
   }, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
     // nothing.
@@ -605,8 +614,8 @@ void Api::setupApi() {
     }
 
     stateController.setState(Definitions::MOWER_STATES::MANUAL);
-
     resources.cutter.stop(true);
+
     request->send(200);
   }, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
     // nothing.
@@ -622,7 +631,7 @@ void Api::setupApi() {
     resources.wheelController.stop(false);
     Log.notice(F("Rebooting by API request" CR));
     request->send(200);
-    delay(1000);
+    delay(100);
     ESP.restart();
   }, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
     // nothing.
@@ -640,7 +649,7 @@ void Api::setupApi() {
     
     Log.notice(F("Factory reset by API request" CR));    
     request->send(200);
-    delay(1000);
+    delay(100);
     ESP.restart();
   }, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
     // nothing.
@@ -719,4 +728,14 @@ void Api::setupApi() {
 
     request->send(200);
   });
+}
+
+void Api::actOnWsRequest(String type, JsonObject& payload) {
+  if (type == "forward") {
+    resources.wheelController.forward(payload["turnrate"], payload["speed"], payload["smooth"]);
+  } else if (type == "backward") {
+    resources.wheelController.backward(payload["turnrate"], payload["speed"], payload["smooth"]);
+  } else {
+    Log.notice(F("unknown ws-request received: %s" CR), type);
+  }
 }

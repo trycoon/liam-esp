@@ -7,6 +7,7 @@ const sec = $('.js-section-start'),
 let renderer3D,
     camera3D,
     scene3D,
+    grid3D,
     mower3D,
     leftWheel,
     rightWheel,
@@ -248,7 +249,7 @@ function initModel3D(canvas) {
     dirLight.castShadow = true;
     camera3D.add(dirLight);
 
-    let grid3D = new THREE.GridHelper(50, 50, 0xFF4444, 0x404040);
+    grid3D = new THREE.GridHelper(50, 50, 0xFF4444, 0x404040);
     grid3D.rotation.x = mower3D_perspectiveRotation;
     scene3D.add(grid3D);
 
@@ -352,8 +353,12 @@ function drawModel3D() {
   // update model here.
   mower3D.rotation.z = THREE.Math.degToRad(liam.data.status.roll);
   mower3D.rotation.x = mower3D_perspectiveRotation + THREE.Math.degToRad(liam.data.status.pitch);
+  // animate grid? https://codepen.io/prisoner849/pen/LBWqpZ
   leftWheel.rotation.x += THREE.Math.degToRad(3 / 100 * liam.data.status.leftWheelSpd);
   rightWheel.rotation.x += THREE.Math.degToRad(3 / 100 * liam.data.status.rightWheelSpd);
+  // rotate grid to illustrate mower turning
+  let gridTurnRate = liam.data.status.leftWheelSpd - liam.data.status.rightWheelSpd;
+  grid3D.rotation.y += THREE.Math.degToRad(3 / 100 * gridTurnRate);
 
   camera3D.lookAt(scene3D.position);
   renderer3D.render(scene3D, camera3D);
