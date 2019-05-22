@@ -8,7 +8,7 @@ The concept and basic ideas are sprung from the ["Liam lawn mower"](https://gith
 Here are some of the features of this project:
 
 - Automatic mowing of lawn using a two wheel robot
-- Support for limiting mower movement using a Buried Wire Fence (virtual wall)
+- GNSS navigation support, for accurate mowing and path planning
 - WiFi connected (can operate when signal is weak/lost, will reconnect when signal is available)
 - Easy to use [REST-based API](documentation/api.md), self explaining (HATEOAS compatible), with Swagger support.  
 - Monitor mower using [MQTT protocol](documentation/api.md) (works with most Home automation systems)
