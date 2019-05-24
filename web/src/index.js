@@ -27,8 +27,7 @@ global.liam = {
   }
 };
 
-let currentActiveSection,
-    isSmallDisplay = $(window).width() < 480;
+let currentActiveSection;
 
 function addClickEffect() {
   // Add click effect on widgets that are clickable

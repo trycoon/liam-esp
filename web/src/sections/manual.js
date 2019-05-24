@@ -76,9 +76,7 @@ function stopMowerMotor() {
   });
 }
 
-function initJoystick(evt) {
-
-  joystickSVG = evt.target;
+function initJoystick(joystickSVG) {
 
   joystickSVG.addEventListener('mousedown', startDrag);
   joystickSVG.addEventListener('touchstart', startDrag);
@@ -287,7 +285,16 @@ export function init() {
     stopMowerMotor();
   });
 
-  $('.joystick').on('load', initJoystick);
+  let joystickEl = document.querySelector('.joystick');
+
+  // detect if SVG yet has been loaded
+  if (joystickEl.getCurrentTime() > 0) {
+    initJoystick(joystickEl);
+  } else {
+    joystickEl.addEventListener('load', () => {
+      initJoystick(joystickEl);
+    })
+  }  
 
   let compasSize = "200px";
   if (window.screen.width > 640) {
