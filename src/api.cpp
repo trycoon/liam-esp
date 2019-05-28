@@ -411,6 +411,24 @@ void Api::setupApi() {
     request->send(response);
   });
 
+  // respond to GET requests on URL /api/v1/schedules
+  web_server.on("/api/v1/schedules", HTTP_GET, [this](AsyncWebServerRequest *request) {
+    if (resources.wifi.isAuthenticated(request)) {
+      request->send(200, "text/plain", "Authorized");
+    } else {
+      request->send(200, "text/plain", "TODO");
+    }
+  });
+
+  // respond to DELETE requests on URL /api/v1/schedules/{position}
+  web_server.on("/api/v1/schedules", HTTP_DELETE, [this](AsyncWebServerRequest *request) {
+    if (resources.wifi.isAuthenticated(request)) {
+      request->send(200, "text/plain", "delete");
+    } else {
+      request->send(200, "text/plain", "TODO");
+    }
+  });
+
   //
   // THE FOLLOWING REST-ENDPOINT SHOULD ALWAYS BE THE LAST ONE REGISTERED OF THE GET-ENDPOINTS !!!
   // As it's the least specific one it will otherwise catch the other requests.
@@ -470,6 +488,10 @@ void Api::setupApi() {
     JsonObject& system = links.createNestedObject("system");
     system["href"] = host + "/api/v1/system";
     system["method"] = "GET";
+
+    JsonObject& schedule = links.createNestedObject("schedules");
+    schedule["href"] = host + "/api/v1/schedules";
+    schedule["method"] = "POST|GET|DELETE";
 
     response->setLength();
     request->send(response);
@@ -704,7 +726,7 @@ void Api::setupApi() {
         auto response = new AsyncJsonResponse();
         response->addHeader("Cache-Control", "no-store, must-revalidate");
         response->addHeader("Set-Cookie", "liam-" + Configuration::config.mowerId + "=" + sessionId + "; HttpOnly; Path=/api");
-        response->setCode(200);
+        response->setCode(201);
         response->setLength();
         request->send(response);
       } else {
@@ -715,7 +737,7 @@ void Api::setupApi() {
     }
   });
 
-  // respond to PUT requests on URL /api/v1/apikey, trigger generation of new API key.
+  // respond to POST requests on URL /api/v1/apikey, trigger generation of new API key.
   web_server.on("/api/v1/apikey", HTTP_POST, [this](AsyncWebServerRequest *request) {}, NULL,
   [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
     if (!resources.wifi.isAuthenticated(request)) {
@@ -726,7 +748,21 @@ void Api::setupApi() {
     Configuration::save();
     Log.notice(F("Generated a new API key." CR));
 
-    request->send(200);
+    request->send(201);
+  });
+
+  // respond to POST requests on URL /api/v1/schedules, add mower schedule entry.
+  web_server.on("/api/v1/schedules", HTTP_POST, [this](AsyncWebServerRequest *request) {}, NULL,
+  [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+    if (!resources.wifi.isAuthenticated(request)) {
+      return request->send(401, "text/plain", "Unauthorized");
+    }
+        
+    // TODO:
+
+    Log.notice(F("Added a new schedule entry." CR));
+
+    request->send(201);
   });
 }
 

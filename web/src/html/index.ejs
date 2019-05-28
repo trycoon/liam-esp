@@ -117,44 +117,55 @@
           </select>
 
           <div class="center">
-              <h3>REST API</h3>
+              <h3>REST API-key</h3>
               <input id="apikey" disabled />
               <span class="js-generateApiKey button">New key</span>
               <br>
               <a href="/swagger.html" target="_blank">OpenAPI documenation</a>
           </div>
         </section>
-        <section class="section js-section js-section-schedule" style="display: none">
-          <h2>Schedule mowing</h2>
-          <div class="mower_schedule">
-            <input value="1" id="dayMon" type="checkbox">
-            <label class="day" for="dayMon">Mon</label>
-            <input value="2" id="dayTue" type="checkbox">
-            <label class="day" for="dayTue">Tue</label>
-            <input value="3" id="dayWed" type="checkbox">
-            <label class="day" for="dayWed">Wed</label>
-            <input value="4" id="dayThu" type="checkbox">
-            <label class="day" for="dayThu">Thu</label>
-            <input value="5" id="dayFri" type="checkbox">
-            <label class="day" for="dayFri">Fri</label>
-            <input value="6" id="daySat" type="checkbox">
-            <label class="day" for="daySat">Sat</label>
-            <input value="7" id="daySun" type="checkbox">
-            <label class="day" for="daySun">Sun</label>
-            <input type="number" min="0" max="23" value="00" class="clock js-startHour">
-            <span>:</span>
-            <input type="number" min="0" max="59" value="00" class="clock js-startMin">
-            &mdash;
-            <input type="number" min="0" max="23" value="00" class="clock js-stopHour">
-            <span>:</span>
-            <input type="number" min="0" max="59" value="00" class="clock js-stopMin">
-            <span class="button">Add</span>
-          </div>
+        <section class="section mowerSchedule js-section js-section-schedule" style="display: none">
+          <section>
+            <h2>Schedule mowing</h2>
+            <div >
+              <div id="js-addScheduleButtons">
+                <input id="dayMon" type="checkbox">
+                <label class="day" for="dayMon">Mon</label>
+                <input id="dayTue" type="checkbox">
+                <label class="day" for="dayTue">Tue</label>
+                <input id="dayWed" type="checkbox">
+                <label class="day" for="dayWed">Wed</label>
+                <input id="dayThu" type="checkbox">
+                <label class="day" for="dayThu">Thu</label>
+                <input id="dayFri" type="checkbox">
+                <label class="day" for="dayFri">Fri</label>
+                <input id="daySat" type="checkbox">
+                <label class="day" for="daySat">Sat</label>
+                <input id="daySun" type="checkbox">
+                <label class="day" for="daySun">Sun</label>
+              </div>
+              <div>
+                <input type="text" required pattern="(00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20|21|22|23)" maxlength="2" value="06" id="js-startHour" class="clock">
+                <span>:</span>
+                <input type="text" required pattern="(0|1|2|3|4|5)\d" maxlength="2" value="00" id="js-startMin" class="clock">
+                &mdash;
+                <input type="text" required pattern="(00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20|21|22|23)" maxlength="2" value="22" id="js-stopHour" class="clock">
+                <span>:</span>
+                <input type="text" required pattern="(0|1|2|3|4|5)\d" maxlength="2" value="00" id="js-stopMin" class="clock">
+                <span id="js-addSchedule" class="button">Add</span>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h2>Active schedules <span class="js-activeSchedules"></span></h2>
+            <ul id="scheduleList"></ul>
+          </section>
         </section>
         <section class="section js-section js-section-map" style="display: none">
           <h2>Mowing map</h2>
-          <svg version="1.2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="map">
-          </svg>
+          <figure>
+            <svg version="1.2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="map"></svg>
+          </figure>          
         </section>
         <section class="section js-section js-section-info" style="display: none">
           <section>

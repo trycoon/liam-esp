@@ -190,3 +190,42 @@ export function deleteSession() {
     method: 'DELETE'    
   });
 }
+
+export function getScheduleList() {
+  return $.getJSON('/api/v1/schedules');
+}
+
+/**
+ * Add new schedule-entry for mowing
+ * @param {Array} activeWeekdays array of boolean, where each position represent a weekday and wether that day is selected.
+ * @param {String} startTime HH:MM of when mower should start mowing
+ * @param {String} stopTime HH:MM of when mower should stop mowing} activeWeekdays 
+ */
+export function addScheduleEntry(activeWeekdays, startTime, stopTime) {
+  return $.ajax({
+    url: `/api/v1/schedules`,
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+    },
+    data: JSON.stringify({
+      activeWeekdays: activeWeekdays,
+      startTime: startTime,
+      stopTime: stopTime
+    })
+  });
+}
+
+/**
+ * Delete schedule-entry for mowing
+ * @param {Number} position
+ */
+export function removeScheduleEntry(position) {
+  return $.ajax({
+    url: `/api/v1/schedules/` + position,
+    method: 'DELETE',
+    headers: {
+      'content-type': 'application/json',
+    }
+  });
+}

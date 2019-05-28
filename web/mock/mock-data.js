@@ -1,4 +1,6 @@
-const moveSequence = require('./moveSequence.json');
+const moveSequence = require('./moveSequence.json'),
+      timeRegExp = /(00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20|21|22|23):(0|1|2|3|4|5)\d/g;
+
 let uptime = new Date(),
     loglevel = 4,
     seqPos = 0,
@@ -33,7 +35,8 @@ let uptime = new Date(),
         batteryFullVoltage: 16.8,
         batteryEmptyVoltage: 14.0,
       },
-    };
+    },
+    schedules = [];
 
 module.exports = {
   getCurrentState: () => {
@@ -114,6 +117,21 @@ module.exports = {
   },
   setApiKey: (key) => {
     currentSystem.apiKey = key;
+  },
+  getSchedules: () => {
+    return schedules;
+  },
+  addScheduleEntry: (entry) => {    
+    if (entry.startTime.match(timeRegExp) && entry.stopTime.match(timeRegExp)) {
+      schedules.unshift({ 
+        activeWeekdays: entry.activeWeekdays,
+        startTime: entry.startTime,
+        stopTime: entry.stopTime,
+      });
+    }
+  },
+  removeScheduleEntry: (position) => {
+    schedules.splice(position, 1);
   },
 };
   

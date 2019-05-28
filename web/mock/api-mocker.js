@@ -1,6 +1,6 @@
 /**
  * Liam-ESP emulator
- * Simple application using [webpack-api-mocker](https://www.npmjs.com/package/webpack-api-mocker) to emulate a Liam-ESP lawnmover and answering the same REST request the mower normally does.
+ * Simple application using [mocker-api](https://www.npmjs.com/package/mocker-api) to emulate a Liam-ESP lawnmover and answering the same REST request the mower normally does.
  * This is useful when you want to develop the GUI without having a lawn mover at hand (or risking starting the cutter and chopping of your hands).
  *
  * Start emulator:
@@ -137,7 +137,7 @@ let proxy = {
       cookies.set(`liam-${data.getCurrentSystem().mowerId}`, '1234567', {
         path: '/api',
       });
-      res.sendStatus(200);
+      res.sendStatus(201);
     } else {
       res.sendStatus(401);
     }
@@ -166,7 +166,7 @@ let proxy = {
       });
   
       data.setApiKey(key);
-      res.sendStatus(200);
+      res.sendStatus(201);
     } else {
       res.sendStatus(401);
     }
@@ -175,6 +175,29 @@ let proxy = {
     if (isAuthenticated(req, res)) {
       res.writeHead(303, {'Content-Type': 'text/plain', 'Location': '/'});
       res.end('SUCCESS');
+    } else {
+      res.sendStatus(401);
+    }
+  },
+  'GET /api/v1/schedules': (req, res) => {
+    if (isAuthenticated(req, res)) {
+      return res.json(data.getSchedules());
+    } else {
+      res.sendStatus(401);
+    }
+  },
+  'POST /api/v1/schedules': (req, res) => {
+    if (isAuthenticated(req, res)) {
+      data.addScheduleEntry(req.body);
+      res.sendStatus(201);
+    } else {
+      res.sendStatus(401);
+    }
+  },
+  'DELETE /api/v1/schedules/:id': (req, res) => {
+    if (isAuthenticated(req, res)) {
+      data.removeScheduleEntry(req.params.id);
+      res.sendStatus(200);
     } else {
       res.sendStatus(401);
     }

@@ -94,7 +94,7 @@ paths:
       description: login user and create session. An session cookie will be set that are expected to be used in future request
       operationId: createSession
       responses:
-        '200':
+        '201':
           description: successfully logged in user
         '400':
           description: if missing parameters or request is malformed
@@ -141,7 +141,7 @@ paths:
       description: trigger the generation of a new API key to replace the old one for authentication
       operationId: generateApiKey
       responses:
-        '200':
+        '201':
           description: successfully generated a new API key
   /factoryreset:
     put:
@@ -242,6 +242,51 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PositionHistory'
+  /schedules:
+    post:
+      tags:
+        - Scheduling
+      description: add mowing schedule to list of schedules. 
+      operationId: createScheduleEntry
+      responses:
+        '201':
+          description: successfully added schedule
+        '400':
+          description: if missing parameters or request is malformed
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleEntry'
+    get:
+      tags:
+        - Scheduling
+      description: returns mower schedules.
+      operationId: getSchedules
+      responses:
+        '200':
+          description: List of schedule entries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleEntry'
+  /schedules/{position}:                
+      delete:
+        tags:
+          - Scheduling
+        description: remove a schedule entry
+        operationId: deleteScheduleEntry
+        parameters:
+          - in: path
+            name: position
+            schema:
+              type: integer
+            required: true
+            description: position in list (starting with 0)
+        responses:
+          '200':
+            description: schedule entry removed
+    
 components:
   securitySchemes:
     basicAuth:
@@ -439,6 +484,22 @@ components:
           type: string
         password:
           type: string
+    ScheduleEntry:
+      type: object
+      properties:
+        activeWeekdays:
+          type: array
+          description: array of weekdays (starting with monday, tuesday...). True means mowing should be conducted this day of the week.
+          items:
+            type: boolean
+          minItems: 7
+          maxItems: 7
+        startTime:
+          type: string
+          description: time when mowing should begin. In the format "HH:MM", and we use a 24 hours notation.
+        stopTime:
+          type: string
+          description: time when mowing should end. In the format "HH:MM", and we use a 24 hours notation.
 security:
   - basicAuth: []
   - apiKeyAuth: []

@@ -29,7 +29,12 @@ input[type=range]:focus {
 
 input {
     font-size: 1em;
-    margin: 1vw 0;
+    margin: 10px 0;
+    padding: 2px;
+}
+
+input:invalid {
+  border: 2px dashed red;
 }
 
 ol, ul {
@@ -542,9 +547,10 @@ p {
 }
 
 /* Mowing schedule */
-.mower_schedule {
+.mowerSchedule {
   input[type=checkbox] {
     display: none;
+    cursor: pointer;
   }
 
   input[type=checkbox]:checked + label {
@@ -564,6 +570,39 @@ p {
 
   .button {
     width: 20vw;
+  }
+
+  .clock {
+    width: 2em;
+  }
+
+  #scheduleList {
+    background-color: #080f14;
+    padding: 10px;
+
+    li {
+      list-style-type: none;
+      padding: 5px 0;
+      
+      .selected {
+        background: #2AD705;
+        color: #ffffff;
+      }
+
+      .removeSchedule {
+        display: inline-block;
+        padding: 5px 10px;
+        cursor: pointer;
+      }    
+    }
+
+    li:nth-child(even) {
+      background: #1c2328;
+    }
+
+    li:nth-child(odd) {
+      background: #3a4146;
+    }
   }
 }
 

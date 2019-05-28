@@ -6,6 +6,10 @@
 
 // https://github.com/kriswiner/EM7180_SENtral_sensor_hub/wiki/A.-A-Short-Survey-of-Sensor-Fusion-Solutions
 // code exmaple from https://github.com/simondlevy/EM7180
+
+// https://github.com/sparkfun/ESP32_Motion_Shield/tree/master/Software
+// https://learn.sparkfun.com/tutorials/esp32-thing-motion-shield-hookup-guide/using-the-imu
+
 static volatile bool newData;
 
 IO_Accelerometer::IO_Accelerometer(TwoWire& w): _Wire(w), em7180(ARES, GRES, MRES, MAG_RATE, ACCEL_RATE, GYRO_RATE, BARO_RATE, Q_RATE_DIVISOR) {
