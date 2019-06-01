@@ -10,6 +10,8 @@
 #include "configuration.h"
 #include "io_accelerometer/io_accelerometer.h"
 #include "log_store.h"
+#include "mowing_schedule.h"
+
 
 /**
 * Container class for holding references to instances that should be shared between many classes.
@@ -24,7 +26,8 @@ class Resources {
                            Battery& battery,
                            GPS& gps,
                            IO_Accelerometer& accelerometer,
-                           LogStore& logStore)
+                           LogStore& logStore,
+                           MowingSchedule& mowingSchedule)
                            : wifi(wifi),
                              wheelController(wheelController),
                              cutter(cutter),
@@ -32,7 +35,8 @@ class Resources {
                              battery(battery),
                              gps(gps),
                              accelerometer(accelerometer),
-                             logStore(logStore) { }
+                             logStore(logStore),
+                             mowingSchedule(mowingSchedule) { }
 
     WiFi_Client& wifi;
     WheelController& wheelController;
@@ -42,6 +46,7 @@ class Resources {
     GPS& gps;
     IO_Accelerometer& accelerometer;
     LogStore& logStore;
+    MowingSchedule& mowingSchedule;
 };
 
 #endif

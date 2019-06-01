@@ -413,19 +413,43 @@ void Api::setupApi() {
 
   // respond to GET requests on URL /api/v1/schedules
   web_server.on("/api/v1/schedules", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    if (resources.wifi.isAuthenticated(request)) {
-      request->send(200, "text/plain", "Authorized");
+    if (!resources.wifi.isAuthenticated(request)) {
+      return request->send(401, "text/plain", "Unauthorized");
     } else {
-      request->send(200, "text/plain", "TODO");
+      auto response = new AsyncJsonResponse(true);
+      response->addHeader("Cache-Control", "no-store, must-revalidate");
+      JsonArray& root = response->getRoot();
+
+      for (auto schedule : resources.mowingSchedule.getScheduleEntries()) {
+        JsonObject& entry = root.createNestedObject();
+        
+        JsonArray& activeWeekdays = entry.createNestedArray("activeWeekdays");
+
+        for (auto day : schedule.activeWeekdays) {
+          activeWeekdays.add(day);
+        }
+
+        entry["startTime"] = schedule.startTime;
+        entry["stopTime"] = schedule.stopTime;
+      }
+
+      response->setLength();
+      request->send(response);
     }
   });
 
   // respond to DELETE requests on URL /api/v1/schedules/{position}
   web_server.on("/api/v1/schedules", HTTP_DELETE, [this](AsyncWebServerRequest *request) {
-    if (resources.wifi.isAuthenticated(request)) {
-      request->send(200, "text/plain", "delete");
+    if (!resources.wifi.isAuthenticated(request)) {
+      return request->send(401, "text/plain", "Unauthorized");
     } else {
-      request->send(200, "text/plain", "TODO");
+      auto pos = request->url().substring(request->url().lastIndexOf("/") + 1).toInt();
+
+      resources.mowingSchedule.removeScheduleEntry(pos);
+
+      Log.notice(F("Removed schedule entry #%d" CR), pos);
+
+      request->send(200);
     }
   });
 
@@ -689,7 +713,7 @@ void Api::setupApi() {
 
     if (root.success()) {
       if (!root.containsKey("level")) {
-        request->send(400, "text/plain", "Bad Request - missing 'level' property");
+        request->send(400, "text/plain", F("Bad Request - missing 'level' property"));
         return;
       }
 
@@ -712,11 +736,11 @@ void Api::setupApi() {
 
     if (root.success()) {
       if (!root.containsKey("username")) {
-        request->send(400, "text/plain", "Bad Request - missing 'username' parameter");
+        request->send(400, "text/plain", F("Bad Request - missing 'username' parameter"));
         return;
       }
       if (!root.containsKey("password")) {
-        request->send(400, "text/plain", "Bad Request - missing 'password' parameter");
+        request->send(400, "text/plain", F("Bad Request - missing 'password' parameter"));
         return;
       }
 
@@ -757,12 +781,52 @@ void Api::setupApi() {
     if (!resources.wifi.isAuthenticated(request)) {
       return request->send(401, "text/plain", "Unauthorized");
     }
-        
-    // TODO:
+    
+    DynamicJsonBuffer jsonBuffer(20);
+    JsonObject& root = jsonBuffer.parseObject((const char*)data);
 
-    Log.notice(F("Added a new schedule entry." CR));
+    if (root.success()) {
+      if (!root.containsKey("activeWeekdays")) {
+        request->send(400, "text/plain", F("Bad Request - missing 'activeWeekdays'"));
+        return;
+      }
+      if (!root.containsKey("startTime")) {
+        request->send(400, "text/plain", F("Bad Request - missing 'startTime'"));
+        return;
+      }
+      if (!root.containsKey("stopTime")) {
+        request->send(400, "text/plain", F("Bad Request - missing 'stopTime'"));
+        return;
+      }
 
-    request->send(201);
+      std::deque<bool> activeWeekdays;
+
+      for (const auto& day : root["activeWeekdays"].as<JsonArray>()) {
+        activeWeekdays.push_back(day);
+      }
+ 
+      auto result = resources.mowingSchedule.addScheduleEntry(activeWeekdays, root["startTime"], root["stopTime"]);
+
+      if (result >= 0) {
+        Log.notice(F("Added a new schedule entry." CR));
+        request->send(201);
+        return;
+      } else if (result == -1) {
+        request->send(400, "text/plain", F("Bad Request - malformed parameter 'activeWeekdays'"));
+        return;
+      } else if (result == -2) {
+        request->send(400, "text/plain", F("Bad Request - malformed parameter 'startTime'"));
+        return;
+      } else if (result == -3) {
+        request->send(400, "text/plain", F("Bad Request - malformed parameter 'stopTime'"));
+        return;
+      } else if (result == -4) {
+        request->send(400, "text/plain", F("Schedule limit reached, max 10 entries allowed!"));
+        return;
+      }
+    } else {
+      request->send(400, "text/plain", "Bad Request");
+    }
   });
 }
 

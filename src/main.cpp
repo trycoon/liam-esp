@@ -17,6 +17,7 @@
 #include "battery.h"
 #include "gps.h"
 #include "state_controller.h"
+#include "mowing_schedule.h"
 #include "api.h"
 
 /*
@@ -42,7 +43,8 @@ Cutter cutter(io_analog);
 BWF bwf;
 GPS gps;
 Battery battery(io_analog, Wire);
-Resources resources(wifi, wheelController, cutter, bwf, battery, gps, io_accelerometer, logstore);
+MowingSchedule mowingSchedule;
+Resources resources(wifi, wheelController, cutter, bwf, battery, gps, io_accelerometer, logstore, mowingSchedule);
 StateController stateController(resources);
 Api api(stateController, resources);
 
