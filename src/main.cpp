@@ -116,6 +116,7 @@ void setup() {
   io_accelerometer.start();
   gps.start();
   battery.start();
+  mowingSchedule.start();
 
   auto lastState = Configuration::config.lastState;
   // initialize state controller, assume we are DOCKED unless there is a saved state.

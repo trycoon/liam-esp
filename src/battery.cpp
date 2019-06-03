@@ -66,6 +66,8 @@ void Battery::updateBatteryVoltage() {
 
 void Battery::updateChargeCurrent() {
   auto chargeCurrent = ina219.getCurrent_mA();
+  _isDocked = ina219.getBusVoltage_V() > 5;
+
   currentMedian[currentMedianIndex++%currentMedian.size()] = chargeCurrent;  // enter new reading into array.
   // we can get some missreadings (1475.10) from time to time, so we record samples to an array an take the median value to filter out all noice.
   chargeCurrent = calculateMedian<float>(currentMedian);
@@ -117,6 +119,10 @@ uint8_t Battery::getBatteryStatus() const {
   }
 
   return level;
+}
+
+bool Battery::isDocked() const {
+  return _isDocked;
 }
 
 bool Battery::isCharging() const {

@@ -15,6 +15,9 @@ class Docked : public AbstractState {
     }
     void selected(Definitions::MOWER_STATES lastState);
     void process();
+
+  private:
+    long lastShouldMowCheck;
 };
 
 #endif

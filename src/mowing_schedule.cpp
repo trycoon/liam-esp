@@ -1,8 +1,11 @@
 #include "mowing_schedule.h"
+#include "configuration.h"
+#include <Preferences.h>
+#include <ArduinoJson.h>
+#include <ArduinoLog.h>
 
-MowingSchedule::MowingSchedule() {
 
-}
+MowingSchedule::MowingSchedule() {}
 
 /**
  * Adds a new entry to the schedule list.
@@ -36,6 +39,7 @@ int8_t MowingSchedule::addScheduleEntry(std::deque<bool> activeWeekdays, String 
   entry.stopTime = stopTime;
 
   mowingSchedule.push_front(entry);
+  saveSchedulesToFlash();
 
   return 1;
 }
@@ -51,14 +55,96 @@ const std::deque<scheduleEntry>& MowingSchedule::getScheduleEntries() const {
 void MowingSchedule::removeScheduleEntry(uint8_t position) {
   if (position < mowingSchedule.size()) {
     mowingSchedule.erase(mowingSchedule.begin() + position);
+    saveSchedulesToFlash();
   }
 }
 
+/**
+ * Check if the mower should mow now, according to the mowing schedule and the current time.
+ */
 bool MowingSchedule::isTimeToMow() {
+
   struct tm timeinfo;
 
-  if (!getLocalTime(&timeinfo, 5000)) { // tries for 5000 ms
-    return F("Failed to obtain time");
+  if (!getLocalTime(&timeinfo, 200)) { // tries for 200 ms
+    return false;
   }
-  return true;
+
+  // fix day-of-week to follow ISO-8601
+  int8_t dayOfWeek = timeinfo.tm_wday == 0 ? 6 : timeinfo.tm_wday - 1;
+
+  for (auto schedule : mowingSchedule) {
+
+    if (schedule.activeWeekdays[dayOfWeek]) {
+      int currentTimeInMinutes = timeinfo.tm_hour * 60 + timeinfo.tm_min;
+      int startTimeInMinutes = schedule.startTime.substring(0, 2).toInt() * 60 + schedule.startTime.substring(3).toInt(); // turn string, like "08:45", into minutes.
+      int stopTimeInMinutes = schedule.stopTime.substring(0, 2).toInt() * 60 + schedule.stopTime.substring(3).toInt();
+
+      if (currentTimeInMinutes >= startTimeInMinutes && currentTimeInMinutes < stopTimeInMinutes) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+void MowingSchedule::start() {
+  loadSchedulesFromFlash();
+}
+
+void MowingSchedule::loadSchedulesFromFlash() {
+
+  mowingSchedule.clear();
+
+  Configuration::preferences.begin("liam-esp", false);
+  auto jsonString = Configuration::preferences.getString("schedules", "[]");
+
+  DynamicJsonBuffer jsonBuffer(1200);
+  JsonArray& root = jsonBuffer.parseArray(jsonString);
+  
+  if (root.success()) {
+
+    for (auto schedule : root) {
+      scheduleEntry entry;
+      std::deque<bool> activeWeekdays;
+
+      for (const auto& day : schedule["activeWeekdays"].as<JsonArray>()) {
+        activeWeekdays.push_back(day);
+      }
+
+      entry.activeWeekdays = activeWeekdays;
+      entry.startTime = schedule["startTime"].as<char*>();
+      entry.stopTime = schedule["stopTime"].as<char*>();
+
+      mowingSchedule.push_back(entry);
+    }
+    
+    Log.notice(F("loaded %i schedules" CR), root.size());
+  }
+}
+
+void MowingSchedule::saveSchedulesToFlash() {
+  // persist mowing schedules in case of power failure.
+  DynamicJsonBuffer jsonBuffer(1200);
+  JsonArray& root = jsonBuffer.createArray();
+
+  for (auto schedule : mowingSchedule) {
+    JsonObject& entry = root.createNestedObject();
+    
+    JsonArray& activeWeekdays = entry.createNestedArray("activeWeekdays");
+
+    for (auto day : schedule.activeWeekdays) {
+      activeWeekdays.add(day);
+    }
+
+    entry["startTime"] = schedule.startTime;
+    entry["stopTime"] = schedule.stopTime;
+  }
+
+  String jsonString;
+  root.printTo(jsonString);
+
+  Configuration::preferences.begin("liam-esp", false);
+  Configuration::preferences.putString("schedules", jsonString);
 }

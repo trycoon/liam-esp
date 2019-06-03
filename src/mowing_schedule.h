@@ -18,9 +18,12 @@ class MowingSchedule {
     const std::deque<scheduleEntry>& getScheduleEntries() const;
     void removeScheduleEntry(uint8_t position);
     bool isTimeToMow();
+    void start();
     
   private:
     std::deque<scheduleEntry> mowingSchedule;
+    void saveSchedulesToFlash();
+    void loadSchedulesFromFlash();
 };
 
 #endif

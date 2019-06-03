@@ -6,9 +6,15 @@ Charging::Charging(Definitions::MOWER_STATES myState, StateController& stateCont
 }
 
 void Charging::selected(Definitions::MOWER_STATES lastState) {
-
+  resources.cutter.stop(true);
+  resources.wheelController.stop();
 }
 
 void Charging::process() {
 
+  if (resources.battery.isFullyCharged()) {
+    stateController.setState(Definitions::MOWER_STATES::DOCKED);
+    return;
+  }
+  
 }

@@ -23,6 +23,7 @@ class Battery {
     uint32_t getLastFullyChargeTime() const;
     uint32_t getLastChargeDuration() const;
     const std::deque<batterySample>& getBatteryHistory() const;
+    bool isDocked() const;
     bool isCharging() const;
     bool needRecharge() const;
     bool isFullyCharged() const;
@@ -37,6 +38,7 @@ class Battery {
     Adafruit_INA219 ina219;
     float batteryVoltage;
     float lastChargeCurrentReading;
+    bool _isDocked;
     bool _isCharging;
     bool _needRecharge;
     bool _isFullyCharged;

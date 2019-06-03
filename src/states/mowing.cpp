@@ -6,9 +6,26 @@ Mowing::Mowing(Definitions::MOWER_STATES myState, StateController& stateControll
 }
 
 void Mowing::selected(Definitions::MOWER_STATES lastState) {
-    resources.cutter.start();
-    resources.wheelController.forward(0, 100, true);
+  resources.cutter.start();
+  delay(2000);
+  resources.wheelController.forward(0, 100, true);
+  lastShouldMowCheck = millis();
 }
 
 void Mowing::process() {
+
+  if (resources.battery.needRecharge()) {
+    stateController.setState(Definitions::MOWER_STATES::DOCKING);
+    return;
+  }
+
+  // Only check time to mow every other second, for performance reasons.
+  if (lastShouldMowCheck + 2000 < millis()) {
+    if (!resources.mowingSchedule.isTimeToMow()) {
+      stateController.setState(Definitions::MOWER_STATES::DOCKING);
+    }
+
+    lastShouldMowCheck = millis();
+  } 
+    
 }
