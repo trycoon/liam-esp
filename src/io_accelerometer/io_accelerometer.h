@@ -3,16 +3,7 @@
 
 #include <Wire.h>
 #include <Ticker.h>
-#include "EM7180.h"
-
-static const uint8_t ARES = 8;           // Gs
-static const uint16_t GRES = 2000;       // degrees per second
-static const uint16_t MRES = 1000;       // microTeslas
-static const uint8_t MAG_RATE = 100;     // Hz
-static const uint16_t ACCEL_RATE = 200;  // Hz
-static const uint16_t GYRO_RATE = 200;   // Hz
-static const uint8_t BARO_RATE = 50;     // Hz
-static const uint8_t Q_RATE_DIVISOR = 3; // 1/3 gyro rate
+#include <SparkFunLSM9DS1.h>
 
 struct orientation {
   int16_t pitch;
@@ -30,9 +21,14 @@ class IO_Accelerometer {
     void start();
 
   private:
+    // Earth's magnetic field varies by location. Add or subtract 
+    // a declination to get a more accurate heading of true magnetic north.
+    // Use an compass for reference.
+    float DECLINATION = -50.0f; // Declination (degrees) in Gotland, SE.
+
+    LSM9DS1 imu;
     TwoWire& _Wire;
     Ticker sensorReadingTicker;
-    EM7180_Master em7180;
     orientation currentOrientation;
     bool available = false;
     void IRAM_ATTR interruptHandler();

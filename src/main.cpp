@@ -26,8 +26,8 @@
  * Congratulation, you have just found the starting point of the program!
  */
 
-// Give us an warning if main loop is delayed more than this value. This could be an indication of hidden "delay" calls in our code.
-const uint32_t LOOP_DELAY_WARNING = 200000; // 200 ms
+// Give us an warning if main loop is delayed more than this value. This could be an indication of long hidden "delay" calls in our code.
+const uint32_t LOOP_DELAY_WARNING = 500000; // 500 ms
 // Don't spam us with warnings, wait this period before issuing a new warning
 const uint32_t LOOP_DELAY_WARNING_COOLDOWN = 10000000; // 10 sec
 

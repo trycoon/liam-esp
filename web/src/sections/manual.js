@@ -322,7 +322,6 @@ export function init() {
     height: compasSize,
     minorTicks: 10,
     ticksAngle: 360,
-    startAngle: 180,
     strokeTicks: false,
     highlights: false,
     colorPlate: "#33a",
@@ -352,11 +351,12 @@ export function init() {
     colorNeedleShadowDown: "#222",
     borderShadowWidth: 0,
     animationTarget: "plate",
-    units: "ᵍ",
+    useMinPath: true,
+    units: "°",
     title: "HEADING",
     fontTitleSize: 19,
     colorTitle: "#f5f5f5",
-    animationDuration: 1500
+    animationDuration: 1000
   }).draw();
 
   window.addEventListener('statusUpdated', updatedStatus);
