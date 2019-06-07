@@ -10,27 +10,25 @@
  * 4. point webbrowser to "http://localhost:8080"
  */
 
-const { resolve } = require('path'),
-      data = require(resolve(__dirname, 'mock-data.js')),
-      Cookies = require('cookies');
+const Cookies = require('cookies');
 
 function isAuthenticated(req, res) {
   let cookies = new Cookies(req, res);
-  let sessionVal = cookies.get(`liam-${data.getCurrentSystem().mowerId}`);
+  let sessionVal = cookies.get(`liam-${req.app.locals.mock.getCurrentSystem().mowerId}`);
   return sessionVal === '1234567';
 } 
 
 let proxy = {
   'GET /api/v1/status': (req, res) => {
     if (isAuthenticated(req, res)) {
-      return res.json(data.getCurrentState());
+      return res.json(req.app.locals.mock.getCurrentState());
     } else {
       res.sendStatus(401);
     }
   },
   'PUT /api/v1/state': (req, res) => {
     if (isAuthenticated(req, res)) {
-      data.setState(req.body.state);
+      req.app.locals.mock.setState(req.body.state);
       res.sendStatus(200);
     } else {
       res.sendStatus(401);
@@ -38,7 +36,7 @@ let proxy = {
   },
   'PUT /api/v1/manual/cutter_on': (req, res) => {
     if (isAuthenticated(req, res)) {
-      data.cutterOn();
+      req.app.locals.mock.cutterOn();
       res.sendStatus(200);
     } else {
       res.sendStatus(401);
@@ -46,7 +44,7 @@ let proxy = {
   },
   'PUT /api/v1/manual/cutter_off': (req, res) => {
     if (isAuthenticated(req, res)) {
-      data.cutterOff();
+      req.app.locals.mock.cutterOff();
       res.sendStatus(200);
     } else {
       res.sendStatus(401);
@@ -54,6 +52,7 @@ let proxy = {
   },
   'PUT /api/v1/manual/forward': (req, res) => {
     if (isAuthenticated(req, res)) {
+      //TODO
       res.sendStatus(200);
     } else {
       res.sendStatus(401);
@@ -61,6 +60,7 @@ let proxy = {
   },
   'PUT /api/v1/manual/backward': (req, res) => {
     if (isAuthenticated(req, res)) {
+      //TODO
       res.sendStatus(200);
     } else {
       res.sendStatus(401);
@@ -68,6 +68,7 @@ let proxy = {
   },
   'PUT /api/v1/manual/turn': (req, res) => {
     if (isAuthenticated(req, res)) {
+      //TODO
       res.sendStatus(200);
     } else {
       res.sendStatus(401);
@@ -75,6 +76,7 @@ let proxy = {
   },
   'PUT /api/v1/manual/stop': (req, res) => {
     if (isAuthenticated(req, res)) {
+      req.app.locals.mock.stop();      
       res.sendStatus(200);
     } else {
       res.sendStatus(401);
@@ -82,14 +84,16 @@ let proxy = {
   },
   'GET /api/v1/history/battery': (req, res) => {
     if (isAuthenticated(req, res)) {
-      return res.json({samples: data.getBatterySamples()});
+      return res.json({
+        samples: req.app.locals.mock.getBatterySamples()
+      });
     } else {
       res.sendStatus(401);
     }        
   },
   'GET /api/v1/system' : (req, res) => {
     if (isAuthenticated(req, res)) {
-      return res.json(data.getCurrentSystem());
+      return res.json(req.app.locals.mock.getCurrentSystem());
     } else {
       res.sendStatus(401);
     }
@@ -110,14 +114,14 @@ let proxy = {
   },
   'GET /api/v1/loglevel': (req, res) => {
     if (isAuthenticated(req, res)) {
-      return res.json(data.getLoglevel());
+      return res.json(req.app.locals.mock.getLoglevel());
     } else {
       res.sendStatus(401);
     }        
   },
   'PUT /api/v1/loglevel': (req, res) => {
     if (isAuthenticated(req, res)) {
-      data.setLoglevel(req.body.level);
+      req.app.locals.mock.setLoglevel(req.body.level);
       res.sendStatus(200);
     } else {
       res.sendStatus(401);
@@ -125,7 +129,7 @@ let proxy = {
   },
   'GET /api/v1/logmessages': (req, res) => {
     if (isAuthenticated(req, res)) {
-      return res.json(data.getLogmessages());
+      return res.json(req.app.locals.mock.getLogmessages());
     } else {
       res.sendStatus(401);
     }
@@ -134,7 +138,7 @@ let proxy = {
     let cookies = new Cookies(req, res);
     console.dir(req.body);
     if (req.body.username === 'admin' && req.body.password === 'liam') {
-      cookies.set(`liam-${data.getCurrentSystem().mowerId}`, '1234567', {
+      cookies.set(`liam-${req.app.locals.mock.getCurrentSystem().mowerId}`, '1234567', {
         path: '/api',
       });
       res.sendStatus(201);
@@ -151,7 +155,7 @@ let proxy = {
   },
   'DELETE /api/v1/session': (req, res) => {
     let cookies = new Cookies(req, res);
-    cookies.set(`liam-${data.getCurrentSystem().mowerId}`, 'null', {
+    cookies.set(`liam-${req.app.locals.mock.getCurrentSystem().mowerId}`, 'null', {
       path: '/api',
       maxAge: 0,
     });
@@ -165,7 +169,7 @@ let proxy = {
         return CHARS[Math.floor(Math.random() * CHARS.length)];
       });
   
-      data.setApiKey(key);
+      req.app.locals.mock.setApiKey(key);
       res.sendStatus(201);
     } else {
       res.sendStatus(401);
@@ -181,14 +185,14 @@ let proxy = {
   },
   'GET /api/v1/schedules': (req, res) => {
     if (isAuthenticated(req, res)) {
-      return res.json(data.getSchedules());
+      return res.json(req.app.locals.mock.getSchedules());
     } else {
       res.sendStatus(401);
     }
   },
   'POST /api/v1/schedules': (req, res) => {
     if (isAuthenticated(req, res)) {
-      data.addScheduleEntry(req.body);
+      req.app.locals.mock.addScheduleEntry(req.body);
       res.sendStatus(201);
     } else {
       res.sendStatus(401);
@@ -196,7 +200,7 @@ let proxy = {
   },
   'DELETE /api/v1/schedules/:id': (req, res) => {
     if (isAuthenticated(req, res)) {
-      data.removeScheduleEntry(req.params.id);
+      req.app.locals.mock.removeScheduleEntry(req.params.id);
       res.sendStatus(200);
     } else {
       res.sendStatus(401);

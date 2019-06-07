@@ -1,7 +1,5 @@
-const { resolve } = require('path'),
-      data = require(resolve(__dirname, 'mock-data.js'));
 
-module.exports = (port) => {
+module.exports = (port, mock) => {
   let http = require('http');
   let sockjs = require('sockjs');
   let clients = new Map();
@@ -13,6 +11,14 @@ module.exports = (port) => {
 
     conn.on('data', (message) => {
       console.log('websocket got:' + message);
+      let json = JSON.parse(message);
+
+      if (json.type === 'forward') {
+        mock.forward(json.payload.speed, json.payload.turnrate, json.payload.smooth);
+      } else if (json.type === 'backward') {
+        mock.backward(json.payload.speed, json.payload.turnrate, json.payload.smooth);
+      }
+
     });
     conn.on('close', () => {
       console.log(`Websocket client disconnected, id: ${conn.id}`);
@@ -28,7 +34,7 @@ module.exports = (port) => {
     clients.forEach((client) => {
       client.write(JSON.stringify({
         type: "status",
-        payload: data.getCurrentState(),
+        payload: mock.getCurrentState(),
       }));
     });
   }, 2000);

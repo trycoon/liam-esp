@@ -66,78 +66,86 @@ function setStopState() {
   });
 }
 
+function disableButton(classname) {
+  document.querySelector(classname).setAttribute("disabled", "disabled");
+}
+
+function enableButton(classname) {
+  document.querySelector(classname).removeAttribute("disabled");
+}
+
 function toggleStateButtons() {
 
   if (liam.data.status.state) {
     switch (liam.data.status.state) {
       case 'DOCKED': {
-        $('.js-launching').show();
-        $('.js-docking').hide();
-        $('.js-mowing').hide();
-        $('.js-stop').hide();
+        enableButton('.js-launching');
+        disableButton('.js-docking');
+        disableButton('.js-mowing');
+        disableButton('.js-stop');
         break;
       }
       case 'LAUNCHING': {
-        $('.js-launching').hide();
-        $('.js-docking').show();
-        $('.js-mowing').hide();
-        $('.js-stop').show();
+        disableButton('.js-launching');
+        enableButton('.js-docking');
+        disableButton('.js-mowing');
+        enableButton('.js-stop');
         break;
       }
       case 'MOWING': {
-        $('.js-launching').hide();
-        $('.js-docking').show();
-        $('.js-mowing').hide();
-        $('.js-stop').show();
+        disableButton('.js-launching');
+        enableButton('.js-docking');
+        disableButton('.js-mowing');
+        enableButton('.js-stop');
         break;
       }
       case 'DOCKING': {
-        $('.js-launching').show();
-        $('.js-docking').hide();
-        $('.js-mowing').show();
-        $('.js-stop').show();
+        disableButton('.js-launching');
+        disableButton('.js-docking');
+        enableButton('.js-mowing');
+        enableButton('.js-stop');
         break;
       }
       case 'CHARGING': {
-        $('.js-launching').show();
-        $('.js-docking').hide();
-        $('.js-mowing').hide();
-        $('.js-stop').hide();
+        enableButton('.js-launching');
+        disableButton('.js-docking');
+        disableButton('.js-mowing');
+        disableButton('.js-stop');
         break;
       }
       case 'STUCK': {
-        $('.js-launching').hide();
-        $('.js-docking').show();
-        $('.js-mowing').show();
-        $('.js-stop').hide();
+        disableButton('.js-launching');
+        enableButton('.js-docking');
+        enableButton('.js-mowing');
+        disableButton('.js-stop');
         break;
       }
       case 'FLIPPED': {
-        $('.js-launching').hide();
-        $('.js-docking').show();
-        $('.js-mowing').show();
-        $('.js-stop').hide();
+        disableButton('.js-launching');
+        disableButton('.js-docking');
+        disableButton('.js-mowing');
+        disableButton('.js-stop');
         break;
       }
       case 'STOP': {
-        $('.js-launching').hide();
-        $('.js-docking').show();
-        $('.js-mowing').show();
-        $('.js-stop').hide();
+        disableButton('.js-launching');
+        enableButton('.js-docking');
+        enableButton('.js-mowing');
+        disableButton('.js-stop');
         break;
       }
       case 'MANUAL': {
-        $('.js-launching').hide();
-        $('.js-docking').show();
-        $('.js-mowing').show();
-        $('.js-stop').show();
+        disableButton('.js-launching');
+        enableButton('.js-docking');
+        enableButton('.js-mowing');
+        enableButton('.js-stop');
         break;
       }
       case 'TEST': {
-        $('.js-launching').hide();
-        $('.js-docking').show();
-        $('.js-mowing').show();
-        $('.js-stop').show();
+        disableButton('.js-launching');
+        enableButton('.js-docking');
+        enableButton('.js-mowing');
+        enableButton('.js-stop');
         break;
       }
       default: {
@@ -196,13 +204,13 @@ function updatedStatus() {
   switch (liam.data.status.state) {
     case 'DOCKED': text = 'DOCKED'; break;
     case 'LAUNCHING': text = 'LAUNCHING'; break;
-    case 'MOWING': text = 'MOWINGR'; break;
+    case 'MOWING': text = 'MOWING'; break;
     case 'DOCKING': text = 'DOCKING'; break;
     case 'CHARGING': text = 'CHARGING'; break;
     case 'STUCK': text = 'STUCK'; break;
     case 'FLIPPED': text = 'FLIPPED'; break;
     case 'MANUAL': text = 'MANUAL'; break;
-    case 'STOP': text = 'STOP'; break;
+    case 'STOP': text = 'STOPPED'; break;
     case 'TEST': text = 'TEST'; break;
     default: text = '...';
   }
@@ -381,16 +389,24 @@ export function init() {
   updatedStatus();
 
   sec.find('.js-launching').on('click', function() {
-    setLaunchMowerState();
+    if (!this.hasAttribute('disabled')) {
+      setLaunchMowerState();
+    }
   });
   sec.find('.js-mowing').on('click', function() {
-    setMowingState();
+    if (!this.hasAttribute('disabled')) {
+      setMowingState();
+    }
   });
   sec.find('.js-docking').on('click', function() {
-    setDockingState();
+    if (!this.hasAttribute('disabled')) {
+      setDockingState();
+    }
   });
   sec.find('.js-stop').on('click', function() {
-    setStopState();
+    if (!this.hasAttribute('disabled')) {
+      setStopState();
+    }
   });
 
   let mower3dCanvas = document.querySelector('.js-model3D'); 

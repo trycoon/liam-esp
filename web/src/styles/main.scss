@@ -285,6 +285,12 @@ p {
   background-image: linear-gradient(top, #404040, #2a2a2a);
 }
 
+.button:disabled,
+.button[disabled] {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
 .button:active,
 .button.active {
   line-height: 32px;

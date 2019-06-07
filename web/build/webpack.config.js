@@ -144,8 +144,12 @@ if (!isProd) {
       },
     },
     before(app) {
+      // load common mock data
+      app.locals.mock = require(resolve(__dirname, '..', 'mock', 'mock-data.js'));
+      // setup REST endpoints with mocked data, mock will be available in api-handlers on app.locals.mock.
       apiMocker(app, resolve(__dirname, '..', 'mock', 'api-mocker.js'));
-      require(resolve(__dirname, '..', 'mock', 'socket-mocker.js'))(8081);
+      // setup Websocket with mocked data
+      require(resolve(__dirname, '..', 'mock', 'socket-mocker.js'))(8081, app.locals.mock);
     },
   };
 } else {

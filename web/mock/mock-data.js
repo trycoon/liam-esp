@@ -85,10 +85,23 @@ module.exports = {
     return samples;
   },
   cutterOn: () => {
+    currentState.state = 'MANUAL';
     currentState.cutterRotating = true;
   },
   cutterOff: () => {
+    currentState.state = 'MANUAL';
     currentState.cutterRotating = false;
+  },
+  forward: (speed, turnrate, smooth) => {
+    currentState.state = 'MANUAL';
+  },
+  backward: (speed, turnrate, smooth) => {
+    currentState.state = 'MANUAL';
+  },
+  stop: () => {
+    currentState.state = 'MANUAL';
+    currentState.leftWheelSpd = 0;
+    currentState.rightWheelSpd = 0;
   },
   setState: (state) => {
     currentState.state = state;
