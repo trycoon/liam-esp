@@ -1,7 +1,8 @@
 import * as api from '../api.js';
 import * as auth from '../authorisation.js';
 
-const sec = $('.js-section-start'),
+const GRID_TURN_RATE = 0.5,
+      sec = $('.js-section-start'),
       mower3D_perspectiveRotation = THREE.Math.degToRad(30);  // rotate 30⁰ to give better 3rd-person perspective
 
 let renderer3D,
@@ -365,8 +366,8 @@ function drawModel3D() {
   leftWheel.rotation.x += THREE.Math.degToRad(3 / 100 * liam.data.status.leftWheelSpd);
   rightWheel.rotation.x += THREE.Math.degToRad(3 / 100 * liam.data.status.rightWheelSpd);
   // rotate grid to illustrate mower turning
-  let gridTurnRate = liam.data.status.leftWheelSpd - liam.data.status.rightWheelSpd;
-  grid3D.rotation.y += THREE.Math.degToRad(3 / 100 * gridTurnRate);
+  let turnRate = liam.data.status.leftWheelSpd - liam.data.status.rightWheelSpd;
+  grid3D.rotation.y += THREE.Math.degToRad(3 / 100 * turnRate * GRID_TURN_RATE);
 
   camera3D.lookAt(scene3D.position);
   renderer3D.render(scene3D, camera3D);

@@ -322,6 +322,7 @@ export function init() {
     height: compasSize,
     minorTicks: 10,
     ticksAngle: 360,
+    startAngle: 180,
     strokeTicks: false,
     highlights: false,
     colorPlate: "#33a",

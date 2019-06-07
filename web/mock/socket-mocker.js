@@ -37,6 +37,8 @@ module.exports = (port, mock) => {
         payload: mock.getCurrentState(),
       }));
     });
+
+    mock.advanceSequence();
   }, 2000);
 };
 

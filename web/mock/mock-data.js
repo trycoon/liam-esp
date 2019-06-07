@@ -24,7 +24,7 @@ let uptime = new Date(),
     currentSystem = {
       name: 'liam-esp',
       version: '1.0.0',
-      mowerId: '413445680',       
+      mowerId: '413445680',
       cpuFreq: 240,
       flashChipSize: 4194304,
       chipRevision: 1,
@@ -42,28 +42,37 @@ module.exports = {
   getCurrentState: () => {
     let state = JSON.parse(JSON.stringify(currentState));   // deep copy, don't affect original.
     state.batteryVoltage = Math.floor(Math.random() * (16.8 - 14.0 + 1)) + 14.0;
-    state.batteryLevel  = Math.round(Math.random() * 100);
+    state.batteryLevel = Math.round(Math.random() * 100);
     state.cutterLoad = Math.round(Math.random() * 100);
     state.heading = Math.floor(Math.random() * 90) - 45;
 
-    let currSequence = moveSequence[seqPos];
-    state.roll = currSequence.r || 0;
-    state.pitch = currSequence.p || 0;
-    state.leftWheelSpd = currSequence.lw || 0;
-    state.rightWheelSpd = currSequence.rw || currSequence.lw;
-    
     state.uptime = Math.round((new Date().getTime() - uptime.getTime()) / 1000);
     state.wifiSignal = Math.floor(Math.random() * (-30 - -90 + 1)) + -90;
-    
-    // random movement and rotation if needed.
-    /*state.roll = Math.floor(Math.random() * 90) - 45;
-    state.pitch = Math.floor(Math.random() * 90) - 45;
-    state.leftWheelSpd = Math.round(-100 + Math.random() * (100 - -100));  // -100 to 100
-    state.rightWheelSpd = Math.round(-100 + Math.random() * (100 - -100)); // -100 to 100*/
-    seqPos = (seqPos + 1) % moveSequence.length;
-    console.log(`current movesequence: ${seqPos}`);
-    
+
+    if (currentState.state === 'MOWING') {
+
+      let currSequence = moveSequence[seqPos];
+      state.roll = currSequence.r || 0;
+      state.pitch = currSequence.p || 0;
+      state.leftWheelSpd = currSequence.lw || 0;
+      state.rightWheelSpd = currSequence.rw || currSequence.lw;
+
+    } else if (currentState.state === 'TEST') {
+      // random movement and rotation if TEST-state.
+      state.roll = Math.floor(Math.random() * 90) - 45;
+      state.pitch = Math.floor(Math.random() * 90) - 45;
+      state.leftWheelSpd = Math.round(-100 + Math.random() * (100 - -100));  // -100 to 100
+      state.rightWheelSpd = Math.round(-100 + Math.random() * (100 - -100)); // -100 to 100
+    }
+
     return state;
+  },
+  advanceSequence: () => {
+    // only "animate" mowing during the mowing-state.
+    if (currentState.state === 'MOWING') {
+      seqPos = (seqPos + 1) % moveSequence.length;
+      console.log(`movesequence: ${seqPos}`);
+    }
   },
   getCurrentSystem: () => {
     let system = JSON.parse(JSON.stringify(currentSystem));   // deep copy, don't affect original.
@@ -102,9 +111,65 @@ module.exports = {
     currentState.state = 'MANUAL';
     currentState.leftWheelSpd = 0;
     currentState.rightWheelSpd = 0;
+    currentState.cutterRotating = false;
+
   },
   setState: (state) => {
     currentState.state = state;
+
+    switch (state) {
+    case 'DOCKED':
+    case 'CHARGING':
+    case 'STUCK':
+    case 'FLIPPED':
+    case 'STOP':
+      currentState.roll = 0;
+      currentState.pitch = 0;
+      currentState.leftWheelSpd = 0;
+      currentState.rightWheelSpd = 0;
+      currentState.cutterRotating = false;
+      break;
+
+    case 'LAUNCHING':
+      currentState.roll = 0;
+      currentState.pitch = 0;
+      currentState.leftWheelSpd = -80;
+      currentState.rightWheelSpd = -80;
+      currentState.cutterRotating = false;
+
+      setTimeout(() => {
+        currentState.leftWheelSpd = -40;
+        currentState.rightWheelSpd = 40;
+
+        setTimeout(() => {
+          currentState.state = 'MOWING';
+          currentState.leftWheelSpd = 80;
+          currentState.rightWheelSpd = 80;
+          currentState.cutterRotating = true;
+        }, 3000);
+      }, 4000);
+
+      break;
+
+    case 'DOCKING':
+      currentState.roll = 0;
+      currentState.pitch = 0;      
+      currentState.leftWheelSpd = 80;
+      currentState.rightWheelSpd = 80;
+      currentState.cutterRotating = false;
+
+      setTimeout(() => {
+        currentState.state = 'DOCKED';
+        currentState.leftWheelSpd = 0;
+        currentState.rightWheelSpd = 0;        
+      }, 4000);
+
+      break;
+
+    case 'MOWING':
+      currentState.cutterRotating = true;
+      break;
+    }
   },
   getLoglevel: () => {
     return {
@@ -134,9 +199,9 @@ module.exports = {
   getSchedules: () => {
     return schedules;
   },
-  addScheduleEntry: (entry) => {    
+  addScheduleEntry: (entry) => {
     if (entry.startTime.match(timeRegExp) && entry.stopTime.match(timeRegExp)) {
-      schedules.unshift({ 
+      schedules.unshift({
         activeWeekdays: entry.activeWeekdays,
         startTime: entry.startTime,
         stopTime: entry.stopTime,
@@ -147,4 +212,3 @@ module.exports = {
     schedules.splice(position, 1);
   },
 };
-  
