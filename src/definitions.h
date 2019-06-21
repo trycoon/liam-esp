@@ -50,24 +50,23 @@ namespace Definitions {
   extern const uint8_t CUTTER_LOAD_PIN;
   extern const float CUTTER_LOAD_RESISTOR_MULTIPLIER;
   extern const uint8_t CUTTER_MAX_SPEED;
-  extern const uint8_t PAUSE_PIN;
-  extern const uint8_t BUZZER_PIN;
-  extern const uint8_t BUMPER_PIN;
-  extern const uint8_t LEFT_BWF_PIN;
-  extern const uint8_t RIGHT_BWF_PIN;
-  extern const uint32_t BWF_SENSE_TIMEOUT;
+  extern const uint16_t CUTTER_LOAD_THRESHOLD;
+  extern const uint8_t EMERGENCY_STOP_PIN;
   extern const uint8_t BATTERY_SENSOR_PIN;
   extern const float BATTERY_FULLY_CHARGED;
   extern const float BATTERY_EMPTY;
   extern const float BATTERY_MULTIPLIER;
   extern const float CHARGE_CURRENT_THRESHOLD;
   extern const uint8_t TILT_ANGLE_MAX;
-  extern const uint8_t IO_ACCELEROMETER_INT_PIN;
   extern const uint8_t FACTORY_RESET_PIN;
   extern const uint8_t GPS_RX_PIN;
   extern const uint8_t GPS_TX_PIN;
   extern const uint16_t MQTT_QUEUE_LENGTH;
   extern const uint16_t MAX_LOGMESSAGES;
+  extern const uint8_t SONAR1_PIN;
+  extern const uint8_t SONAR2_PIN;
+  extern const uint8_t SONAR3_PIN;
+  extern const uint16_t SONAR_MAXDISTANCE;
 };
 
 #endif

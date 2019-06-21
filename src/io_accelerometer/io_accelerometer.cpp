@@ -4,16 +4,10 @@
 #include "definitions.h"
 #include "io_accelerometer.h"
 
-// https://github.com/kriswiner/EM7180_SENtral_sensor_hub/wiki/A.-A-Short-Survey-of-Sensor-Fusion-Solutions
-// code exmaple from https://github.com/simondlevy/EM7180
-
 // https://github.com/sparkfun/ESP32_Motion_Shield/tree/master/Software
 // https://learn.sparkfun.com/tutorials/esp32-thing-motion-shield-hookup-guide/using-the-imu
 
-static volatile bool newData;
-
 IO_Accelerometer::IO_Accelerometer(TwoWire& w): _Wire(w) {
-  //pinMode(Definitions::IO_ACCELEROMETER_INT_PIN, INPUT_PULLUP);
 
   // the device's communication mode and addresses:
   imu.settings.device.commInterface = IMU_MODE_I2C;
@@ -21,16 +15,7 @@ IO_Accelerometer::IO_Accelerometer(TwoWire& w): _Wire(w) {
   //imu.settings.device.agAddress = LSM9DS1_AG;
 }
 
-IO_Accelerometer::~IO_Accelerometer() {
- // detachInterrupt(digitalPinToInterrupt(Definitions::IO_ACCELEROMETER_INT_PIN));
-}
-
-void IRAM_ATTR IO_Accelerometer::interruptHandler() { // IRAM_ATTR tells the complier, that this code Must always be in the ESP32's IRAM, the limited 128k IRAM. Use it sparingly.
-  newData = true;
-}
-
 void IO_Accelerometer::start() {
- // attachInterrupt(digitalPinToInterrupt(Definitions::IO_ACCELEROMETER_INT_PIN), std::bind(&IO_Accelerometer::interruptHandler, this), RISING);
 
   if (!imu.begin()) {
     Log.error(F("Failed to initialize gyro/accelerometer/compass, check connections!"));
@@ -38,7 +23,10 @@ void IO_Accelerometer::start() {
     Log.notice(F("Gyro/accelerometer/compass init success." CR));
     available = true;
 
-    sensorReadingTicker.attach_ms<IO_Accelerometer*>(200, [](IO_Accelerometer* instance) {
+    imu.calibrate(true);
+    //imu.calibrateMag(true);   //TODO: check why this crashes with: Guru Meditation Error: Core  1 panic'ed (StoreProhibited). Exception was unhandled.
+
+    sensorReadingTicker.attach_ms<IO_Accelerometer*>(50, [](IO_Accelerometer* instance) {
       instance->getReadings();
     }, this);
   }

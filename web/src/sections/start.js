@@ -10,6 +10,7 @@ let renderer3D,
     scene3D,
     grid3D,
     mower3D,
+    obstacle,
     leftWheel,
     rightWheel,
     requestAnimationInstance,
@@ -301,6 +302,10 @@ function initModel3D(canvas) {
         });*/
 
         scene3D.add(mower3D);
+ 
+        obstacle = new THREE.Mesh( new THREE.BoxGeometry( 10000, 10000, 10000 ), new THREE.MeshBasicMaterial( {color: 0xff0000} ) );
+        obstacle.position.set(0, 0, 1);
+        scene3D.add( obstacle );
 
         isModelAvailable3D = true;
         drawModel3D();
@@ -366,8 +371,7 @@ function drawModel3D() {
   leftWheel.rotation.x += THREE.Math.degToRad(3 / 100 * liam.data.status.leftWheelSpd);
   rightWheel.rotation.x += THREE.Math.degToRad(3 / 100 * liam.data.status.rightWheelSpd);
   // rotate grid to illustrate mower turning
-  let turnRate = liam.data.status.leftWheelSpd - liam.data.status.rightWheelSpd;
-  grid3D.rotation.y += THREE.Math.degToRad(3 / 100 * turnRate * GRID_TURN_RATE);
+  grid3D.rotation.y = THREE.Math.degToRad(liam.data.status.heading);
 
   camera3D.lookAt(scene3D.position);
   renderer3D.render(scene3D, camera3D);

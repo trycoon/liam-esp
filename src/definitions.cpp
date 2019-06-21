@@ -24,7 +24,6 @@ namespace Definitions
     Accelerometer/Gyro/Compass
   */
   const uint8_t TILT_ANGLE_MAX = 35;    // Max angle (degrees) the mower is allowed to tilt, going above this value will stop mower and enter FLIPPED-state. This is a safety setting!
-  const uint8_t IO_ACCELEROMETER_INT_PIN = 23;  // Interrupt pin signaling when new data is available from Accelerometer/Gyro/Compass
 
   /*
     Wheel motor settings
@@ -63,16 +62,6 @@ namespace Definitions
   const uint8_t CUTTER_MAX_SPEED = 100;  // 0-100 (%), lower this value if cutter spinning too fast.
   // When the load on the cuttor motor surpasses this limit, the cutter is working too hard cutting the grass (and we should reduce speed of wheels to compensate).
   const uint16_t CUTTER_LOAD_THRESHOLD = 1000;
-
-  /*
-    Border Wire Fence settings
-  */
-  const uint8_t LEFT_BWF_PIN = 25;
-  const uint8_t RIGHT_BWF_PIN = 26;
-  // How long the mower should be running without hitting the border wire, in seconds.
-  // This is a safety setting that prevent the mower to escape too far away.
-  // If the mower reach this time setting before it reach the border fence it will stop and enter the STUCK-state.
-  const uint32_t BWF_SENSE_TIMEOUT = 3 * 60;
 
   /*
     Battery settings
@@ -114,18 +103,22 @@ namespace Definitions
   const uint8_t GPS_RX_PIN = 3;  // GPIO3 (RXD0)
   const uint8_t GPS_TX_PIN = 1;  // GPIO1 (TDX0)
 
-  // Pulse this pin LOW to pause mower (emergency stop), pulse LOW once more to continue
-  const uint8_t PAUSE_PIN = 2;
-
-  // Pin to drive external buzzer for giving warning/error codes beeps.
-  const uint8_t BUZZER_PIN = 27;
-
-  // Bumper for detecting objects lying in the way of the mower, pull LOW to signal object hit.
-  const uint8_t BUMPER_PIN = 34;
+  // Pull this pin LOW to emergency stop mower, pull HIGH to continue
+  const uint8_t EMERGENCY_STOP_PIN = 2;
 
   // Max number of messages awaiting to be sent to broker. Higher value consumes more RAM-memory but let us be disconnected from WiFi for a longer period.
   const uint16_t MQTT_QUEUE_LENGTH = 50;
 
   // How many lines of log messages that are kept, increase to have longer log message history at the expense of higher memory consumption.
   const uint16_t MAX_LOGMESSAGES = 50;
+
+  // Pin used to send and detect a ultrasonic ping for obstacle detection.
+  // SONAR-sensor #1 is the one pointing straight forward.
+  // SONAR-sensor #2 is the one pointing to the left when viewing mower from above (facing the same direction as the mower).
+  // SONAR-sensor #3 is the one pointing to the right when viewing mower from above (facing the same direction as the mower).
+  const uint8_t SONAR1_PIN = 34;
+  const uint8_t SONAR2_PIN = 23;
+  const uint8_t SONAR3_PIN = 27;
+  // Distance ahead the mower should detect obstacles (in centimeters). Between 5-400cm.
+  const uint16_t SONAR_MAXDISTANCE = 200;
 }

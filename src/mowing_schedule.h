@@ -17,10 +17,12 @@ class MowingSchedule {
     int8_t addScheduleEntry(std::deque<bool> activeWeekdays, String startTime, String stopTime);
     const std::deque<scheduleEntry>& getScheduleEntries() const;
     void removeScheduleEntry(uint8_t position);
+    void setManualMowingOverride(bool enable);
     bool isTimeToMow();
     void start();
     
   private:
+    bool manualMowingOverride = false;
     std::deque<scheduleEntry> mowingSchedule;
     void saveSchedulesToFlash();
     void loadSchedulesFromFlash();

@@ -60,10 +60,21 @@ void MowingSchedule::removeScheduleEntry(uint8_t position) {
 }
 
 /**
+ * Override schedule to force mower to start mowing outside of schedule, this is used when manually launching mower from API.
+ */
+void MowingSchedule::setManualMowingOverride(bool enable) {
+  manualMowingOverride = enable;
+}
+
+/**
  * Check if the mower should mow now, according to the mowing schedule and the current time.
  */
 bool MowingSchedule::isTimeToMow() {
 
+  if (manualMowingOverride) {
+    return true;
+  }
+  
   struct tm timeinfo;
 
   if (!getLocalTime(&timeinfo, 200)) { // tries for 200 ms

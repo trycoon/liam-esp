@@ -1,20 +1,23 @@
 # Liam-ESP
 [![license](https://img.shields.io/github/license/trycoon/liam-esp.svg?maxAge=3600)](https://opensource.org/licenses/MIT)
 
-## Overview
+## Introduction
 Software for controlling a home built robotic lawn mower.
 The concept and basic ideas are sprung from the ["Liam lawn mower"](https://github.com/sm6yvr/liam) and [ArduMower](https://www.ardumower.de/index.php/en/) projects, but instead of using an Arduino for controlling the mower this project makes use of the more powerful Espressif ESP32 microcontroller. The reasoning behind this decision is the wish for WiFi connectivity and interconnectivity with existing home automation systems on the market.
 
 Here are some of the features of this project:
 
-- Automatic mowing of lawn using a two wheel robot
-- GNSS navigation support, for accurate mowing and path planning
-- WiFi connected (can operate when signal is weak/lost, will reconnect when signal is available)
+- Automatic mowing of lawn using a two wheeled robot.
+- GNSS navigation support, for accurate mowing and path planning.
+- WiFi connected (can operate when signal is weak/lost, will reconnect when signal is available).
 - Easy to use [REST-based API](documentation/api.md), self explaining (HATEOAS compatible), with Swagger support.  
-- Monitor mower using [MQTT protocol](documentation/api.md) (works with most Home automation systems)
-- NTP time support, making scheduling of mowing a breeze
-- Integrated Web UI for controlling and monitoring mower
-- Support accelerometer, gyroscope, and e-compass to keep mower on a straight line, and detect if mower are flipped over (safety reasons)
+- Monitor mower using [MQTT protocol](documentation/api.md) (works with most Home automation systems).
+- Realtime monitoring using Websocket.
+- NTP time support, making scheduling of mowing a breeze.
+- Obstacle avoidance using ultrasound transducers.
+- Support accelerometer, gyroscope, and e-compass to keep mower on a straight line, and detect if mower has flipped over (safety reasons).
+- Integrated Web UI for controlling and monitoring mower, see [demo site](http://liam.smart-home.rocks/). (username: admin, password: liam)
+
 
 ## Build and upload software
 
@@ -55,11 +58,6 @@ Press the "Reset" button on the ESP32 board and you should now be able to visit 
 ## Debugging and faultfinding
 
 [See debugging section](documentation/debugging.md)
-
-## TODO
-
-TODO: Multithreading on ESP32, processable.h-interface and let each class use this one instead: https://github.com/copercini/esp32-iot-examples/blob/master/multiloop/multiloop.ino, if not working then look at this: https://www.arduino.cc/en/Reference/Scheduler or this (works even in Arduino-mode): http://www.freertos.org/a00125.html
-TODO: see this for inspiration: https://bitbucket.org/xoseperez/espurna/src
 
 ## License & Author
 

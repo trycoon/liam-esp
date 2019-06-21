@@ -34,6 +34,10 @@ void Api::statusToJson(statusResponse& obj, JsonObject& json) {
     json["pitch"] = obj.pitch;
     json["roll"] = obj.roll;
     json["heading"] = obj.heading;
+    JsonArray& obstacles = json.createNestedArray("obstacles");
+    obstacles.add(obj.obstacleDistance1);
+    obstacles.add(obj.obstacleDistance2);
+    obstacles.add(obj.obstacleDistance3);
 }
 
 /**
@@ -83,6 +87,22 @@ void Api::collectAndPushNewStatus() {
     currentStatus.rightWheelSpd = stat.rightWheelSpeed;
     statusChanged = true;
   }
+  auto obstacleDistance1 = resources.sonar.getObstacleDistance(0);
+  auto obstacleDistance2 = resources.sonar.getObstacleDistance(1);
+  auto obstacleDistance3 = resources.sonar.getObstacleDistance(2);
+  if (currentStatus.obstacleDistance1 != obstacleDistance1) {
+    currentStatus.obstacleDistance1 = obstacleDistance1;
+    statusChanged = true;
+  }
+  if (currentStatus.obstacleDistance2 != obstacleDistance2) {
+    currentStatus.obstacleDistance2 = obstacleDistance2;
+    statusChanged = true;
+  }
+  if (currentStatus.obstacleDistance3 != obstacleDistance3) {
+    currentStatus.obstacleDistance3 = obstacleDistance3;
+    statusChanged = true;
+  }
+
   // we have to check that we are connected before we try to get WiFi signal, otherwise it will freeze up.
   if (WiFi.status() == WL_CONNECTED) {
     auto wifiSignal = WiFi.RSSI();

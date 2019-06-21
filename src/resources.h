@@ -7,6 +7,7 @@
 #include "bwf.h"
 #include "battery.h"
 #include "gps.h"
+#include "sonar.h"
 #include "configuration.h"
 #include "io_accelerometer/io_accelerometer.h"
 #include "log_store.h"
@@ -25,6 +26,7 @@ class Resources {
                            BWF& bwf,
                            Battery& battery,
                            GPS& gps,
+                           Sonar& sonar,
                            IO_Accelerometer& accelerometer,
                            LogStore& logStore,
                            MowingSchedule& mowingSchedule)
@@ -34,6 +36,7 @@ class Resources {
                              bwf(bwf),
                              battery(battery),
                              gps(gps),
+                             sonar(sonar),
                              accelerometer(accelerometer),
                              logStore(logStore),
                              mowingSchedule(mowingSchedule) { }
@@ -44,6 +47,7 @@ class Resources {
     BWF& bwf;
     Battery& battery;
     GPS& gps;
+    Sonar& sonar;
     IO_Accelerometer& accelerometer;
     LogStore& logStore;
     MowingSchedule& mowingSchedule;

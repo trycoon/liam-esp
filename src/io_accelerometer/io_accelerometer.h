@@ -14,7 +14,6 @@ struct orientation {
 class IO_Accelerometer {
   public:
     IO_Accelerometer(TwoWire& w);
-    ~IO_Accelerometer();
     bool isAvailable() const;
     bool isFlipped() const;
     const orientation& getOrientation() const;
@@ -30,8 +29,12 @@ class IO_Accelerometer {
     TwoWire& _Wire;
     Ticker sensorReadingTicker;
     orientation currentOrientation;
+    uint16_t ax_sample[5] = {0, 0, 0, 0, 0};
+    uint16_t ay_sample[5] = {0, 0, 0, 0, 0};
+    uint16_t az_sample[5] = {0, 0, 0, 0, 0};
+    uint16_t mx_sample[5] = {0, 0, 0, 0, 0};
+    uint16_t my_sample[5] = {0, 0, 0, 0, 0};
     bool available = false;
-    void IRAM_ATTR interruptHandler();
     void getReadings();
 };
 

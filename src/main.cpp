@@ -16,6 +16,7 @@
 #include "bwf.h"
 #include "battery.h"
 #include "gps.h"
+#include "sonar.h"
 #include "state_controller.h"
 #include "mowing_schedule.h"
 #include "api.h"
@@ -42,9 +43,10 @@ WheelController wheelController(leftWheel, rightWheel);
 Cutter cutter(io_analog);
 BWF bwf;
 GPS gps;
+Sonar sonar;
 Battery battery(io_analog, Wire);
 MowingSchedule mowingSchedule;
-Resources resources(wifi, wheelController, cutter, bwf, battery, gps, io_accelerometer, logstore, mowingSchedule);
+Resources resources(wifi, wheelController, cutter, bwf, battery, gps, sonar, io_accelerometer, logstore, mowingSchedule);
 StateController stateController(resources);
 Api api(stateController, resources);
 
@@ -85,9 +87,7 @@ void scan_I2C() {
 void setup() {
 
   pinMode(Definitions::FACTORY_RESET_PIN, INPUT_PULLUP);
-  pinMode(Definitions::PAUSE_PIN, INPUT_PULLUP);
-  pinMode(Definitions::BUMPER_PIN, INPUT_PULLUP);
-  pinMode(Definitions::BUZZER_PIN, OUTPUT);
+  pinMode(Definitions::EMERGENCY_STOP_PIN, INPUT_PULLUP);
 
   //esp_log_level_set("*", ESP_LOG_DEBUG);
 
@@ -156,6 +156,11 @@ void loop() {
       stateController.setState(Definitions::MOWER_STATES::FLIPPED);
     }
 
+    if (digitalRead(Definitions::EMERGENCY_STOP_PIN) == LOW) {
+      stateController.setState(Definitions::MOWER_STATES::STOP);;
+    }
+
+    sonar.process();
     stateController.getStateInstance()->process();
     wheelController.process();
   }
@@ -168,4 +173,7 @@ void loop() {
 
     Log.warning(F("Main loop running slow due to long delay(%l us)! Make sure thread is not blocked by delays()." CR), (uint32_t)loopDelay);
   }
+
+  // small delay on purpose, to reduce load on CPU
+  delay(1);
 }

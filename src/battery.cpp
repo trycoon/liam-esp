@@ -7,31 +7,11 @@
 
 Battery::Battery(IO_Analog& io_analog, TwoWire& w) : io_analog(io_analog), wire(w), lastChargeCurrentReading(0), currentMedian(11, 0), currentMedianIndex(0) {}
 
-
-  /**
-   * Get median value from an array of values
-   */
-  template<typename T>
-  T calculateMedian(std::vector<T> entries) {
-      size_t size = entries.size();
-
-      if (size == 0) {
-          return 0;  // Undefined, really.
-      } else {
-          sort(entries.begin(), entries.end());
-          if (size % 2 == 0) {
-              return (entries[size / 2 - 1] + entries[size / 2]) / 2;
-          } else {
-              return entries[size / 2];
-          }
-      }
-  }
-
 void Battery::start() {
   ina219.begin(&wire);
   
   // Set initial state.
-  for (auto i: currentMedian) {
+  for (auto i __attribute__((unused)): currentMedian) {
     updateChargeCurrent();
   }
   updateBatteryVoltage();
@@ -70,7 +50,7 @@ void Battery::updateChargeCurrent() {
 
   currentMedian[currentMedianIndex++%currentMedian.size()] = chargeCurrent;  // enter new reading into array.
   // we can get some missreadings (1475.10) from time to time, so we record samples to an array an take the median value to filter out all noice.
-  chargeCurrent = calculateMedian<float>(currentMedian);
+  chargeCurrent = Utils::calculateMedian<float>(currentMedian);
 
   _isCharging = chargeCurrent >= Definitions::CHARGE_CURRENT_THRESHOLD;
   // if we just started charging

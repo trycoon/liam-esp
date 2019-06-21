@@ -20,6 +20,7 @@ let uptime = new Date(),
       pitch: 0,
       roll: 0,
       heading: 0,
+      obstacles: [0, 0, 0],
     },
     currentSystem = {
       name: 'liam-esp',

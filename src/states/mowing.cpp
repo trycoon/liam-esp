@@ -1,3 +1,4 @@
+#include <ArduinoLog.h>
 #include "mowing.h"
 #include "state_controller.h"
 
@@ -23,9 +24,9 @@ void Mowing::process() {
   if (lastShouldMowCheck + 2000 < millis()) {
     if (!resources.mowingSchedule.isTimeToMow()) {
       stateController.setState(Definitions::MOWER_STATES::DOCKING);
+      return;
     }
 
     lastShouldMowCheck = millis();
-  } 
-    
+  }
 }

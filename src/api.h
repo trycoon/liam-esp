@@ -25,6 +25,9 @@ struct statusResponse {
   int16_t pitch;
   int16_t roll;
   uint16_t heading;
+  uint16_t obstacleDistance1;
+  uint16_t obstacleDistance2;
+  uint16_t obstacleDistance3;
 };
 
 class Api {

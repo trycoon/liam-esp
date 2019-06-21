@@ -72,6 +72,8 @@ void StateController::setState(String newState) {
 
 bool StateController::setUserChangableState(String newState) {
   if (newState == "LAUNCHING") {
+    // set scheduler to manual override otherwise it will reset the state back to DOCKING since we could be outside the time-schedule.
+    resources.mowingSchedule.setManualMowingOverride(true);
     setState(Definitions::MOWER_STATES::LAUNCHING);
   } else if (newState == "MOWING") {
     setState(Definitions::MOWER_STATES::MOWING);
