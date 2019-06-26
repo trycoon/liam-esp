@@ -79,6 +79,11 @@ select {
     user-select: none;
 }
 
+details, summary {  
+  border: none;  
+  outline: none;  
+} 
+
 /* ROOT FONT STYLES */
 * {
   font-family: 'Lato', Helvetica, sans-serif;
@@ -474,6 +479,8 @@ p {
 
 /* Charts */
 .ct-chart {
+    position: relative;
+
     .ct-label.ct-vertical,
     .ct-label.ct-horizontal {
         color: rgba(255, 255, 255, 0.5);
@@ -493,6 +500,48 @@ p {
     }
 }
 
+/*
+.ct-legend {
+  position: relative;
+  z-index: 10;
+  list-style: none;
+  text-align: center;
+
+  li {
+      position: relative;
+      padding-left: 23px;
+      margin-right: 10px;
+      margin-bottom: 3px;
+      cursor: pointer;
+      display: inline-block;
+  }
+
+  li:before {
+      width: 12px;
+      height: 12px;
+      position: absolute;
+      left: 0;
+      content: '';
+      border: 3px solid transparent;
+      border-radius: 2px;
+  }
+
+  li.inactive:before {
+      background: transparent;
+  }
+
+  &.ct-legend-inside {
+      position: absolute;
+      top: 0;
+      right: 0;
+
+      li {
+        display: block;
+        margin: 0;
+      }
+  }
+}*/
+
 #battery-chart {
     .ct-series.ct-series-b .ct-line {
         stroke: #00A000;
@@ -505,6 +554,13 @@ p {
         stroke-width: 2px;
         stroke-dasharray: 5px 3px;
     }
+}
+
+#memory-chart {
+  .ct-series.ct-series-b .ct-line {
+      stroke: #9da000;
+      stroke-width: 2px;
+  }
 }
 
 /* Battery indicator */
@@ -526,11 +582,6 @@ p {
   .charging {
     margin: 0 3vw 0 auto;
   }
-}
-
-/* Mower heading compass */
-.compass {
-    margin: 3vw;
 }
 
 /* System messages log */

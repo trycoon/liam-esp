@@ -13,7 +13,6 @@
 #include "wheel_controller.h"
 #include "wheel.h"
 #include "cutter.h"
-#include "bwf.h"
 #include "battery.h"
 #include "gps.h"
 #include "sonar.h"
@@ -41,12 +40,11 @@ Wheel leftWheel(1, Definitions::LEFT_WHEEL_MOTOR_PIN, Definitions::LEFT_WHEEL_MO
 Wheel rightWheel(2, Definitions::RIGHT_WHEEL_MOTOR_PIN, Definitions::RIGHT_WHEEL_MOTOR_DIRECTION_PIN, Definitions::RIGHT_WHEEL_ODOMETER_PIN, Definitions::RIGHT_WHEEL_MOTOR_INVERTED, Definitions::RIGHT_WHEEL_MOTOR_SPEED);
 WheelController wheelController(leftWheel, rightWheel);
 Cutter cutter(io_analog);
-BWF bwf;
 GPS gps;
 Sonar sonar;
 Battery battery(io_analog, Wire);
 MowingSchedule mowingSchedule;
-Resources resources(wifi, wheelController, cutter, bwf, battery, gps, sonar, io_accelerometer, logstore, mowingSchedule);
+Resources resources(wifi, wheelController, cutter, battery, gps, sonar, io_accelerometer, logstore, mowingSchedule);
 StateController stateController(resources);
 Api api(stateController, resources);
 
@@ -94,7 +92,10 @@ void setup() {
   logstore.begin(115200);
   Log.begin(LOG_LEVEL_NOTICE, &logstore, true);
 
-  Log.notice("\n=== %s v%s ===\nbuild time: %s %s\n\n", Definitions::APP_NAME, Definitions::APP_VERSION, __DATE__, __TIME__);
+  esp_chip_info_t chip_info;
+  esp_chip_info(&chip_info);
+
+  Log.notice(F(CR "=== %s v%s ===\nbuild time: %s %s\nCPU: %dx%d MHz\nFlash: %d Bytes\nChip revision: %d\n=======================" CR CR), Definitions::APP_NAME, Definitions::APP_VERSION, __DATE__, __TIME__, chip_info.cores, ESP.getCpuFreqMHz(), ESP.getFlashChipSize(), chip_info.revision);
 
   Configuration::load();
   

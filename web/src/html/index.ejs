@@ -78,6 +78,7 @@
           </div>
         </section>
         <section class="section js-section js-section-manual" style="display: none">
+          <h2>Manual control</h2>
           <div class="state-control">
             <svg class="joystick" viewBox="0 0 100 100" preserveAspectRatio="xMaxYMax meet">
               <circle class="joypad" cx="50" cy="50" r="48" stroke="#1E90FF" stroke-width="1" fill="#0000FF55"/>
@@ -88,17 +89,25 @@
               <span class="js-stopmower button">Stop cutter</span>
             </div>
           </div>
-          <div class="center">
-            <canvas id="js-compass" class="compass"></canvas>
-          </div>
         </section>
         <section class="section js-section js-section-metrics" style="display: none">
-            <h2>Battery voltage (V)</h2>
-            <div id="battery-chart" class="ct-chart ct-minor-seventh"></div>
-            <h2>WiFi reception (dBm)</h2>
-            <div id="wifi-chart" class="ct-chart ct-minor-seventh"></div>
-            <h2>Cuttermotor load (%)</h2>
-            <div id="cutterload-chart" class="ct-chart ct-minor-seventh"></div>
+            <h2>Metrics</h2>
+            <details open>
+              <summary>Battery voltage (V)</summary>
+              <div id="battery-chart" class="ct-chart ct-minor-seventh"></div>
+            </details>
+            <details open>
+              <summary>WiFi reception (dBm)</summary>
+              <div id="wifi-chart" class="ct-chart ct-minor-seventh"></div>
+            </details>
+            <details>
+              <summary>Cuttermotor load (%)</summary>
+              <div id="cutterload-chart" class="ct-chart ct-minor-seventh"></div>
+            </details>
+            <details>
+              <summary>Memory (KiB)</summary>
+              <div id="memory-chart" class="ct-chart ct-minor-seventh"></div>
+            </details>
         </section>
         <section class="section js-section js-section-settings" style="display: none">
           <h2>Settings</h2>
@@ -174,11 +183,7 @@
               Application:&nbsp;<strong><span class="appName"></span></strong><br>
               Version:&nbsp;<strong><span class="appVersion"></span></strong><br>
               Mower Id:&nbsp;<strong><span class="mowerId"></span></strong><br>
-              Uptime:&nbsp;<span class="uptime"></span><br>
-              CPU frequency:&nbsp;<strong><span class="cpuFreq"></span></strong>&nbsp;MHz<br>
-              Flash chipsize:&nbsp;<strong><span class="flashChipSize"></span></strong>&nbsp;Bytes<br>
-              Chip revision:&nbsp;<strong><span class="chipRevision"></span></strong><br>
-              Free heap memory:&nbsp;<strong><span class="freeHeap"></span></strong>&nbsp;Bytes<br>
+              Uptime:&nbsp;<span class="uptime"></span><br>              
               Mower clock:&nbsp;<strong><span class="localTime"></span></strong><br>
               WiFi signal:&nbsp;<strong><span class="wifiSignal"></span></strong>
             </p>            
@@ -204,7 +209,7 @@
     <script src="https://use.fontawesome.com/releases/v5.3.1/js/all.js" integrity="sha384-kW+oWsYx3YpxvjtZjFXqazFpA7UP/MbiY4jvs+RWZo2+N94PFZ36T6TFkc9O3qoB" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.0/dist/jquery.min.js" integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartist@0.11.0/dist/chartist.min.js" integrity="sha256-UzffRueYhyZDw8Cj39UCnnggvBfa1fPcDQ0auvCbvCc=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-gauges@2.1.5/gauge.min.js" integrity="sha256-u/1Sn0WmBPoDlZD8Hvf3Jo5a4l3ijfIGD+1niV7s1Ec=" crossorigin="anonymous"></script>
+    <!--<script src="https://cdn.jsdelivr.net/npm/chartist-plugin-legend@0.6.2/chartist-plugin-legend.min.js"></script>-->
     <script src="https://cdn.jsdelivr.net/npm/three@0.103.0/build/three.min.js" integrity="sha256-T4lfPbatZLyNhpEgCvtmXmlhOUq0HZHkDX4cMlQWExA=" crossorigin="anonymous"></script>
     <script src="https://smart-home.rocks/liam/GLTFLoader.js"></script>
     <script src="https://smart-home.rocks/liam/DRACOLoader.js"></script>

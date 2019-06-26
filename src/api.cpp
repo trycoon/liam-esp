@@ -341,9 +341,6 @@ void Api::setupApi() {
       return request->send(401, "text/plain", "Unauthorized");
     }
 
-    esp_chip_info_t chip_info;
-    esp_chip_info(&chip_info);
-
     auto response = new AsyncJsonResponse();
     response->addHeader("Cache-Control", "no-store, must-revalidate");
     JsonObject& root = response->getRoot();
@@ -351,10 +348,10 @@ void Api::setupApi() {
     root["name"] = Definitions::APP_NAME;
     root["version"] = Definitions::APP_VERSION;
     root["mowerId"] = Configuration::config.mowerId;
-    root["cpuFreq"] = ESP.getCpuFreqMHz();
-    root["flashChipSize"] = ESP.getFlashChipSize();
-    root["chipRevision"] = chip_info.revision;
-    root["freeHeap"] = ESP.getFreeHeap();
+    root["totalHeap"] = ESP.getHeapSize();      // total heap size
+    root["freeHeap"] = ESP.getFreeHeap();       // available heap
+    root["minFreeHeap"] = ESP.getMinFreeHeap(); // lowest level of free heap we had since boot
+    root["getMaxAllocHeap"] = ESP.getMaxAllocHeap();   // largest block of heap that can be allocated at once (heap is usually fragmented, a large value indicated low fragmentation which is good)
     root["apiKey"] = Configuration::config.apiKey;
     root["localTime"] = resources.wifi.getTime();
     JsonObject& settings = root.createNestedObject("settings");

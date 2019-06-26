@@ -6,10 +6,6 @@ function renderInfo() {
     $('.js-section-info .appName').text(info.name);
     $('.js-section-info .appVersion').text(info.version);
     $('.js-section-info .mowerId').text(info.mowerId);
-    $('.js-section-info .cpuFreq').text(info.cpuFreq);
-    $('.js-section-info .flashChipSize').text(info.flashChipSize);
-    $('.js-section-info .chipRevision').text(info.chipRevision);
-    $('.js-section-info .freeHeap').text(info.freeHeap);
     $('.js-section-info .localTime').text(info.localTime);
 }
 

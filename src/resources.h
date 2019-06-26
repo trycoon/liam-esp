@@ -4,7 +4,6 @@
 #include "wifi.h"
 #include "wheel_controller.h"
 #include "cutter.h"
-#include "bwf.h"
 #include "battery.h"
 #include "gps.h"
 #include "sonar.h"
@@ -23,7 +22,6 @@ class Resources {
     Resources(WiFi_Client& wifi,
                            WheelController& wheelController,
                            Cutter& cutter,
-                           BWF& bwf,
                            Battery& battery,
                            GPS& gps,
                            Sonar& sonar,
@@ -33,7 +31,6 @@ class Resources {
                            : wifi(wifi),
                              wheelController(wheelController),
                              cutter(cutter),
-                             bwf(bwf),
                              battery(battery),
                              gps(gps),
                              sonar(sonar),
@@ -44,7 +41,6 @@ class Resources {
     WiFi_Client& wifi;
     WheelController& wheelController;
     Cutter& cutter;
-    BWF& bwf;
     Battery& battery;
     GPS& gps;
     Sonar& sonar;

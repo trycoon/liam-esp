@@ -8,20 +8,26 @@ let batteryChart,
     wifiData = [],
     cutterLoadChart,
     cutterLoadData = [],
-    batteryInterval,
-    batteryRequestInProgress;
+    memoryChart,
+    memoryHeapFree = [],
+    memoryMaxAllocHeap = [],
+    pollInterval,
+    requestInProgress;
 
-function getBatteryHistoryAndRender() {
-    if (batteryRequestInProgress) {
+// get metrics from REST-API by polling
+function getMetricsAndRender() {
+    if (requestInProgress) {
         return;
     }
 
-    batteryRequestInProgress = true;
+    requestInProgress = true;
 
-    api.getBatteryHistory()
-    .then(function(data) {
-        let values = data.samples.value,
-            times = data.samples.time;
+    $.when(
+        api.getBatteryHistory(),
+        api.getSystem()
+    ).done((battery, system) => {
+        let values = battery[0].samples.value,
+            times = battery[0].samples.time;
         // limit number of samples
         if (values.length > MAX_SAMPLES) {
             values = values.slice(-MAX_SAMPLES);
@@ -42,46 +48,68 @@ function getBatteryHistoryAndRender() {
                 data: batteryEmptyThreshold        
             }],
         });
+
+        liam.data.system = system[0];
+        // prevent chart from growing to infinity (consuming browser memory)
+        if (memoryHeapFree.length > MAX_SAMPLES) {
+            memoryHeapFree = memoryHeapFree.slice(-MAX_SAMPLES);
+        }
+        memoryHeapFree.push(Math.round(liam.data.system.freeHeap / 1024)); 
+
+        if (memoryMaxAllocHeap.length > MAX_SAMPLES) {
+            memoryMaxAllocHeap = memoryMaxAllocHeap.slice(-MAX_SAMPLES);
+        }
+        memoryMaxAllocHeap.push(Math.round(liam.data.system.getMaxAllocHeap / 1024));
+
+        memoryChart.update({
+            series: [{
+                name: 'memoryHeapFree',
+                data: memoryHeapFree        
+            },
+            {
+                name: 'memoryMaxAllocHeap',
+                data: memoryMaxAllocHeap        
+            }],
+        });
     })
     .catch(function(e) {
         console.error(e.message);
     })
     .always(() => {
-        batteryRequestInProgress = false;
+        requestInProgress = false;
     });
 }
 
-// Keep receiving and storing useful metrics, that we could display later
+// Keep receiving and storing useful metrics from Websocket
 function updatedStatus() {
     // prevent chart from growing to infinity (consuming browser memory)
     if (cutterLoadData.length > MAX_SAMPLES) {
         cutterLoadData = cutterLoadData.slice(-MAX_SAMPLES);
     }
-    if (wifiData.length > MAX_SAMPLES) {
-        wifiData = wifiData.slice(-MAX_SAMPLES);
-    }
-
     cutterLoadData.push(liam.data.status.cutterLoad);
-    wifiData.push(liam.data.status.wifiSignal);
-
     cutterLoadChart.update({
         series: [cutterLoadData],
     });
 
+    // prevent chart from growing to infinity (consuming browser memory)
+    if (wifiData.length > MAX_SAMPLES) {
+        wifiData = wifiData.slice(-MAX_SAMPLES);
+    }
+    wifiData.push(liam.data.status.wifiSignal);
     wifiChart.update({
         series: [wifiData],
     });
 }
 
 export function selected() {
-    getBatteryHistoryAndRender();
-    batteryInterval = setInterval(() => {
-        getBatteryHistoryAndRender();   // and keep on fetching updated battery status as long as the user view this tab
-    }, 5000);
+    getMetricsAndRender();
+    pollInterval = setInterval(() => {
+        getMetricsAndRender();   // and keep on fetching updated metrics as long as the user view this tab
+    }, 3000);
 }
 
 export function unselected() {
-    clearInterval(batteryInterval);
+    clearInterval(pollInterval);
 }
 
 export function init() {
@@ -148,6 +176,33 @@ export function init() {
         },
         showPoint: false,
         high: 100,
+        low: 0,
+    });
+
+    memoryChart = new Chartist.Line('#memory-chart', {
+        series: [{
+                name: 'memoryHeapFree',
+                data: memoryHeapFree        
+            },
+            {
+                name: 'memoryMaxAllocHeap',
+                data: memoryMaxAllocHeap        
+            }],
+    }, {
+        /*plugins: [
+            Chartist.plugins.legend({
+                legendNames: ['free', 'min free', 'max block'],
+                position: 'bottom'
+            })
+        ],*/
+        axisX: {
+            showGrid: false,
+        },
+        axisY: {
+            showLabel: true,
+        },
+        showPoint: false,
+        high: Math.round(liam.data.system.totalHeap / 1024),
         low: 0,
     });
 }

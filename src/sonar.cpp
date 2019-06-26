@@ -14,15 +14,15 @@ Sonar::Sonar() {
   // define available sensors...
   SonarDevice sonar1;
   sonar1.pin = Definitions::SONAR1_PIN;
-  sonars.push_back(sonar1);
+  //sonars.push_back(sonar1);
   /*SonarDevice sonar2;
   sonar2.pin = Definitions::SONAR2_PIN;
   sonars.push_back(sonar2);*/
   /*SonarDevice sonar3;
   sonar3.pin = Definitions::SONAR3_PIN;
   sonars.push_back(sonar3);*/
-  pinMode(digitalPinToInterrupt(23), INPUT);
-  attachInterrupt(digitalPinToInterrupt(23), std::bind(&Sonar::onPing, this), CHANGE);
+  //pinMode(digitalPinToInterrupt(23), INPUT);
+  //attachInterrupt(digitalPinToInterrupt(23), std::bind(&Sonar::onPing, this), CHANGE);
 }
 
 void Sonar::ping() {
@@ -120,5 +120,5 @@ uint16_t Sonar::getObstacleDistance(uint8_t sonar_nr) {
   
   portEXIT_CRITICAL(&mux);
 
-  return distance;
+  return 0;
 }

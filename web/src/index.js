@@ -67,8 +67,10 @@ function showSection(section) {
 
 function initialSetup() {
   // get initial settings and system information.
-  $.when(api.getSystem(), api.getStatus())
-  .done((system, status) => {
+  $.when(
+    api.getSystem(),
+    api.getStatus()
+  ).done((system, status) => {
     liam.data.system = system[0];
     liam.data.status = status[0];
 

@@ -344,9 +344,6 @@ components:
         rightWheelSpd:
           type: integer
           format: int16
-        targetHeading:
-          type: integer
-          format: uint16
         pitch:
           type: integer
           format: int16
@@ -355,6 +352,9 @@ components:
           format: int16
         heading:
           type: integer
+          format: uint16
+        obstacles:
+          type: array
           format: uint16
     System:
       type: object
@@ -365,18 +365,18 @@ components:
           type: string
         mowerId:
           type: string
-        cpuFreq:
-          type: integer
-          format: uint8
-        flashChipSize:
+        totalHeap:
           type: integer
           format: uint32
-        chipRevision:
-          type: integer
-          format: uint8
         freeHeap:
           type: integer
           format: uint32
+        minFreeHeap:
+          type: integer
+          format: uint32          
+        getMaxAllocHeap:
+          type: integer
+          format: uint32          
         apiKey:
           type: string
         localTime:
