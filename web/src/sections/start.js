@@ -281,18 +281,8 @@ function initModel3D(canvas) {
         mower3D.rotation.set(mower3D_perspectiveRotation, THREE.Math.degToRad(180), 0); // align mower with grid and in front-facing direction
         mower3D.scale.set (10, 10, 10);
 
-        // TODO: parenting between wheel and tire should be done when exporting model, not here.
         leftWheel = mower3D.getObjectByName('wheel_left');
         rightWheel = mower3D.getObjectByName('wheel_right');
-
-        let leftTire = mower3D.getObjectByName('tire_left');
-        let rightTire = mower3D.getObjectByName('tire_right');
-
-        attachModel(leftTire, mower3D, leftWheel);
-        attachModel(rightTire, mower3D, rightWheel);
-        // TODO: to get the tires back on the wheels. This should not need to be hardcoded.
-        leftTire.position.set(38,0,0);
-        rightTire.position.set(38,0,0);
 
         /*mower3D.traverse((o) => {
           if (o.isMesh) {
