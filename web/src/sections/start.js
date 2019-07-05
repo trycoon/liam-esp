@@ -1,8 +1,7 @@
 import * as api from '../api.js';
 import * as auth from '../authorisation.js';
 
-const GRID_TURN_RATE = 0.5,
-      sec = $('.js-section-start'),
+const sec = $('.js-section-start'),
       mower3D_perspectiveRotation = THREE.Math.degToRad(30);  // rotate 30⁰ to give better 3rd-person perspective
 
 let renderer3D,
@@ -263,8 +262,6 @@ function initModel3D(canvas) {
     grid3D.rotation.x = mower3D_perspectiveRotation;
     scene3D.add(grid3D);
 
-    //scene3D.fog = new THREE.Fog(0x72645b, 2, 100);
-
     //Loader for the model
     const loader = new THREE.GLTFLoader();
     const dracoLoader = new THREE.DRACOLoader();
@@ -283,13 +280,6 @@ function initModel3D(canvas) {
 
         leftWheel = mower3D.getObjectByName('wheel_left');
         rightWheel = mower3D.getObjectByName('wheel_right');
-
-        /*mower3D.traverse((o) => {
-          if (o.isMesh) {
-            //o.geometry.scale( -1, 1, 1 );
-            console.log(o.name);
-          }
-        });*/
 
         scene3D.add(mower3D);
  

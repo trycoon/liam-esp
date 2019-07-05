@@ -55,27 +55,27 @@ void GPS::start() {
   {
     lastTime = millis(); //Update the timer
 
-    /* Note: Long/lat are large numbers because they are * 10^7. To convert lat/long
-    to something google maps understands simply divide the numbers by 1,000,000. We
+    /* Note: Long/lat are large numbers because they are * 10^9. To convert lat/long
+    to something google maps understands simply divide the numbers by 100,000,000. We
     do this so that we don't have to use floating point numbers. */
-    long latitude = gps.getLatitude();
+    int32_t latitude = gps.getHighResLatitude();
     Serial.print(F("Lat: "));
     Serial.print(latitude);
 
-    long longitude = gps.getLongitude();
+    int32_t longitude = gps.getHighResLongitude();
     Serial.print(F(" Long: "));
     Serial.print(longitude);
 
-    long altitude = gps.getAltitude();
+    int32_t altitude = gps.getAltitude();
     Serial.print(F(" Alt: "));
     Serial.print(altitude);
 
-    long speed = gps.getGroundSpeed();
+    int32_t speed = gps.getGroundSpeed();
     Serial.print(F(" Speed: "));
     Serial.print(speed);
     Serial.print(F(" (mm/s)"));
 
-    long heading = gps.getHeading();
+    int32_t heading = gps.getHeading();
     Serial.print(F(" Heading: "));
     Serial.print(heading);
     Serial.print(F(" (degrees * 10^-5)"));
@@ -99,13 +99,18 @@ void GPS::start() {
     if (RTK == 2) Serial.print(F("High precision fix!"));
     Serial.println();
     
-    long accuracy = gps.getPositionAccuracy();
+    int32_t accuracy = gps.getPositionAccuracy();
     Serial.print(F(" 3D Positional Accuracy: "));
     Serial.print(accuracy);
     Serial.println(F("mm"));
 
-    // Denna skall vi använda sedan: https://github.com/sparkfun/SparkFun_Ublox_Arduino_Library/blob/master/examples/Example13_AutoPVT/Example13_AutoPVT.ino
+    uint32_t accuracy = gps.getHorizontalAccuracy();
+    Serial.print(F(" Horizontal accuracy: "));
+    Serial.print(accuracy);
+    Serial.println(F("mm"));
 
+    // Denna skall vi använda sedan: https://github.com/sparkfun/SparkFun_Ublox_Arduino_Library/blob/master/examples/Example13_AutoPVT/Example13_AutoPVT.ino
+    // https://github.com/sparkfun/SparkFun_Ublox_Arduino_Library/commit/63fb62ebd12c46c062d059c0fabe309f2d280098
   }
   }
 }
