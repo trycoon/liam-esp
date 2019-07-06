@@ -51,8 +51,11 @@
                 <span class="js-stop button" disabled>Emergency stop</span>
               </div>
           </div>
-          <div>
-            <canvas class="center model3D js-model3D"></canvas>
+          <div class="model3D_wrapper">
+            <canvas class="js-model3D model3D center"></canvas>
+            <div class="js-model3D-loader model3D-loader center">
+              <p class="js-loadertext">Loading...</p>
+            </div>
           </div>
           <div>
             <div style="display: -webkit-flex;display: flex" class="battery center">

@@ -273,6 +273,8 @@ function initModel3D(canvas) {
     loader.load('https://smart-home.rocks/liam/3d_mower.glb',
       // called when model has been loaded
       function (gltf) {    
+        document.querySelector('.js-model3D-loader').hidden = true;
+
         mower3D = gltf.scene;
         mower3D.position.set(0, 0, 1);
         mower3D.rotation.set(mower3D_perspectiveRotation, THREE.Math.degToRad(180), 0); // align mower with grid and in front-facing direction
@@ -293,12 +295,13 @@ function initModel3D(canvas) {
       // called when loading is in progresses
       function(xhr) {
         if ( xhr.lengthComputable ) {
-          console.info(`3D model, ${Math.round(xhr.loaded / xhr.total * 100, 2)}% loaded`);
+          document.querySelector('.js-loadertext').textContent = `${Math.round(xhr.loaded / xhr.total * 100, 2)}% loaded...`;
         }  
       },
       // called when loading has errors
-      function(error) {    
+      function(error) {
         console.warn('Failed to load 3D model. Stacktrace: ' + error.stack);
+        document.querySelector('.js-loadertext').textContent = 'failed to load model';
       }
     );
      

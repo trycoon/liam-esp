@@ -598,9 +598,24 @@ p {
 }
 
 /* 3D representation */
-.model3D {
-  display: block;
-  width: 100%;
+.model3D_wrapper {
+  position: relative;
+
+  .model3D {
+    position: absolute;
+    display: block;
+    width: 100%;
+  }
+  
+  .model3D-loader {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  
+    p {
+      font-size: 2em;
+    }
+  }
 }
 
 /* Mowing schedule */
