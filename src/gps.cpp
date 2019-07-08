@@ -104,9 +104,9 @@ void GPS::start() {
     Serial.print(accuracy);
     Serial.println(F("mm"));
 
-    uint32_t accuracy = gps.getHorizontalAccuracy();
+    uint32_t horizontalAccuracy = gps.getHorizontalAccuracy();
     Serial.print(F(" Horizontal accuracy: "));
-    Serial.print(accuracy);
+    Serial.print(horizontalAccuracy);
     Serial.println(F("mm"));
 
     // Denna skall vi använda sedan: https://github.com/sparkfun/SparkFun_Ublox_Arduino_Library/blob/master/examples/Example13_AutoPVT/Example13_AutoPVT.ino

@@ -598,7 +598,10 @@ void Api::setupApi() {
         return;
       }
       
-      resources.wheelController.forward(root["turnrate"], root["speed"], root["smooth"]);
+      // don't allow us to drive forward when we are already docked, this could damage mower or chargestation.
+      if (!resources.battery.isDocked()) {
+        resources.wheelController.forward(root["turnrate"], root["speed"], root["smooth"]);
+      }
 
       request->send(200);
     } else {

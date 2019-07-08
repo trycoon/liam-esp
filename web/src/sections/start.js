@@ -270,7 +270,7 @@ function initModel3D(canvas) {
     //dracoLoader.setVerbosity(1);  // Verbose console logging.
     loader.setDRACOLoader(dracoLoader);
 
-    loader.load('https://smart-home.rocks/liam/3d_mower.glb',
+    loader.load('https://smart-home.rocks/liam/3d_mower.glb?v=1',
       // called when model has been loaded
       function (gltf) {    
         document.querySelector('.js-model3D-loader').hidden = true;

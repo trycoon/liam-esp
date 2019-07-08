@@ -95,7 +95,7 @@ void setup() {
   esp_chip_info_t chip_info;
   esp_chip_info(&chip_info);
 
-  Log.notice(F(CR "=== %s v%s ===\nbuild time: %s %s\nCPU: %dx%d MHz\nFlash: %d Bytes\nChip revision: %d\n=======================" CR CR), Definitions::APP_NAME, Definitions::APP_VERSION, __DATE__, __TIME__, chip_info.cores, ESP.getCpuFreqMHz(), ESP.getFlashChipSize(), chip_info.revision);
+  Log.notice(F(CR "=== %s v%s ===\nbuild time: %s %s\nCPU: %dx%d MHz\nFlash: %d KiB\nChip revision: %d\n=======================" CR CR), Definitions::APP_NAME, Definitions::APP_VERSION, __DATE__, __TIME__, chip_info.cores, ESP.getCpuFreqMHz(), ESP.getFlashChipSize() / 1024, chip_info.revision);
 
   Configuration::load();
   

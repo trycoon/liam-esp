@@ -37,6 +37,10 @@ input:invalid {
   border: 2px dashed red;
 }
 
+figure {
+  margin: 0;
+}
+
 ol, ul {
     margin: 0;
     padding: 0;
@@ -681,6 +685,7 @@ p {
 /* Mower map */
 .map {
   display: block;
+  border: solid 1px;
   width: 100%;
   height: auto;
 }

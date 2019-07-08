@@ -17,6 +17,10 @@ void WheelController::forward(int8_t turnrate, uint8_t speed, bool smooth, uint3
   speed = constrain(speed, 0, 100);
   lastSpeed = 0;
 
+  if (speed > 0 && speed < Definitions::WHEEL_MOTOR_MIN_SPEED) {
+    speed = Definitions::WHEEL_MOTOR_MIN_SPEED;
+  }
+
   if (distance > 0) {
     auto currentOdometer = leftWheel.getOdometer(); // we only need to count on one wheel, since they always the same distance (but maybe in the opposite direction)
     targetOdometer = currentOdometer + distance * PULSE_PER_CENTIMETER;
@@ -28,11 +32,11 @@ void WheelController::forward(int8_t turnrate, uint8_t speed, bool smooth, uint3
   Log.trace(F("WheelController-forward, speed: %d, turnrate: %d, smooth: %d, distance: %d" CR), speed, turnrate, smooth, distance);
 
   if (turnrate < 0) {
-    leftWheel.setSpeed(speed + turnrate);
+    leftWheel.setSpeed(speed * (100 + turnrate) / 100);
     rightWheel.setSpeed(speed);
   } else if (turnrate > 0) {
     leftWheel.setSpeed(speed);
-    rightWheel.setSpeed(speed - turnrate);
+    rightWheel.setSpeed(speed * (100 - turnrate) / 100);
   } else {
     leftWheel.setSpeed(speed);
     rightWheel.setSpeed(speed);
@@ -44,6 +48,10 @@ void WheelController::backward(int8_t turnrate, uint8_t speed, bool smooth, uint
   speed = constrain(speed, 0, 100);
   lastSpeed = 0;
 
+  if (speed > 0 && speed < Definitions::WHEEL_MOTOR_MIN_SPEED) {
+    speed = Definitions::WHEEL_MOTOR_MIN_SPEED;
+  }
+  
   if (distance > 0) {
     auto currentOdometer = leftWheel.getOdometer(); // we only need to count on one wheel, since they always the same distance (but maybe in the opposite direction)
     targetOdometer = currentOdometer + distance * PULSE_PER_CENTIMETER;
@@ -55,11 +63,11 @@ void WheelController::backward(int8_t turnrate, uint8_t speed, bool smooth, uint
   Log.trace(F("WheelController-backward, speed: %d, turnrate: %d, smooth: %d, distance: %d" CR), speed, turnrate, smooth, distance);
 
   if (turnrate < 0) {
-    leftWheel.setSpeed(-speed - turnrate);
+    leftWheel.setSpeed(-speed * (100 + turnrate) / 100);
     rightWheel.setSpeed(-speed);
   } else if (turnrate > 0) {
     leftWheel.setSpeed(-speed);
-    rightWheel.setSpeed(-speed + turnrate);
+    rightWheel.setSpeed(-speed * (100 + turnrate) / 100);
   } else {
     leftWheel.setSpeed(-speed);
     rightWheel.setSpeed(-speed);

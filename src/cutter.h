@@ -21,8 +21,8 @@ class Cutter {
   private:
     const uint8_t cutter_id;
     IO_Analog& io_analog;
-    uint8_t cutterSpeed;
-    uint8_t load;
+    uint8_t cutterSpeed = 0;
+    uint8_t load = 0;
     void senseLoad();
     Ticker cutterLoadReadingTicker;
 };

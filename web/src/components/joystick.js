@@ -174,7 +174,7 @@ export class Joystick extends EventEmitter {
           this.emit('move', current);
           this.lastEmit = current;
          }
-       }, 100);
+       }, 50);
     }
    }
 
