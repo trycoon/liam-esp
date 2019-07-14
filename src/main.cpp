@@ -21,7 +21,7 @@
 #include "api.h"
 
 /*
- * Software for controlling a LIAM robotmower using a NodeMCU/ESP-32 (or similar ESP32) microcontroller.
+ * Software for controlling a LIAM robotmower using a ESP-32 microcontroller.
  * 
  * Congratulation, you have just found the starting point of the program!
  */

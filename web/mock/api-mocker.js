@@ -85,7 +85,7 @@ let proxy = {
   'GET /api/v1/history/battery': (req, res) => {
     if (isAuthenticated(req, res)) {
       return res.json({
-        samples: req.app.locals.mock.getBatterySamples()
+        samples: req.app.locals.mock.getBatterySamples(),
       });
     } else {
       res.sendStatus(401);
@@ -129,7 +129,7 @@ let proxy = {
   },
   'GET /api/v1/logmessages': (req, res) => {
     if (isAuthenticated(req, res)) {
-      return res.json(req.app.locals.mock.getLogmessages());
+      return res.json(req.app.locals.mock.getLogmessages(req.query.lastnr));
     } else {
       res.sendStatus(401);
     }

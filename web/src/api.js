@@ -149,8 +149,8 @@ export function getLoglevel() {
   return $.getJSON('/api/v1/loglevel');
 }
 
-export function getLogmessages() {
-  return $.getJSON('/api/v1/logmessages');
+export function getLogmessages(lastnr) {
+  return $.getJSON(`/api/v1/logmessages?lastnr=${lastnr || 0}`);
 }
 
 export function setLoglevel(level) {

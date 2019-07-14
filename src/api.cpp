@@ -353,7 +353,7 @@ void Api::setupApi() {
     root["minFreeHeap"] = ESP.getMinFreeHeap(); // lowest level of free heap we had since boot
     root["getMaxAllocHeap"] = ESP.getMaxAllocHeap();   // largest block of heap that can be allocated at once (heap is usually fragmented, a large value indicated low fragmentation which is good)
     root["apiKey"] = Configuration::config.apiKey;
-    root["localTime"] = resources.wifi.getTime();
+    root["localTime"] = Utils::getTime();
     JsonObject& settings = root.createNestedObject("settings");
     settings["batteryFullVoltage"] = Definitions::BATTERY_FULLY_CHARGED;
     settings["batteryEmptyVoltage"] = Definitions::BATTERY_EMPTY;
@@ -378,7 +378,7 @@ void Api::setupApi() {
     request->send(response);
   });
 
-  // respond to GET requests on URL /api/v1/logmessages
+  // respond to GET requests on URL /api/v1/logmessages?lastnr=<number>
   web_server.on("/api/v1/logmessages", HTTP_GET, [this](AsyncWebServerRequest *request) {
     if (!resources.wifi.isAuthenticated(request)) {
       return request->send(401, "text/plain", "Unauthorized");
@@ -388,14 +388,30 @@ void Api::setupApi() {
     response->addHeader("Cache-Control", "no-store, must-revalidate");
     JsonObject& root = response->getRoot();
    
-    JsonArray& loggmessages = root.createNestedArray("messages");
-    for (auto &line: resources.logStore.getLogMessages()) {
-      // ignore empty lines
-      if (line.length() > 0) {
-        loggmessages.add(line);
+    uint16_t lastnrParam = request->hasParam("lastnr") ? request->getParam("lastnr")->value().toInt() : 0;
+    uint16_t lastFoundMessageNr = lastnrParam;
+
+    JsonArray& logMessages = root.createNestedArray("messages");
+    auto logPage = resources.logStore.getLogMessages();
+
+    uint16_t nrLogPosts = 0;
+
+    for (auto &entry: logPage.messages) {
+      // don't return too big sets of log messages, to keep memory and network bandwidth down we only allow 20 messages at a time.
+      if (nrLogPosts >= 20) {
+        break;
+      }
+      // only return the messages we are interested in (later than the last one we received)
+      if (entry.id > lastnrParam) {
+        logMessages.add(entry.message);
+        lastFoundMessageNr = entry.id;
+        nrLogPosts++;
       }
     }
 
+    root["lastnr"] = lastFoundMessageNr;
+    root["total"] = logPage.total;
+    
     response->setLength();
     request->send(response);
   });

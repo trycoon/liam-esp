@@ -1,5 +1,8 @@
 import * as api from '../api.js';
-let interval, requestInProgress;
+let interval,
+    requestInProgress,
+    logmessages = [],
+    lastLogNr = 0;
 
 function renderInfo() {
     let info = liam.data.system;
@@ -18,13 +21,15 @@ function getSystemInfoAndRender() {
 
     $.when(
         api.getSystem(),
-        api.getLogmessages()
+        api.getLogmessages(lastLogNr)
     ).done((r1, r2) => {
         liam.data.system = r1[0];
         renderInfo();
 
-        let logmessages = r2[0].messages.join('\n');
-        $('#syslog').text(logmessages);
+        logmessages = logmessages.concat(r2[0].messages);
+        lastLogNr = r2[0].lastnr;
+
+        $('#syslog').text(logmessages.join('\n'));
     })
     .always(() => {
         requestInProgress = false;

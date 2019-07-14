@@ -180,9 +180,9 @@ module.exports = {
   setLoglevel: (level) => {
     loglevel = level;
   },
-  getLogmessages: () => {
+  getLogmessages: (lastnr) => {
     return {
-      messages: [
+      messages: lastnr == 8 ? [] : [
         'N: Gyro/accelerometer/compass init success.',
         'N: New state: DOCKED',
         'N: AP Started, AP SSID: "liam-esp", AP IPv4: 192.168.4.1',
@@ -192,6 +192,8 @@ module.exports = {
         'N: Connected to WiFi accesspoint "Stargate", using IP-address: 192.168.1.123 and MAC: 30:AE:A4:19:33:44',
         'N: Connected to the MQTT broker.',
       ],
+      lastnr: 8,
+      total: 8,
     };
   },
   setApiKey: (key) => {

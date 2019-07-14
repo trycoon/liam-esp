@@ -80,6 +80,14 @@ paths:
         - Debugging
       description: get current log messages. Old ones are removed when new ones arrives.
       operationId: getLogmessages
+      parameters:
+        - in: query
+          name: lastnr
+          schema:
+            type: integer
+            format: uint16
+          required: false
+          description: id of last message received, will fetch next XX messages after that. Zero or no parameter will pick from beginning.
       responses:
         '200':
           description: returns current log messages. New lines are marked with '\n'
@@ -424,7 +432,16 @@ components:
       type: object
       properties:
         messages:
-          type: string
+          type: array
+          description: log messages (max 20 per request)
+          items:
+            type: string
+        lastnr:
+          type: integer
+          format: uint16
+        total:
+          type: integer
+          format: uint16
     ForwardBackwardMotion:
       type: object
       properties:

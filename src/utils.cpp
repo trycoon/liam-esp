@@ -2,6 +2,10 @@
 #include "configuration.h"
 
 namespace Utils {
+    /**
+     * If ESP has synced its software clock with the NTP-servers, in other words can we get a correct time reading.
+     */
+    bool isTimeAvailable = false;
 
     /**
      * Generate a XX character long key/password of ASCII characters
@@ -35,5 +39,26 @@ namespace Utils {
         struct timeval tv;
         gettimeofday(&tv, NULL);
         return (tv.tv_sec * 1000LL + (tv.tv_usec / 1000LL));
+    }
+
+    /**
+     * Get current date/time as a string
+     * @param format e.g. "%d %b %Y, %H:%M:%S%z"
+     * @param timeout for how many milliseconds we try to obtain time
+     */
+    String getTime(String format, uint32_t timeout) {
+        struct tm timeinfo;
+
+        if (!getLocalTime(&timeinfo, timeout)) {
+            isTimeAvailable = false;
+            return F("Failed to obtain time");
+        }
+
+        isTimeAvailable = true;
+
+        char outstr[80];
+        strftime(outstr, sizeof(outstr), format.c_str(), &timeinfo); // ISO 8601 time
+
+        return String(outstr);
     }
 }

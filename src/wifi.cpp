@@ -132,19 +132,6 @@ void WiFi_Client::saveAuthenticatedSessions() {
   Configuration::preferences.putString("authSessions", jsonString);
 }
 
-String WiFi_Client::getTime() {
-  struct tm timeinfo;
-
-  if (!getLocalTime(&timeinfo, 5000)) { // tries for 5000 ms
-    return F("Failed to obtain time");
-  }
-
-  char outstr[80];
-  strftime(outstr, sizeof(outstr), "%d %b %Y, %H:%M:%S%z", &timeinfo); // ISO 8601 time
-
-  return String(outstr);
-}
-
 // WiFi status eventhandler, called upon when WiFi connection change status.
 void WiFi_Client::WiFiEvent(WiFiEvent_t event, WiFiEventInfo_t info) {
   Log.trace(F("[WiFi-event] event: %d" CR), event);
@@ -495,7 +482,7 @@ void WiFi_Client::onWifiConnect(WiFiEvent_t event, WiFiEventInfo_t info) {
 
   // Get time from NTP server.
   configTime(Configuration::config.gmt.toInt() * 3600, 1 * 3600, Configuration::config.ntpServer.c_str()); // second parameter is daylight offset (3600 = summertime)
-  Log.notice("Time: %s" CR, getTime().c_str());
+  Log.notice("Time: %s" CR, Utils::getTime("%d %b %Y, %H:%M:%S%z").c_str());
 
   if (isMQTT_enabled()) {
     connectToMqtt();

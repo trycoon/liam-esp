@@ -44,7 +44,6 @@ class WiFi_Client : public Processable {
     void removeAuthenticatedSession(AsyncWebServerRequest *request);
     void sendDataWebSocket(String msgType, JsonObject& json, AsyncWebSocketClient* client = nullptr);
     void registerMqttMessageCallback(const cb_mqttMessage &cb);
-    String getTime();
     
     /* Internal use only! */
     void process();

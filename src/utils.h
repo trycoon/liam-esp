@@ -10,23 +10,17 @@
 */
 namespace Utils {
 
+  extern bool isTimeAvailable;
+
   extern String generateKey(uint8_t length);
   extern String uint64String(uint64_t value, uint8_t base = 10);
   extern int64_t getEpocTime();
-  
-  template <typename Cont, typename Pred>
-  extern Cont filter(const Cont &container, Pred predicate);
+  extern String getTime(String format = "%d %b %Y, %H:%M:%S%z", uint32_t timeout = 5000);
 
-  /**
-   * Filter data structure using predicate
-   * e.g. std::vector<int> myVec = {1,4,7,8,9,0}; auto filteredVec = filter(myVec, [](int a) { return a > 5; });
-   */
-  template <typename Cont, typename Pred>
-  Cont filter(const Cont &container, Pred predicate) {
-      Cont result;
-      std::copy_if(container.begin(), container.end(), std::back_inserter(result), predicate);
-      return result;
-  }
+  template<typename T>
+  extern T calculateMedian(std::vector<T> entries);
+  template<typename T, size_t size>
+  extern T calculateMedian(T(&entries)[size]);
   
   /**
    * Get median value from an list of values
