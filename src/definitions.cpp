@@ -55,12 +55,13 @@ namespace Definitions
   /*
     Cutter settings
   */
-  const uint8_t CUTTER_MOTOR_PIN = 32;   // Pin to PWM-control motor.
-  const uint8_t CUTTER_BRAKE_PIN = 33;   // Pin for braking cutter motor.
-  const uint8_t CUTTER_LOAD_PIN = 36;    // Pin on ADC for measuring cutter motor load.
+  const uint8_t CUTTER_MOTOR_PIN = 32;     // Pin to PWM-control motor.
+  const uint8_t CUTTER_BRAKE_PIN = 33;     // Pin for braking cutter motor.
+  const uint8_t CUTTER_LOAD_PIN = 36;      // Pin on ADC for measuring cutter motor load.
   const float CUTTER_LOAD_RESISTOR_MULTIPLIER = 20.0f/170.0f;   // Setting of RV3-trim resistor divided by size of RV3-trim resistor, e.g. 20/170 (kilo ohm). This is to read the correct cutter load.
-  const float CUTTER_LOAD_MAXVALUE = 800;// Max value of cutter load, milliamperes when cutter motor has almost stalled. (used to calculate cutter load percentage)
-  const uint8_t CUTTER_MAX_SPEED = 100;  // 0-100 (%), lower this value if cutter spinning too fast.
+  const float CUTTER_NOLOAD_CURRENT = 310; // Milliampere of cutter motor when no load is applied, see motor specs for no-load current. (used to calculate cutter load percentage)
+  const float CUTTER_MAX_CURRENT = 3100;   // Max milliampere of cutter motor, see motor specs for stall current. (used to calculate cutter load percentage)
+  const uint8_t CUTTER_MAX_SPEED = 100;    // 0-100 (%), lower this value if cutter spinning too fast.
   // When the load on the cuttor motor surpasses this limit, the cutter is working too hard cutting the grass (and we should reduce speed of wheels to compensate).
   const uint16_t CUTTER_LOAD_THRESHOLD = 1000;
 

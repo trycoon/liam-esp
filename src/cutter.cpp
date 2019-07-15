@@ -60,7 +60,9 @@ bool Cutter::isCutting() {
 
 void Cutter::senseLoad() {
   auto adc_reading = io_analog.getVoltage(Definitions::CUTTER_LOAD_PIN);
-  load = round((adc_reading * Definitions::CUTTER_LOAD_RESISTOR_MULTIPLIER) / Definitions::CUTTER_LOAD_MAXVALUE * 100);
+
+  load = round((adc_reading * Definitions::CUTTER_LOAD_RESISTOR_MULTIPLIER - Definitions::CUTTER_NOLOAD_CURRENT) / (Definitions::CUTTER_MAX_CURRENT - Definitions::CUTTER_NOLOAD_CURRENT) * 100);
+
   // make sure we stay within percentage boundaries.
   if (load < 0) {
     load = 0;
