@@ -22,6 +22,7 @@ void Api::statusToJson(statusResponse& obj, JsonObject& json) {
     json["state"] = obj.state;
     json["batteryVoltage"] = obj.batteryVoltage;
     json["batteryLevel"] = obj.batteryLevel;
+    json["batteryChargeCurrent"] = obj.batteryChargeCurrent;
     json["isCharging"] = obj.isCharging;
     json["lastFullyChargeTime"] = obj.lastFullyChargeTime;
     json["lastChargeDuration"] = obj.lastChargeDuration;
@@ -56,6 +57,10 @@ void Api::collectAndPushNewStatus() {
   }
   if (currentStatus.batteryLevel != resources.battery.getBatteryStatus()) {
     currentStatus.batteryLevel = resources.battery.getBatteryStatus();
+    statusChanged = true;
+  }
+  if (currentStatus.batteryChargeCurrent != resources.battery.getChargeCurrent()) {
+    currentStatus.batteryChargeCurrent = resources.battery.getChargeCurrent();
     statusChanged = true;
   }
   if (currentStatus.isCharging != resources.battery.isCharging()) {

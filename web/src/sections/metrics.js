@@ -11,6 +11,8 @@ let batteryChart,
     memoryChart,
     memoryHeapFree = [],
     memoryMaxAllocHeap = [],
+    batteryChargeChart,
+    batteryChargeData = [],
     pollInterval,
     requestInProgress;
 
@@ -99,6 +101,15 @@ function updatedStatus() {
     wifiChart.update({
         series: [wifiData],
     });
+
+    // prevent chart from growing to infinity (consuming browser memory)
+    if (batteryChargeData.length > MAX_SAMPLES) {
+        batteryChargeData = batteryChargeData.slice(-MAX_SAMPLES);
+    }
+    batteryChargeData.push(liam.data.status.batteryChargeCurrent);
+    batteryChargeChart.update({
+        series: [batteryChargeData],
+    });
 }
 
 export function selected() {
@@ -113,8 +124,6 @@ export function unselected() {
 }
 
 export function init() {
-
-    window.addEventListener('statusUpdated', updatedStatus);
 
     batteryFullThreshold.fill(liam.data.system.settings.batteryFullVoltage);
     batteryEmptyThreshold.fill(liam.data.system.settings.batteryEmptyVoltage);
@@ -205,4 +214,19 @@ export function init() {
         high: Math.round(liam.data.system.totalHeap / 1024),
         low: 0,
     });
+
+    batteryChargeChart = new Chartist.Line('#battery-charge-chart', {
+        series: [batteryChargeData],
+    }, {
+        axisX: {
+            showGrid: false,
+        },
+        axisY: {
+            showLabel: true,
+        },
+        showPoint: false,
+    });
+
+    window.addEventListener('statusUpdated', updatedStatus);
+    updatedStatus();
 }

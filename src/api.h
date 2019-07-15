@@ -12,6 +12,7 @@
 struct statusResponse {
   const char* state;
   float batteryVoltage;
+  float batteryChargeCurrent;
   float batteryLevel;
   bool isCharging;
   uint32_t lastFullyChargeTime;

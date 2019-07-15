@@ -38,9 +38,11 @@ void Battery::updateBatteryVoltage() {
   if (batterySamples.size() >= MAX_SAMPLES) {
     batterySamples.pop_front();
   }
-  batterySample sample;
-  sample.time = Utils::getEpocTime();
-  sample.batteryVoltage = batteryVoltage;
+  batterySample sample = {
+    time: Utils::getEpocTime(),
+    batteryVoltage: batteryVoltage
+  };
+
   batterySamples.push_back(sample);
 }
 
@@ -67,10 +69,10 @@ void Battery::updateChargeCurrent() {
     
     if (_isFullyCharged) {
       Log.notice("Done charging battery." CR);
-      auto currMillis = Utils::getEpocTime();
-      Configuration::config.lastFullyChargeTime = currMillis;
+      auto currEpocSeconds = Utils::getEpocTime();
+      Configuration::config.lastFullyChargeTime = currEpocSeconds;
       if (Configuration::config.startChargeTime > 0) {
-        Configuration::config.lastChargeDuration = currMillis - Configuration::config.startChargeTime;
+        Configuration::config.lastChargeDuration = currEpocSeconds - Configuration::config.startChargeTime;
       }
     } else {
       Log.notice("Charging of battery was aborted." CR);
@@ -85,6 +87,11 @@ void Battery::updateChargeCurrent() {
 
 float Battery::getBatteryVoltage() const {
   return batteryVoltage;
+}
+
+float Battery::getChargeCurrent() const {
+  // don't bother reporting stray-current when there is no charging going on.
+  return lastChargeCurrentReading > 1.0 ? lastChargeCurrentReading : 0;
 }
 
 /*

@@ -19,6 +19,7 @@ class Battery {
   public:
     Battery(IO_Analog& io_analog, TwoWire& w);
     float getBatteryVoltage() const;
+    float getChargeCurrent() const;
     uint8_t getBatteryStatus() const;
     uint32_t getLastFullyChargeTime() const;
     uint32_t getLastChargeDuration() const;

@@ -1,6 +1,7 @@
 #include "log_store.h"
 #include "utils.h"
 
+// https://github.com/espressif/arduino-esp32/blob/master/libraries/SPIFFS/examples/SPIFFS_time/SPIFFS_time.ino
 
 /**
  * Lowlevel class for writing log messages to serial output, but also to store them for later retreival with method getLogmessages.

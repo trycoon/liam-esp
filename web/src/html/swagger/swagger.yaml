@@ -327,6 +327,9 @@ components:
         batteryLevel:
           type: number
           format: float
+        batteryChargeCurrent:
+          type: number
+          format: float
         isCharging:
           type: boolean
         lastFullyChargeTime:
