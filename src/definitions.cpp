@@ -42,7 +42,7 @@ namespace Definitions
 
   const uint8_t WHEEL_MOTOR_MIN_SPEED = 20;    // 0-100 (%), set the minimum speed that the wheel motors should use. This is used in combination with e.g. WHEEL_MOTOR_DECREASE_SPEED_AT_CUTTER_LOAD.
   const uint8_t WHEEL_MOTOR_TURN_SPEED = 50;   // 0-100 (%), speed to use when turning.
-  const bool WHEEL_MOTOR_DECREASE_SPEED_AT_CUTTER_LOAD = false; // reduce forward movement of mower when there is a high load on cutter (like high grass)
+  const bool WHEEL_MOTOR_DECREASE_SPEED_AT_CUTTER_LOAD = true;  // reduce forward movement of mower when there is a high load on cutter (like high grass)
   const uint16_t WHEEL_ODOMETERPULSES_PER_ROTATION = 90;        // number of odometer pulses from motor that equals a full rotation of the shaft (check with motor manufacturer).
   const uint8_t WHEEL_DIAMETER = 190;     // in millimeter
   const uint8_t WHEEL_PAIR_DISTANCE = 27; // distance meassured between the wheel pairs, in centimeter
@@ -59,6 +59,7 @@ namespace Definitions
   const uint8_t CUTTER_BRAKE_PIN = 33;   // Pin for braking cutter motor.
   const uint8_t CUTTER_LOAD_PIN = 36;    // Pin on ADC for measuring cutter motor load.
   const float CUTTER_LOAD_RESISTOR_MULTIPLIER = 20.0f/170.0f;   // Setting of RV3-trim resistor divided by size of RV3-trim resistor, e.g. 20/170 (kilo ohm). This is to read the correct cutter load.
+  const float CUTTER_LOAD_MAXVALUE = 800;// Max value of cutter load, milliamperes when cutter motor has almost stalled. (used to calculate cutter load percentage)
   const uint8_t CUTTER_MAX_SPEED = 100;  // 0-100 (%), lower this value if cutter spinning too fast.
   // When the load on the cuttor motor surpasses this limit, the cutter is working too hard cutting the grass (and we should reduce speed of wheels to compensate).
   const uint16_t CUTTER_LOAD_THRESHOLD = 1000;

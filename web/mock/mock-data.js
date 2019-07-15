@@ -45,6 +45,8 @@ module.exports = {
     let state = JSON.parse(JSON.stringify(currentState));   // deep copy, don't affect original.
     state.batteryVoltage = Math.floor(Math.random() * (16.8 - 14.0 + 1)) + 14.0;
     state.batteryLevel = Math.round(Math.random() * 100);
+    state.batteryChargeCurrent = 0.0;
+
     state.cutterLoad = Math.round(Math.random() * 100);
     state.heading = Math.floor(Math.random() * 90) - 45;
 
