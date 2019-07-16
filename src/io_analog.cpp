@@ -4,10 +4,7 @@
 #include "definitions.h"
 #include "esp32-hal-adc.h"
 
-// ADS1115 external I2C ADC:
-// http://arduinotronics.blogspot.se/2015/05/reading-current-shunt-with-arduino.html
-// https://learn.adafruit.com/adafruit-4-channel-adc-breakouts/programming
-// http://henrysbench.capnfatz.com/henrys-bench/arduino-voltage-measurements/arduino-ads1115-module-getting-started-tutorial/
+// Shunt sizing:
 // https://www.spiria.com/en/blog/iot-m2m-embedded-solutions/measuring-small-currents-adc
 
 // ESP32 ADC information and issues:

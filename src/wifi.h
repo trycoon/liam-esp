@@ -38,6 +38,7 @@ class WiFi_Client : public Processable {
     void publish_mqtt(std::string message, std::string subtopic = "");
     AsyncWebServer& getWebServer();  // code-smell, we should think of a better way than to expose this inner reference when we need to register routes!
     AsyncWebSocket& getWebSocketServer();  // code-smell, we should think of a better way than to expose this inner reference when we need to register routes!
+    size_t getConnectedWebsocketClientsCount();
     bool isAuthenticated(AsyncWebServerRequest *request);
     bool isAuthenticatedSession(AsyncWebServerRequest *request);
     String authenticateSession(String username, String password);

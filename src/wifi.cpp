@@ -395,7 +395,7 @@ void WiFi_Client::setupWebServer() {
 	    } else if (Configuration::config.ssid.length() == 0) {
         request->redirect("/setup");
       } else {
-		    request->send(404);
+		    request->send(404, "text/plain", "Resource not found.");
 	    }
     });
 
@@ -412,12 +412,20 @@ void WiFi_Client::setupWebServer() {
     }
 
     if (Configuration::config.ssid.length() > 0) {
+      // serve index.html without cache-header
       web_server
       .serveStatic("/", SPIFFS, "/")
       .setDefaultFile("index.html")
+      .setCacheControl("no-cache")
+      .setFilter([](AsyncWebServerRequest *request) {
+        // match ON_STA_FILTER and index-file
+        return WiFi.localIP() == request->client()->localIP() && (request->url() == "/" || request->url() == "/index.html");
+      });
+      // serve all other files with cache-header
+      web_server
+      .serveStatic("/", SPIFFS, "/")
       .setCacheControl("max-age=2592000") // 30 days.
       .setFilter(ON_STA_FILTER);
-      //.setAuthentication(Configuration::config.username.c_str(), Configuration::config.password.c_str());
     }
 
     // Start web server.
@@ -610,6 +618,17 @@ void WiFi_Client::sendDataWebSocket(String msgType, JsonObject& json, AsyncWebSo
 
 AsyncWebSocket& WiFi_Client::getWebSocketServer() {
   return ws;
+}
+
+/**
+ * Get number of clients currently connected using websocket.
+ */
+size_t WiFi_Client::getConnectedWebsocketClientsCount() {
+  if (!WiFi.isConnected()) {
+    return 0;
+  }
+  
+  return ws.count();
 }
 
 /**

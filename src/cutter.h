@@ -14,7 +14,7 @@ class Cutter {
     Cutter(IO_Analog& io_analog);
     ~Cutter();
     void start();
-    void stop(bool brake);
+    void stop(bool brake = true);
     bool isCutting();
     uint8_t getLoad();
 
