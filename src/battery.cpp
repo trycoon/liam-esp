@@ -5,15 +5,17 @@
 #include "configuration.h"
 #include "utils.h"
 
-Battery::Battery(IO_Analog& io_analog, TwoWire& w) : io_analog(io_analog), wire(w), lastChargeCurrentReading(0), currentMedian(11, 0), currentMedianIndex(0) {}
+Battery::Battery(IO_Analog& io_analog, TwoWire& w) : io_analog(io_analog), wire(w), lastChargeCurrentReading(0) {}
 
 void Battery::start() {
+  
   ina219.begin(&wire);
   
   // Set initial state.
-  for (auto i __attribute__((unused)): currentMedian) {
+  for (auto i = 0; i < CURRENT_MEDIAN_SAMPLES; i++) {
     updateChargeCurrent();
   }
+
   updateBatteryVoltage();
   Log.trace("Battery voltage: %F volt, charge current: %F mA" CR, batteryVoltage, lastChargeCurrentReading);
 
@@ -28,6 +30,7 @@ void Battery::start() {
 }
 
 void Battery::updateBatteryVoltage() {
+
   float adc_reading = io_analog.getVoltage(Definitions::BATTERY_SENSOR_PIN);
   batteryVoltage = roundf((adc_reading * Definitions::BATTERY_MULTIPLIER) * 100) / 100;  // adjust reading and round to two decimals.
 
@@ -47,10 +50,11 @@ void Battery::updateBatteryVoltage() {
 }
 
 void Battery::updateChargeCurrent() {
+
   auto chargeCurrent = ina219.getCurrent_mA();
   _isDocked = ina219.getBusVoltage_V() > 5;
 
-  currentMedian[currentMedianIndex++%currentMedian.size()] = chargeCurrent;  // enter new reading into array.
+  currentMedian[currentMedianIndex++ % CURRENT_MEDIAN_SAMPLES] = chargeCurrent;  // enter new reading into array.
   // we can get some missreadings (1475.10) from time to time, so we record samples to an array an take the median value to filter out all noice.
   chargeCurrent = Utils::calculateMedian<float>(currentMedian);
 
@@ -98,6 +102,7 @@ float Battery::getChargeCurrent() const {
 * Get battery status in percent, 100% = fully charged.
 */
 uint8_t Battery::getBatteryStatus() const {
+
   auto level = round((batteryVoltage - Definitions::BATTERY_EMPTY) / (Definitions::BATTERY_FULLY_CHARGED - Definitions::BATTERY_EMPTY) * 100);
   if (level < 0) {
     level = 0;

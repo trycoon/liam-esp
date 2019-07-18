@@ -25,15 +25,23 @@ class IO_Accelerometer {
     // Use an compass for reference.
     float DECLINATION = -50.0f; // Declination (degrees) in Gotland, SE.
 
+    // How many samples should we take to calculate a median value for the gyro/accelerometer/compass. Don't fiddle with this unless needed.
+    const static uint8_t GYRO_MEDIAN_SAMPLES = 5;
+
     LSM9DS1 imu;
     TwoWire& _Wire;
     Ticker sensorReadingTicker;
     orientation currentOrientation;
-    uint16_t ax_sample[5] = {0, 0, 0, 0, 0};
-    uint16_t ay_sample[5] = {0, 0, 0, 0, 0};
-    uint16_t az_sample[5] = {0, 0, 0, 0, 0};
-    uint16_t mx_sample[5] = {0, 0, 0, 0, 0};
-    uint16_t my_sample[5] = {0, 0, 0, 0, 0};
+
+    // All these arrays NEEDS to be of the same size and type!
+    int16_t ax_sample[GYRO_MEDIAN_SAMPLES] = {0};
+    int16_t ay_sample[GYRO_MEDIAN_SAMPLES] = {0};
+    int16_t az_sample[GYRO_MEDIAN_SAMPLES] = {0};
+    int16_t mx_sample[GYRO_MEDIAN_SAMPLES] = {0};
+    int16_t my_sample[GYRO_MEDIAN_SAMPLES] = {0};
+
+    uint8_t medianIndex = 0;
+
     bool available = false;
     void getReadings();
 };

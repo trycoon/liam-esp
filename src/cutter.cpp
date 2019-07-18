@@ -1,6 +1,7 @@
 #include <ArduinoLog.h>
 #include "cutter.h"
 #include "definitions.h"
+#include "utils.h"
 
 Cutter::Cutter(IO_Analog& io_analog) : cutter_id(3), io_analog(io_analog), cutterSpeed(0) {
   pinMode(Definitions::CUTTER_MOTOR_PIN, OUTPUT);
@@ -59,16 +60,21 @@ bool Cutter::isCutting() {
 }
 
 void Cutter::senseLoad() {
-  auto adc_reading = io_analog.getVoltage(Definitions::CUTTER_LOAD_PIN);
 
-  load = round((adc_reading * Definitions::CUTTER_LOAD_RESISTOR_MULTIPLIER - Definitions::CUTTER_NOLOAD_CURRENT) / (Definitions::CUTTER_MAX_CURRENT - Definitions::CUTTER_NOLOAD_CURRENT) * 100);
+  auto current = round(io_analog.getVoltage(Definitions::CUTTER_LOAD_PIN) / Definitions::CUTTER_LOAD_RESISTOR * 1000); // 1000 for converting ampere to milliampere
+  auto newLoad = round((current - Definitions::CUTTER_NOLOAD_CURRENT) / (Definitions::CUTTER_MAX_CURRENT - Definitions::CUTTER_NOLOAD_CURRENT) * 100);
 
   // make sure we stay within percentage boundaries.
-  if (load < 0) {
-    load = 0;
-  } else if (load > 100) {
-    load = 100;
+  if (newLoad < 0) {
+    newLoad = 0;
+  } else if (newLoad > 100) {
+    newLoad = 100;
   }
+
+  loadMedian[loadMedianIndex++ % LOAD_MEDIAN_SAMPLES] = newLoad;  // enter new reading into array.
+  load = Utils::calculateMedian<uint8_t>(loadMedian);
+  
+  //Log.notice("%F mA, %d%%" CR, current, load);
 }
 
 uint8_t Cutter::getLoad() {

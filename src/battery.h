@@ -6,7 +6,6 @@
 #include <Ticker.h>
 #include <Wire.h>
 #include <deque>
-#include <vector>
 #include <Adafruit_INA219.h>
 #include "io_analog.h"
 
@@ -32,8 +31,10 @@ class Battery {
 
   private:
     static const uint16_t MAX_SAMPLES = 100;   // How much history are we going to keep? set too high will consume excessive memory and we may get out-of-memory related errors.
-    static const uint16_t BATTERY_CHARGECURRENT_DELAY = 100; // milliseconds
-    static const uint16_t BATTERY_VOLTAGE_DELAY = 20;  // seconds
+    static const uint16_t BATTERY_CHARGECURRENT_DELAY = 100; // Read charge current every XXX milliseconds.
+    static const uint16_t BATTERY_VOLTAGE_DELAY = 20;        // Read battery voltage every XXX seconds.
+    static const uint8_t CURRENT_MEDIAN_SAMPLES = 11;         // How many samples should we take to calculate a median value for charge current. Don't fiddle with this unless needed.
+
     IO_Analog& io_analog;
     TwoWire& wire;
     Adafruit_INA219 ina219;
@@ -43,8 +44,8 @@ class Battery {
     bool _isCharging;
     bool _needRecharge;
     bool _isFullyCharged;
-    std::vector<float> currentMedian;
-    uint8_t currentMedianIndex;
+    float currentMedian[CURRENT_MEDIAN_SAMPLES] = {0};
+    uint8_t currentMedianIndex = 0;
     void updateBatteryVoltage();
     void updateChargeCurrent();
     Ticker batteryVoltageTicker;

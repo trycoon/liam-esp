@@ -19,10 +19,14 @@ class Cutter {
     uint8_t getLoad();
 
   private:
+    static const uint8_t LOAD_MEDIAN_SAMPLES = 5; // How many samples should we take to calculate a median value for cutter load. Don't fiddle with this unless needed.
+
     const uint8_t cutter_id;
     IO_Analog& io_analog;
     uint8_t cutterSpeed = 0;
     uint8_t load = 0;
+    uint8_t loadMedian[LOAD_MEDIAN_SAMPLES] = {0};
+    uint8_t loadMedianIndex = 0;
     void senseLoad();
     Ticker cutterLoadReadingTicker;
 };

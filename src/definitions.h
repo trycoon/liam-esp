@@ -48,7 +48,7 @@ namespace Definitions {
   extern const uint8_t CUTTER_MOTOR_PIN;
   extern const uint8_t CUTTER_BRAKE_PIN;
   extern const uint8_t CUTTER_LOAD_PIN;
-  extern const float CUTTER_LOAD_RESISTOR_MULTIPLIER;
+  extern const uint16_t CUTTER_LOAD_RESISTOR;
   extern const float CUTTER_NOLOAD_CURRENT;
   extern const float CUTTER_MAX_CURRENT;
   extern const uint8_t CUTTER_MAX_SPEED;

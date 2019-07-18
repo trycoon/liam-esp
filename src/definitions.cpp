@@ -24,7 +24,7 @@ namespace Definitions
     Accelerometer/Gyro/Compass
   */
   const uint8_t TILT_ANGLE_MAX = 30;    // Max angle (degrees) the mower is allowed to tilt, going above this value will stop mower and enter FLIPPED-state. This is a safety setting!
-
+  
   /*
     Wheel motor settings
   */
@@ -58,12 +58,12 @@ namespace Definitions
   const uint8_t CUTTER_MOTOR_PIN = 32;     // Pin to PWM-control motor.
   const uint8_t CUTTER_BRAKE_PIN = 33;     // Pin for braking cutter motor.
   const uint8_t CUTTER_LOAD_PIN = 36;      // Pin on ADC for measuring cutter motor load.
-  const float CUTTER_LOAD_RESISTOR_MULTIPLIER = 20.0f/170.0f;   // Setting of RV3-trim resistor divided by size of RV3-trim resistor, e.g. 20/170 (kilo ohm). This is to read the correct cutter load.
-  const float CUTTER_NOLOAD_CURRENT = 310; // Milliampere of cutter motor when no load is applied, see motor specs for no-load current. (used to calculate cutter load percentage)
+  const uint16_t CUTTER_LOAD_RESISTOR = 1; // Size of shunt resistor connected in serial with cutter motor, in Ohm.
+  const float CUTTER_NOLOAD_CURRENT = 200; // Milliampere of cutter motor when no load is applied, see motor specs for no-load current or find a suitable value yourself. (used for calculating cutter load percentage)
   const float CUTTER_MAX_CURRENT = 3100;   // Max milliampere of cutter motor, see motor specs for stall current. (used to calculate cutter load percentage)
   const uint8_t CUTTER_MAX_SPEED = 100;    // 0-100 (%), lower this value if cutter spinning too fast.
-  // When the load on the cuttor motor surpasses this limit, the cutter is working too hard cutting the grass (and we should reduce speed of wheels to compensate).
-  const uint16_t CUTTER_LOAD_THRESHOLD = 1000;
+  // When the load on the cutter motor surpasses this limit, the cutter is working too hard cutting the grass (and we should reduce speed of wheels to compensate).
+  const uint16_t CUTTER_LOAD_THRESHOLD = 80;
 
   /*
     Battery settings
