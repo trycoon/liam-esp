@@ -8,6 +8,7 @@
 
 struct logmessage {
   uint16_t id;
+  
   String message;
 };
 
@@ -25,9 +26,8 @@ class LogStore : public HardwareSerial {
 
   private:
     std::deque<logmessage> log_messages;
-    uint32_t current_linenumber;
     String current_line;
-    uint16_t current_lastnr;
+    uint16_t current_lastnr = 0;
     void writeInternal(uint8_t c);
 };
 

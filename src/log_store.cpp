@@ -6,7 +6,7 @@
 /**
  * Lowlevel class for writing log messages to serial output, but also to store them for later retreival with method getLogmessages.
  */
-LogStore::LogStore() : HardwareSerial(0), current_lastnr(0) {
+LogStore::LogStore() : HardwareSerial(0) {
   current_line.reserve(100);
 }
 
@@ -50,14 +50,18 @@ void LogStore::writeInternal(uint8_t c) {
       log_messages.pop_front();
     }
 
-    logmessage mewMsg = {
-      id: ++current_lastnr,
-      message: Utils::isTimeAvailable ? Utils::getTime("%H:%M:%S") + " " + std::move(current_line) : std::move(current_line)
-    };
-
-    log_messages.emplace_back(std::move(mewMsg));
-
-    current_line.reserve(100);
-    ++current_linenumber;
+    log_messages.emplace_back();
+    auto& newMsg = log_messages.back();
+  
+    newMsg.id = ++current_lastnr;
+    
+    if (Utils::isTimeAvailable) {
+      newMsg.message = Utils::getTime("%H:%M:%S") + " " + current_line;
+      current_line = "";
+    }
+    else {
+      newMsg.message = std::move(current_line);
+      current_line.reserve(100);
+    }
   }
 }
