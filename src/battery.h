@@ -38,12 +38,12 @@ class Battery {
     IO_Analog& io_analog;
     TwoWire& wire;
     Adafruit_INA219 ina219;
-    float batteryVoltage;
-    float lastChargeCurrentReading;
-    bool _isDocked;
-    bool _isCharging;
-    bool _needRecharge;
-    bool _isFullyCharged;
+    float batteryVoltage = 0;
+    float lastChargeCurrentReading = 0;
+    bool _isDocked = false;
+    bool _isCharging = false;
+    bool _needRecharge = false;
+    bool _isFullyCharged = false;
     float currentMedian[CURRENT_MEDIAN_SAMPLES] = {0};
     uint8_t currentMedianIndex = 0;
     void updateBatteryVoltage();

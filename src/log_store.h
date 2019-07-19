@@ -7,8 +7,7 @@
 #include "definitions.h"
 
 struct logmessage {
-  uint16_t id;
-  
+  uint16_t id;  
   String message;
 };
 

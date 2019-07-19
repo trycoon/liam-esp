@@ -5,7 +5,7 @@
 #include "configuration.h"
 #include "utils.h"
 
-Battery::Battery(IO_Analog& io_analog, TwoWire& w) : io_analog(io_analog), wire(w), lastChargeCurrentReading(0) {}
+Battery::Battery(IO_Analog& io_analog, TwoWire& w) : io_analog(io_analog), wire(w) {}
 
 void Battery::start() {
   
@@ -41,12 +41,11 @@ void Battery::updateBatteryVoltage() {
   if (batterySamples.size() >= MAX_SAMPLES) {
     batterySamples.pop_front();
   }
-  batterySample sample = {
-    time: Utils::getEpocTime(),
-    batteryVoltage: batteryVoltage
-  };
 
-  batterySamples.push_back(sample);
+  batterySamples.emplace_back();
+  auto& sample = batterySamples.back();
+  sample.time = Utils::getEpocTime();
+  sample.batteryVoltage = batteryVoltage;
 }
 
 void Battery::updateChargeCurrent() {

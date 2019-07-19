@@ -24,8 +24,8 @@ class Scheduler {
 
   private:
     std::list<scheduled_fn_t> scheduled_fn_list;
-    uint16_t task_counter;
-    bool in_series;
+    uint16_t task_counter = 0;
+    bool in_series = false;
 };
 
 #endif

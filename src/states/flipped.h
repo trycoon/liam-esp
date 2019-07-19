@@ -19,7 +19,7 @@ class Flipped : public AbstractState {
   
   private:
     Definitions::MOWER_STATES previousState;
-    uint32_t timer;
+    uint32_t timer = 0;
 };
 
 #endif

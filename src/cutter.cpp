@@ -3,7 +3,7 @@
 #include "definitions.h"
 #include "utils.h"
 
-Cutter::Cutter(IO_Analog& io_analog) : cutter_id(3), io_analog(io_analog), cutterSpeed(0) {
+Cutter::Cutter(IO_Analog& io_analog) : cutter_id(3), io_analog(io_analog) {
   pinMode(Definitions::CUTTER_MOTOR_PIN, OUTPUT);
   pinMode(Definitions::CUTTER_BRAKE_PIN, OUTPUT);
   digitalWrite(Definitions::CUTTER_BRAKE_PIN, LOW);

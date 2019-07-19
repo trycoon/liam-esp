@@ -18,7 +18,7 @@ class Mowing : public AbstractState {
     void process();
   
   private:
-    long lastShouldMowCheck;
+    long lastShouldMowCheck = 0;
 };
 
 #endif

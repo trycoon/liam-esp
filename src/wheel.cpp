@@ -3,7 +3,7 @@
 #include "wheel.h"
 #include "definitions.h"
 
-Wheel::Wheel(uint8_t wheel_id, uint8_t motor_pin, uint8_t motor_dir_pin, uint8_t odometer_pin, bool wheel_invert, uint8_t wheel_max_speed) : wheel_id(wheel_id), motor_pin(motor_pin), motor_dir_pin(motor_dir_pin), odometer_pin(odometer_pin), wheel_invert(wheel_invert), max_speed(constrain(wheel_max_speed, 0, 100)), current_speed(0) {
+Wheel::Wheel(uint8_t wheel_id, uint8_t motor_pin, uint8_t motor_dir_pin, uint8_t odometer_pin, bool wheel_invert, uint8_t wheel_max_speed) : wheel_id(wheel_id), motor_pin(motor_pin), motor_dir_pin(motor_dir_pin), odometer_pin(odometer_pin), wheel_invert(wheel_invert), max_speed(constrain(wheel_max_speed, 0, 100)) {
   pinMode(motor_pin, OUTPUT);
   pinMode(motor_dir_pin, OUTPUT);
   pinMode(odometer_pin, INPUT_PULLUP);

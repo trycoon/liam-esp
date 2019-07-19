@@ -14,9 +14,9 @@ namespace Configuration {
     String username;
     String password;
     int8_t logLevel;
-    uint32_t startChargeTime;
-    uint32_t lastFullyChargeTime;
-    uint32_t lastChargeDuration;
+    uint32_t startChargeTime = 0;
+    uint32_t lastFullyChargeTime = 0;
+    uint32_t lastChargeDuration = 0;
     String lastState;
     String mqttServer;
     String mqttPort;
@@ -27,7 +27,7 @@ namespace Configuration {
     String wifiPassword;
     String ssid;
     String apiKey;
-    bool setupDone;
+    bool setupDone = false;
   };
 
   extern Preferences preferences;

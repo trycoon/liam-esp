@@ -66,8 +66,8 @@ class WiFi_Client : public Processable {
     DNSServer dnsServer;
     std::vector<cb_mqttMessage> onMqttMessageCallbacks;
     std::vector<String> authenticatedSessions;
-    bool capturePortalRunning;
-    bool wifiStartedOnce;   // set to true if WiFi.begin() has been run atleast once.
+    bool capturePortalRunning = false;
+    bool wifiStartedOnce = false;   // set to true if WiFi.begin() has been run atleast once.
 
     static void WiFiEvent(system_event_id_t event, system_event_info_t info);
     bool isMQTT_enabled();

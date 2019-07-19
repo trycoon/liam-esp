@@ -23,7 +23,7 @@ class Sonar : public Processable {
   private:
     volatile boolean pingInProgress = false;
     volatile uint8_t currentSonar = 0;
-    volatile unsigned long startTime;
+    volatile unsigned long startTime = 0;
     volatile uint32_t test1=0;
     volatile uint32_t test2=0;
     std::vector<SonarDevice> sonars;
