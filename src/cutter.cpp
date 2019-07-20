@@ -29,18 +29,20 @@ void Cutter::start() {
     delay(10);
 
     cutterSpeed = Definitions::CUTTER_MAX_SPEED;
-    // calculate duty, 8191 from 2 ^ 13 - 1
-    uint32_t duty = ((pow(2, Definitions::MOTOR_TIMER_13_BIT) - 1) / 100) * abs(cutterSpeed);
-    ledcWrite(cutter_id, duty);
+    cutterCurrentSpeed = 1;
 
-    Log.trace(F("Cutter-start, speed: %d, dutyCycle: %d" CR), cutterSpeed, duty);
+    setCutterSpeed(cutterCurrentSpeed);
+
+    Log.trace(F("Cutter-start, speed: %d" CR), cutterSpeed);
   }
 }
 
 void Cutter::stop(bool brake) {
   if (cutterSpeed > 0) {
     cutterSpeed = 0;
-    ledcWrite(cutter_id, cutterSpeed);
+    cutterCurrentSpeed = 0;
+
+    setCutterSpeed(cutterCurrentSpeed);
 
     if (brake) {
       delay(10);
@@ -50,6 +52,7 @@ void Cutter::stop(bool brake) {
     }
 
     cutterLoadReadingTicker.detach();
+    load = 0;
 
     Log.trace(F("Cutter-stop, brake: %d" CR), brake);
   }
@@ -77,6 +80,35 @@ void Cutter::senseLoad() {
   //Log.notice("%F mA, %d%%" CR, current, load);
 }
 
+void Cutter::setCutterSpeed(uint8_t speed) {
+
+  if (speed == 0) {
+    ledcWrite(cutter_id, 0);
+  } else {
+    // calculate duty, 8191 from 2 ^ 13 - 1
+    uint32_t duty = ((pow(2, Definitions::MOTOR_TIMER_13_BIT) - 1) / 100) * abs(speed);
+    ledcWrite(cutter_id, duty);
+  }
+}
+
 uint8_t Cutter::getLoad() {
   return load;
+}
+
+void Cutter::process() {
+  // slowly ramp cutter speed up to reach target ("cutterSpeed"), this is to save fuses and electronics from current surges.
+  if (cutterCurrentSpeed < cutterSpeed) {
+
+    if (millis() - cutterLastSpeedRamp > 50) {
+      cutterLastSpeedRamp = millis();
+      cutterCurrentSpeed++;
+      setCutterSpeed(cutterCurrentSpeed);
+    }
+
+  } else if (cutterCurrentSpeed > cutterSpeed) {
+
+    cutterCurrentSpeed--;
+    setCutterSpeed(cutterCurrentSpeed);
+
+  }
 }

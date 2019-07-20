@@ -61,7 +61,7 @@ namespace Definitions
   const uint16_t CUTTER_LOAD_RESISTOR = 1; // Size of shunt resistor connected in serial with cutter motor, in Ohm.
   const float CUTTER_NOLOAD_CURRENT = 200; // Milliampere of cutter motor when no load is applied, see motor specs for no-load current or find a suitable value yourself. (used for calculating cutter load percentage)
   const float CUTTER_MAX_CURRENT = 3100;   // Max milliampere of cutter motor, see motor specs for stall current. (used to calculate cutter load percentage)
-  const uint8_t CUTTER_MAX_SPEED = 100;    // 0-100 (%), lower this value if cutter spinning too fast.
+  const uint8_t CUTTER_MAX_SPEED = 100;     // 1-100 (%), lower this value if cutter spinning too fast.
   // When the load on the cutter motor surpasses this limit, the cutter is working too hard cutting the grass (and we should reduce speed of wheels to compensate).
   const uint16_t CUTTER_LOAD_THRESHOLD = 80;
 

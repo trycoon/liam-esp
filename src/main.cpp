@@ -164,6 +164,7 @@ void loop() {
     sonar.process();
     stateController.getStateInstance()->process();
     wheelController.process();
+    cutter.process();
   }
 
   uint64_t currentTime = esp_timer_get_time();
