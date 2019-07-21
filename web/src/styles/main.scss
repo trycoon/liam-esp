@@ -572,6 +572,8 @@ p {
   svg {
     height: 15vw;
   }
+  display: -webkit-flex;
+  display: flex;
   -webkit-flex: 0 0 35%;
   flex: 0 0 35%;
 
@@ -604,6 +606,7 @@ p {
 /* 3D representation */
 .model3D_wrapper {
   position: relative;
+  padding-bottom: 100%;
 
   .model3D {
     position: absolute;
