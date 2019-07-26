@@ -31,9 +31,9 @@ struct scannedNetwork {
 
 using cb_mqttMessage = std::function<void(char* topic, char* payload, size_t length)>;
 
-class WiFi_Client : public Processable {
+class Wlan : public Processable {
   public:
-    WiFi_Client();
+    Wlan();
     void start();
     void publish_mqtt(std::string message, std::string subtopic = "");
     AsyncWebServer& getWebServer();  // code-smell, we should think of a better way than to expose this inner reference when we need to register routes!
@@ -50,7 +50,7 @@ class WiFi_Client : public Processable {
     void process();
     
   private:
-    static WiFi_Client* Instance;
+    static Wlan* Instance;
     static String renderPlaceholder(const String& placeholder);
     Ticker wifiReconnectTimer;
 

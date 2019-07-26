@@ -9,7 +9,7 @@
 #include "resources.h"
 #include "io_analog.h"
 #include "io_accelerometer/io_accelerometer.h"
-#include "wifi.h"
+#include "wlan.h"
 #include "wheel_controller.h"
 #include "wheel.h"
 #include "cutter.h"
@@ -35,7 +35,7 @@ const uint32_t LOOP_DELAY_WARNING_COOLDOWN = 10000000; // 10 sec
 LogStore logstore;
 IO_Analog io_analog;
 IO_Accelerometer io_accelerometer(Wire);
-WiFi_Client wifi;
+Wlan wlan;
 Wheel leftWheel(1, Definitions::LEFT_WHEEL_MOTOR_PIN, Definitions::LEFT_WHEEL_MOTOR_DIRECTION_PIN, Definitions::LEFT_WHEEL_ODOMETER_PIN, Definitions::LEFT_WHEEL_MOTOR_INVERTED, Definitions::LEFT_WHEEL_MOTOR_SPEED);
 Wheel rightWheel(2, Definitions::RIGHT_WHEEL_MOTOR_PIN, Definitions::RIGHT_WHEEL_MOTOR_DIRECTION_PIN, Definitions::RIGHT_WHEEL_ODOMETER_PIN, Definitions::RIGHT_WHEEL_MOTOR_INVERTED, Definitions::RIGHT_WHEEL_MOTOR_SPEED);
 WheelController wheelController(leftWheel, rightWheel);
@@ -44,7 +44,7 @@ GPS gps;
 Sonar sonar;
 Battery battery(io_analog, Wire);
 MowingSchedule mowingSchedule;
-Resources resources(wifi, wheelController, cutter, battery, gps, sonar, io_accelerometer, logstore, mowingSchedule);
+Resources resources(wlan, wheelController, cutter, battery, gps, sonar, io_accelerometer, logstore, mowingSchedule);
 StateController stateController(resources);
 Api api(stateController, resources);
 
@@ -128,7 +128,7 @@ void setup() {
     stateController.setState(Definitions::MOWER_STATES::DOCKED);
   }
 
-  wifi.start();
+  wlan.start();
 
   if (Configuration::config.setupDone) {
     api.setupApi();
@@ -149,7 +149,7 @@ void loop() {
     return;
   }
 
-  wifi.process();
+  wlan.process();
   
   if (Configuration::config.setupDone) {
     // always check if we are flipped.

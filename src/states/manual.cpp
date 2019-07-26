@@ -11,7 +11,7 @@ void Manual::selected(Definitions::MOWER_STATES lastState) {
 
 void Manual::process() {
   // if we drive manually and get disconnected from mower or mower loose WiFi connectivity, then stop mower from driving further.
-  if (resources.wifi.getConnectedWebsocketClientsCount() == 0) {
+  if (resources.wlan.getConnectedWebsocketClientsCount() == 0) {
     
     resources.cutter.stop();
 

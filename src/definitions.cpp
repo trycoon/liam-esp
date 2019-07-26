@@ -68,24 +68,23 @@ namespace Definitions
   /*
     Battery settings
   */
-  const uint8_t BATTERY_SENSOR_PIN = 39;    // Pin on ADC for measuring battery voltage.
 
   // Lithium-ion / LiPo  http://batteryuniversity.com/learn/article/types_of_lithium_ion
-  // Normally a fully charged cell is 4.2 volt and quickly drops down to 3.7 volt, as battery is closing depleated it will drop from 3.7 down to 3.0 volt.
-  // 3.0 volts should be considered an completely discharged cell, below that will damage the cell.
+  // Normally a fully charged cell is 4.2 volt and quickly drops down to 3.6 volt, as battery is closing depleated it will drop from 3.6 down to 2.5 volt.
+  // 2.5 volts should be considered an completely discharged cell, below that will damage the cell.
   const float BATTERY_FULLY_CHARGED = 16.8;        // in volt. e.g. 4.2 volt * 4 cells = 16.8 volt.
-  const float BATTERY_EMPTY = 14.00;               // in volt. e.g. 3.0 volt * 4 cells = 12.0 volt and then we add a few volts to give us enough power to get us back to the charger.
-  const float BATTERY_MULTIPLIER = BATTERY_FULLY_CHARGED / 3.04;   // Battery voltage divided by ADC max value, used to calculate real battery voltage.
+  const float BATTERY_EMPTY = 12.00;               // in volt. e.g. 2.5 volt * 4 cells = 10.0 volt and then we add a few volts to give us enough power to get us back to the charger.
 
   // Nickel–metal hydride / NiMH example. http://batteryuniversity.com/learn/article/charging_nickel_metal_hydride
   // const float BATTERY_FULLY_CHARGED = 14.50;
   // const float BATTERY_EMPTY = 11.50;
-  // const float BATTERY_RESISTOR_DIVISOR = ???;
 
   // Lead-acid example. http://www.solarnavigator.net/battery_charging.htm
   // const float BATTERY_FULLY_CHARGED = 13.30;
   // const float BATTERY_EMPTY = 11.90;
-  // const float BATTERY_RESISTOR_DIVISOR = ???;
+
+  const float BATTERY_MULTIPLIER = BATTERY_FULLY_CHARGED / 3.04;   // Battery voltage divided by ADC max value, used to calculate real battery voltage.
+  const uint8_t BATTERY_SENSOR_PIN = 39;    // Pin on ADC for measuring battery voltage.
 
   /*
     Charger Settings

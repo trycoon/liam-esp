@@ -138,13 +138,13 @@ void Api::collectAndPushNewStatus() {
     JsonObject& root = jsonBuffer.createObject();
     statusToJson(currentStatus, root);
 
-    resources.wifi.sendDataWebSocket("status", root);
+    resources.wlan.sendDataWebSocket("status", root);
 
     // MQTT updates don't have to be "realtime", we can settle with an update every 10 sec to not spam server.
     if (lastMQTT_push < currentStatus.uptime - 10) {
       String jsonStr;
       root.printTo(jsonStr);
-      resources.wifi.publish_mqtt(jsonStr.c_str(), "/status");
+      resources.wlan.publish_mqtt(jsonStr.c_str(), "/status");
       lastMQTT_push = currentStatus.uptime;
     }
   }
@@ -177,8 +177,8 @@ void Api::setupApi() {
     Configuration::save();
   }
 
-  AsyncWebServer& web_server = resources.wifi.getWebServer();
-  resources.wifi.registerMqttMessageCallback(
+  AsyncWebServer& web_server = resources.wlan.getWebServer();
+  resources.wlan.registerMqttMessageCallback(
     [this](char* topic, char* payload, size_t length) {
       onMqttMessage(topic, payload, length);
     }
@@ -190,7 +190,7 @@ void Api::setupApi() {
   }, this);
 
   // start listening on WebSocket events.
-  resources.wifi.getWebSocketServer().onEvent([this](AsyncWebSocket* server, AsyncWebSocketClient* client, AwsEventType type, void* arg, uint8_t* data, size_t len) {
+  resources.wlan.getWebSocketServer().onEvent([this](AsyncWebSocket* server, AsyncWebSocketClient* client, AwsEventType type, void* arg, uint8_t* data, size_t len) {
     if (type == WS_EVT_CONNECT) {
       //client connected
       Log.trace(F("ws[%s][%u] connected" CR), server->url(), client->id());
@@ -223,7 +223,7 @@ void Api::setupApi() {
 
   // respond to GET requests on URL /api/v1/history/battery
   web_server.on("/api/v1/history/battery", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    if (!resources.wifi.isAuthenticated(request)) {
+    if (!resources.wlan.isAuthenticated(request)) {
       return request->send(401, "text/plain", "Unauthorized");
     }
 
@@ -245,7 +245,7 @@ void Api::setupApi() {
 
   // respond to GET requests on URL /api/v1/history/position
   web_server.on("/api/v1/history/position", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    if (!resources.wifi.isAuthenticated(request)) {
+    if (!resources.wlan.isAuthenticated(request)) {
       return request->send(401, "text/plain", "Unauthorized");
     }
 
@@ -267,7 +267,7 @@ void Api::setupApi() {
 
   // respond to GET requests on URL /api/v1/history
   web_server.on("/api/v1/history", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    if (!resources.wifi.isAuthenticated(request)) {
+    if (!resources.wlan.isAuthenticated(request)) {
       return request->send(401, "text/plain", "Unauthorized");
     }
     
@@ -290,7 +290,7 @@ void Api::setupApi() {
 
   // respond to GET requests on URL /api/v1/manual
   web_server.on("/api/v1/manual", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    if (!resources.wifi.isAuthenticated(request)) {
+    if (!resources.wlan.isAuthenticated(request)) {
       return request->send(401, "text/plain", "Unauthorized");
     }
 
@@ -325,7 +325,7 @@ void Api::setupApi() {
 
   // respond to GET requests on URL /api/v1/status
   web_server.on("/api/v1/status", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    if (!resources.wifi.isAuthenticated(request)) {
+    if (!resources.wlan.isAuthenticated(request)) {
       return request->send(401, "text/plain", "Unauthorized");
     }
 
@@ -342,7 +342,7 @@ void Api::setupApi() {
 
   // respond to GET requests on URL /api/v1/system
   web_server.on("/api/v1/system", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    if (!resources.wifi.isAuthenticated(request)) {
+    if (!resources.wlan.isAuthenticated(request)) {
       return request->send(401, "text/plain", "Unauthorized");
     }
 
@@ -369,7 +369,7 @@ void Api::setupApi() {
 
   // respond to GET requests on URL /api/v1/loglevel
   web_server.on("/api/v1/loglevel", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    if (!resources.wifi.isAuthenticated(request)) {
+    if (!resources.wlan.isAuthenticated(request)) {
       return request->send(401, "text/plain", "Unauthorized");
     }
 
@@ -385,7 +385,7 @@ void Api::setupApi() {
 
   // respond to GET requests on URL /api/v1/logmessages?lastnr=<number>
   web_server.on("/api/v1/logmessages", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    if (!resources.wifi.isAuthenticated(request)) {
+    if (!resources.wlan.isAuthenticated(request)) {
       return request->send(401, "text/plain", "Unauthorized");
     }
 
@@ -423,7 +423,7 @@ void Api::setupApi() {
 
   // respond to GET requests on URL /api/v1/session
   web_server.on("/api/v1/session", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    if (resources.wifi.isAuthenticatedSession(request)) {
+    if (resources.wlan.isAuthenticatedSession(request)) {
       request->send(200, "text/plain", "Authorized");
     } else {
       request->send(401, "text/plain", "Unauthorized");
@@ -432,7 +432,7 @@ void Api::setupApi() {
 
   // respond to GET requests on URL /api/v1/basic_auth
   web_server.on("/api/v1/basic_auth", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    if (resources.wifi.isAuthenticated(request)) {
+    if (resources.wlan.isAuthenticated(request)) {
       request->send(200, "text/plain", "Authorized");
     } else {
       request->requestAuthentication();
@@ -442,7 +442,7 @@ void Api::setupApi() {
   // respond to DELETE requests on URL /api/v1/session
   web_server.on("/api/v1/session", HTTP_DELETE, [this](AsyncWebServerRequest *request) {
 
-    resources.wifi.removeAuthenticatedSession(request);
+    resources.wlan.removeAuthenticatedSession(request);
 
     auto response = request->beginResponse(200);
     response->addHeader("Set-Cookie", "liam-" + Configuration::config.mowerId + "=null; HttpOnly; Path=/api; Max-Age=0");
@@ -451,7 +451,7 @@ void Api::setupApi() {
 
   // respond to GET requests on URL /api/v1/schedules
   web_server.on("/api/v1/schedules", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    if (!resources.wifi.isAuthenticated(request)) {
+    if (!resources.wlan.isAuthenticated(request)) {
       return request->send(401, "text/plain", "Unauthorized");
     } else {
       auto response = new AsyncJsonResponse(true);
@@ -478,7 +478,7 @@ void Api::setupApi() {
 
   // respond to DELETE requests on URL /api/v1/schedules/{position}
   web_server.on("/api/v1/schedules", HTTP_DELETE, [this](AsyncWebServerRequest *request) {
-    if (!resources.wifi.isAuthenticated(request)) {
+    if (!resources.wlan.isAuthenticated(request)) {
       return request->send(401, "text/plain", "Unauthorized");
     } else {
       auto pos = request->url().substring(request->url().lastIndexOf("/") + 1).toInt();
@@ -498,7 +498,7 @@ void Api::setupApi() {
 
   // respond to GET requests on URL /api/v1
   web_server.on("/api/v1", HTTP_GET, [this](AsyncWebServerRequest *request) {
-    if (!resources.wifi.isAuthenticated(request)) {
+    if (!resources.wlan.isAuthenticated(request)) {
       return request->send(401, "text/plain", "Unauthorized");
     }
 
@@ -567,7 +567,7 @@ void Api::setupApi() {
   // example body: {"state": "TEST"}
   web_server.on("/api/v1/state", HTTP_PUT, [this](AsyncWebServerRequest *request) {}, NULL,
   [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
-    if (!resources.wifi.isAuthenticated(request)) {
+    if (!resources.wlan.isAuthenticated(request)) {
       return request->send(401, "text/plain", "Unauthorized");
     }
 
@@ -598,7 +598,7 @@ void Api::setupApi() {
     stateController.setState(Definitions::MOWER_STATES::MANUAL);
 
   }, NULL, [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
-    if (!resources.wifi.isAuthenticated(request)) {
+    if (!resources.wlan.isAuthenticated(request)) {
       return request->send(401, "text/plain", "Unauthorized");
     }
 
@@ -637,7 +637,7 @@ void Api::setupApi() {
     stateController.setState(Definitions::MOWER_STATES::MANUAL);
 
   }, NULL, [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
-    if (!resources.wifi.isAuthenticated(request)) {
+    if (!resources.wlan.isAuthenticated(request)) {
       return request->send(401, "text/plain", "Unauthorized");
     }
 
@@ -668,7 +668,7 @@ void Api::setupApi() {
 
   // respond to PUT requests on URL /api/v1/manual/stop, stop mower movement.
   web_server.on("/api/v1/manual/stop", HTTP_PUT, [this](AsyncWebServerRequest *request) {
-    if (!resources.wifi.isAuthenticated(request)) {
+    if (!resources.wlan.isAuthenticated(request)) {
       return request->send(401, "text/plain", "Unauthorized");
     }
 
@@ -682,7 +682,7 @@ void Api::setupApi() {
 
   // respond to PUT requests on URL /api/v1/manual/cutter_on, start mower cutter.
   web_server.on("/api/v1/manual/cutter_on", HTTP_PUT, [this](AsyncWebServerRequest *request) {
-    if (!resources.wifi.isAuthenticated(request)) {
+    if (!resources.wlan.isAuthenticated(request)) {
       return request->send(401, "text/plain", "Unauthorized");
     }
 
@@ -696,7 +696,7 @@ void Api::setupApi() {
 
   // respond to PUT requests on URL /api/v1/manual/cutter_off, stop mower cutter.
   web_server.on("/api/v1/manual/cutter_off", HTTP_PUT, [this](AsyncWebServerRequest *request) {
-    if (!resources.wifi.isAuthenticated(request)) {
+    if (!resources.wlan.isAuthenticated(request)) {
       return request->send(401, "text/plain", "Unauthorized");
     }
 
@@ -710,7 +710,7 @@ void Api::setupApi() {
 
   // respond to PUT requests on URL /api/v1/reboot, restart mower.
   web_server.on("/api/v1/reboot", HTTP_PUT, [this](AsyncWebServerRequest *request) {
-    if (!resources.wifi.isAuthenticated(request)) {
+    if (!resources.wlan.isAuthenticated(request)) {
       return request->send(401, "text/plain", "Unauthorized");
     }
 
@@ -726,7 +726,7 @@ void Api::setupApi() {
 
   // respond to PUT requests on URL /api/v1/factoryreset, reset all setting and restart mower.
   web_server.on("/api/v1/factoryreset", HTTP_PUT, [this](AsyncWebServerRequest *request) {
-    if (!resources.wifi.isAuthenticated(request)) {
+    if (!resources.wlan.isAuthenticated(request)) {
       return request->send(401, "text/plain", "Unauthorized");
     }
 
@@ -745,7 +745,7 @@ void Api::setupApi() {
   // respond to PUT requests on URL /api/v1/loglevel, set loglevel for mower (useful for fault finding).
   web_server.on("/api/v1/loglevel", HTTP_PUT, [this](AsyncWebServerRequest *request) {}, NULL,
   [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
-    if (!resources.wifi.isAuthenticated(request)) {
+    if (!resources.wlan.isAuthenticated(request)) {
       return request->send(401, "text/plain", "Unauthorized");
     }
 
@@ -785,7 +785,7 @@ void Api::setupApi() {
         return;
       }
 
-      auto sessionId = resources.wifi.authenticateSession(root["username"], root["password"]);
+      auto sessionId = resources.wlan.authenticateSession(root["username"], root["password"]);
 
       if (sessionId.length() > 0) {
         auto response = new AsyncJsonResponse();
@@ -805,7 +805,7 @@ void Api::setupApi() {
   // respond to POST requests on URL /api/v1/apikey, trigger generation of new API key.
   web_server.on("/api/v1/apikey", HTTP_POST, [this](AsyncWebServerRequest *request) {}, NULL,
   [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
-    if (!resources.wifi.isAuthenticated(request)) {
+    if (!resources.wlan.isAuthenticated(request)) {
       return request->send(401, "text/plain", "Unauthorized");
     }
         
@@ -819,7 +819,7 @@ void Api::setupApi() {
   // respond to POST requests on URL /api/v1/schedules, add mower schedule entry.
   web_server.on("/api/v1/schedules", HTTP_POST, [this](AsyncWebServerRequest *request) {}, NULL,
   [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
-    if (!resources.wifi.isAuthenticated(request)) {
+    if (!resources.wlan.isAuthenticated(request)) {
       return request->send(401, "text/plain", "Unauthorized");
     }
     

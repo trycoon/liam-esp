@@ -1,4 +1,4 @@
-#include "wifi.h"
+#include "wlan.h"
 #include <WiFi.h>
 #include <string>
 #include <time.h>
@@ -19,17 +19,17 @@
 // TODO: AVOID "%" in CSS, https://github.com/me-no-dev/ESPAsyncWebServer/pull/366
 static const char SETUP_HTML[] PROGMEM = "<!DOCTYPE html><html lang=\"en\"><head><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Liam-ESP</title><style>fieldset{padding:1em;font:0.8em/1 sans-serif;margin:1em}legend{padding:0.2em 0.5em;border:1px solid black;font-size:0.9em}label{float:left;margin-right:0.5em;padding-top:0.2em;text-align:right;font-weight:bold;width:6em}input{margin-bottom:0.4em;padding-left: 0.2em;}.center{display:block;margin-right:auto;margin-left:auto;text-align:center}a:link{text-decoration:none;}button,.button{border:0;border-radius:0.3rem;background-color:#1fa3ec;color:#fff;line-height:2rem;font-size:1.1rem;width:6em;}</style></head><body><h1 class=\"center\">Setup</h1><form action=\"/setup\" method=\"post\"><fieldset><legend>WiFi</legend><label>SSID: </label><input type=\"text\" list=\"availSSID\" id=\"SSID\" name=\"SSID\" length=32 value=\"%SSID%\" required><datalist id=\"availSSID\">%availSSID%</datalist><br><label>Password: </label><input type=\"password\" name=\"WIFI_PASSWORD\" length=64 value=\"%WIFI_PASSWORD%\"></fieldset><fieldset><legend>Administrator</legend><label>Username: </label><input type=\"text\" name=\"USERNAME\" length=20 value=\"%USERNAME%\" required><br><label>Password: </label><input type=\"password\" name=\"PASSWORD\" length=20 value=\"%PASSWORD%\" required></fieldset><fieldset><legend>Time</legend><label>NTP-server: </label><input type=\"text\" name=\"NTP_SERVER\" length=40 value=\"%NTP_SERVER%\"><br><label>Time zone: </label><input type=\"number\" name=\"GMT\"  min=\"-12\" max=\"12\" value=\"%GMT%\">&nbsp;<a href=\"https://smart-home.rocks/liam/Standard_Time_Zones_of_the_World.png\" target=\"_blank\">&nbsp;i&nbsp;</a></fieldset><fieldset><legend>MQTT</legend><label>Server IP: </label><input type=\"text\" name=\"MQTT_SERVER\" placeholder=\"leave blank if not used\" length=64 value=\"%MQTT_SERVER%\"><br><label>Port: </label><input type=\"number\" name=\"MQTT_PORT\" placeholder=\"leave blank if not used\" min=\"1024\" max=\"65535\" value=\"%MQTT_PORT%\"><br><label>Subscribe: </label><input type=\"text\" name=\"MQTT_TOPIC\" placeholder=\"leave blank if not used\" length=200 value=\"%MQTT_TOPIC%\"><br><label>Command: </label><input type=\"text\" name=\"MQTT_TOPIC_COMMAND\" placeholder=\"leave blank if not used\" length=200 value=\"%MQTT_TOPIC_COMMAND%\"></fieldset><input type=\"submit\" value=\"Save\" class=\"center button\"></form></body></html>";
 static const char NO_WEB_UI[] PROGMEM = "Web interface is not available. See README.md for instructions about how to flash interface into mower.";
-WiFi_Client* WiFi_Client::Instance = nullptr;
+Wlan* Wlan::Instance = nullptr;
 
 // Constructor
-WiFi_Client::WiFi_Client() : web_server(80), ws("/ws") {  
+Wlan::Wlan() : web_server(80), ws("/ws") {  
   assert(!Instance);
   Instance = this;
 }
 
 // Method that get called upon when the template engine renders the SETUP_HTML-page and finds a "%<placeholder>%"-element.
 // We populate the HTML with settings saved from Flash memory (or default values).
-String WiFi_Client::renderPlaceholder(const String& placeholder) {
+String Wlan::renderPlaceholder(const String& placeholder) {
   if (placeholder == "USERNAME") {
     return Configuration::config.username;
   } else if (placeholder == "PASSWORD") {
@@ -66,7 +66,7 @@ String WiFi_Client::renderPlaceholder(const String& placeholder) {
 /**
  * Scans for available WiFi accesspoints and return a list of names.
  */
-void WiFi_Client::scanForSSID() {
+void Wlan::scanForSSID() {
   auto scanStartTime = millis();
   auto total = WiFi.scanNetworks();
   availableSSID.clear();
@@ -101,7 +101,7 @@ void WiFi_Client::scanForSSID() {
 }
 
 
-void WiFi_Client::loadAuthenticatedSessions() {
+void Wlan::loadAuthenticatedSessions() {
   // load saved list of authenticated sessions.
   Configuration::preferences.begin("liam-esp", false);
   auto jsonString = Configuration::preferences.getString("authSessions", "[]");
@@ -117,7 +117,7 @@ void WiFi_Client::loadAuthenticatedSessions() {
   }
 }
 
-void WiFi_Client::saveAuthenticatedSessions() {
+void Wlan::saveAuthenticatedSessions() {
   // persist authenticated sessions in case of power failure.
   DynamicJsonBuffer jsonBuffer(300);
   JsonArray& json = jsonBuffer.createArray();
@@ -133,7 +133,7 @@ void WiFi_Client::saveAuthenticatedSessions() {
 }
 
 // WiFi status eventhandler, called upon when WiFi connection change status.
-void WiFi_Client::WiFiEvent(WiFiEvent_t event, WiFiEventInfo_t info) {
+void Wlan::WiFiEvent(WiFiEvent_t event, WiFiEventInfo_t info) {
   Log.trace(F("[WiFi-event] event: %d" CR), event);
 
   switch(event) {
@@ -168,7 +168,7 @@ void WiFi_Client::WiFiEvent(WiFiEvent_t event, WiFiEventInfo_t info) {
 }
 
 // Setup and connect WiFi, should only be called upon once.
-void WiFi_Client::start() {
+void Wlan::start() {
     
   WiFi.onEvent(WiFiEvent);
   scanForSSID();
@@ -189,7 +189,7 @@ void WiFi_Client::start() {
   setupWebServer();
 }
 
-void WiFi_Client::setupOTA() {
+void Wlan::setupOTA() {
   ArduinoOTA.onStart([this]() {
     String type;
 
@@ -233,7 +233,7 @@ void WiFi_Client::setupOTA() {
   ArduinoOTA.setPassword(Configuration::config.password.c_str());
 }
 
-void WiFi_Client::setupMQTT() {
+void Wlan::setupMQTT() {
   if (isMQTT_enabled()) {
     mqttClient.onConnect([this](bool sessionPresent) {
       onMqttConnect(sessionPresent);
@@ -269,7 +269,7 @@ void WiFi_Client::setupMQTT() {
   }
 }
 
-void WiFi_Client::setupWebServer() {
+void Wlan::setupWebServer() {
     // Add CORS support, to fix error on iOS. https://github.com/me-no-dev/ESPAsyncWebServer/blob/d7399a7664bce76e9939837fd6cf51bd272ef588/README.md#adding-default-headers
     DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
 
@@ -433,12 +433,12 @@ void WiFi_Client::setupWebServer() {
     Log.notice(F("Web server initialized" CR));
 }
 
-bool WiFi_Client::isMQTT_enabled() {
+bool Wlan::isMQTT_enabled() {
   return Configuration::config.mqttServer.length() > 0 && Configuration::config.mqttTopic.length() > 0;
 }
 
 // Call upon this method to connect/reconnect WiFi
-void WiFi_Client::connect() {
+void Wlan::connect() {
   
   if (WiFi.getMode() == WIFI_MODE_STA) {
     WiFi.setAutoReconnect(false); // we handle this ourself.
@@ -472,7 +472,7 @@ void WiFi_Client::connect() {
 }
 
 // Method is called upon when have a WiFi connection with an IP address (note that this method could be called upon several times).
-void WiFi_Client::onWifiConnect(WiFiEvent_t event, WiFiEventInfo_t info) {
+void Wlan::onWifiConnect(WiFiEvent_t event, WiFiEventInfo_t info) {
 
   wifiReconnectTimer.detach();
   WiFi.macAddress(mac);
@@ -498,27 +498,27 @@ void WiFi_Client::onWifiConnect(WiFiEvent_t event, WiFiEventInfo_t info) {
 }
 
 // Method is called upon when WiFi connection is lost, it will try to reconnect.
-void WiFi_Client::onWifiDisconnect(WiFiEvent_t event, WiFiEventInfo_t info) {
+void Wlan::onWifiDisconnect(WiFiEvent_t event, WiFiEventInfo_t info) {
   Log.notice(F("Disconnected from WiFi, reason: %d." CR), info.disconnected.reason);
 
   mqttReconnectTimer.detach(); // ensure we don't reconnect to MQTT while reconnecting to WiFi
 
-  wifiReconnectTimer.attach<WiFi_Client*>(10, [](WiFi_Client* instance) {
+  wifiReconnectTimer.attach<Wlan*>(10, [](Wlan* instance) {
     instance->connect();
   }, this);
 }
 
-void WiFi_Client::connectToMqtt() {
+void Wlan::connectToMqtt() {
   Log.trace(F("Connecting to MQTT broker..." CR));
   mqttClient.connect();
 }
 
-void WiFi_Client::onMqttConnect(bool sessionPresent) {
+void Wlan::onMqttConnect(bool sessionPresent) {
   mqttClient.publish(Configuration::config.mqttTopic.c_str(), 1, true, "CONNECTED");
   Log.notice(F("Connected to the MQTT broker." CR));
 
   // Flush any messages waiting in queue now that we are connected to broker.
-  flushQueueTimer.once_ms<WiFi_Client*>(1, [](WiFi_Client* instance) {
+  flushQueueTimer.once_ms<Wlan*>(1, [](Wlan* instance) {
     instance->flushMqttQueue();
   }, this);
 
@@ -527,19 +527,19 @@ void WiFi_Client::onMqttConnect(bool sessionPresent) {
   }
 }
 
-void WiFi_Client::onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
+void Wlan::onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
   Log.notice(F("Disconnected from the MQTT broker! reason: %d" CR), static_cast<uint8_t>(reason));
 
   if (WiFi.isConnected()) {
     // wait two seconds then try to reconnect.
     // TODO: change "once" to "attach", in case we fail to reconnect then "onMqttDisconnect" will not be called upon again and no more attempts will be made!
-    mqttReconnectTimer.once<WiFi_Client*>(2, [](WiFi_Client* instance) {
+    mqttReconnectTimer.once<Wlan*>(2, [](Wlan* instance) {
       instance->connectToMqtt();
     }, this);
   }
 }
 
-void WiFi_Client::flushMqttQueue() {
+void Wlan::flushMqttQueue() {
   while(WiFi.isConnected() && mqttClient.connected() && !msgQueue.empty()) {
     MQTT_Message message = msgQueue.front();  // oldest message in queue.
 
@@ -552,7 +552,7 @@ void WiFi_Client::flushMqttQueue() {
   }
 }
 
-void WiFi_Client::publish_mqtt(std::string message, std::string subtopic) {
+void Wlan::publish_mqtt(std::string message, std::string subtopic) {
   if (isMQTT_enabled()) {
     std::string topic = Configuration::config.mqttTopic.c_str();
 
@@ -575,11 +575,11 @@ void WiFi_Client::publish_mqtt(std::string message, std::string subtopic) {
   }
 }
 
-void WiFi_Client::onMqttPublish(uint16_t packetId) {
+void Wlan::onMqttPublish(uint16_t packetId) {
   Log.trace(F("MQTT Publish acknowledged, packet id: %d" CR), packetId);
 }
 
-AsyncWebServer& WiFi_Client::getWebServer() {
+AsyncWebServer& Wlan::getWebServer() {
   return web_server;
 }
 
@@ -589,7 +589,7 @@ AsyncWebServer& WiFi_Client::getWebServer() {
  * @param json message to be sent
  * @param client [optional] client to send to, if none specified then we broadcast to everybody
  */
-void WiFi_Client::sendDataWebSocket(String msgType, JsonObject& json, AsyncWebSocketClient* client) {
+void Wlan::sendDataWebSocket(String msgType, JsonObject& json, AsyncWebSocketClient* client) {
   // only push if there are connected clients.
   if (WiFi.isConnected() && ws.count() > 0) {
     DynamicJsonBuffer jsonBuffer(400);
@@ -616,14 +616,14 @@ void WiFi_Client::sendDataWebSocket(String msgType, JsonObject& json, AsyncWebSo
   }
 }
 
-AsyncWebSocket& WiFi_Client::getWebSocketServer() {
+AsyncWebSocket& Wlan::getWebSocketServer() {
   return ws;
 }
 
 /**
  * Get number of clients currently connected using websocket.
  */
-size_t WiFi_Client::getConnectedWebsocketClientsCount() {
+size_t Wlan::getConnectedWebsocketClientsCount() {
   if (!WiFi.isConnected()) {
     return 0;
   }
@@ -636,7 +636,7 @@ size_t WiFi_Client::getConnectedWebsocketClientsCount() {
  * @param request to parse cookie value from
  * @return an session-id if present, otherwise an empty string.
  */
-String WiFi_Client::parseSessionFromRequest(AsyncWebServerRequest *request) {
+String Wlan::parseSessionFromRequest(AsyncWebServerRequest *request) {
   String cookieValue = "";
 
   if (request->hasHeader("Cookie")) {
@@ -664,7 +664,7 @@ String WiFi_Client::parseSessionFromRequest(AsyncWebServerRequest *request) {
  * Check if request is authenticated (user logged in).
  * You could provide an active session cookie or a querystring-parameter "apiKey", if apiKey is not provided then we expect BasicAuthentication (https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication) to be used.
  */
-bool WiFi_Client::isAuthenticated(AsyncWebServerRequest *request) {
+bool Wlan::isAuthenticated(AsyncWebServerRequest *request) {
   auto cookieValue = parseSessionFromRequest(request);
 
   if (cookieValue.length() > 0) {
@@ -682,7 +682,7 @@ bool WiFi_Client::isAuthenticated(AsyncWebServerRequest *request) {
  * Check if request is authenticated (user logged in).
  * This method ONLY checks for an active session cookie, NO apikeys och Basic Authentication!
  */
-bool WiFi_Client::isAuthenticatedSession(AsyncWebServerRequest *request) {
+bool Wlan::isAuthenticatedSession(AsyncWebServerRequest *request) {
   auto cookieValue = parseSessionFromRequest(request);
 
   if (cookieValue.length() > 0) {
@@ -698,7 +698,7 @@ bool WiFi_Client::isAuthenticatedSession(AsyncWebServerRequest *request) {
  * @param password password to authenticate
  * @return an session-id if authentication is successful, otherwise an empty string.
  */
-String WiFi_Client::authenticateSession(String username, String password) {
+String Wlan::authenticateSession(String username, String password) {
   String sessionId = "";
 
   if (username == Configuration::config.username.c_str() && password == Configuration::config.password.c_str()) {
@@ -735,7 +735,7 @@ String WiFi_Client::authenticateSession(String username, String password) {
  * It's safe to call upon this even if no session by that id exists.
  * @param request request that should be cleared from session.
  */
-void WiFi_Client::removeAuthenticatedSession(AsyncWebServerRequest *request) {
+void Wlan::removeAuthenticatedSession(AsyncWebServerRequest *request) {
   auto cookieValue = parseSessionFromRequest(request);
 
   if (cookieValue.length() > 0) {
@@ -746,7 +746,7 @@ void WiFi_Client::removeAuthenticatedSession(AsyncWebServerRequest *request) {
   }
 }
 
-void WiFi_Client::process() {
+void Wlan::process() {
 
   ArduinoOTA.handle();
 
@@ -756,7 +756,7 @@ void WiFi_Client::process() {
   }
 }
 
-void WiFi_Client::registerMqttMessageCallback(const cb_mqttMessage &cb) {
+void Wlan::registerMqttMessageCallback(const cb_mqttMessage &cb) {
   // add callback to end of callback list
   onMqttMessageCallbacks.push_back(cb);
 }
