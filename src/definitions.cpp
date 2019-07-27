@@ -23,7 +23,7 @@ namespace Definitions
   /*
     Accelerometer/Gyro/Compass
   */
-  const uint8_t TILT_ANGLE_MAX = 30;    // Max angle (degrees) the mower is allowed to tilt, going above this value will stop mower and enter FLIPPED-state. This is a safety setting!
+  const uint8_t TILT_ANGLE_MAX = 35;    // Max angle (degrees) the mower is allowed to tilt, going above this value will stop mower and enter FLIPPED-state. This is a safety setting!
   
   /*
     Wheel motor settings

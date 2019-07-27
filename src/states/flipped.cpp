@@ -16,7 +16,7 @@ void Flipped::process() {
   if (resources.accelerometer.isFlipped()) {
     timer = millis();
   } else {
-    if (timer + 4000 < millis()) {
+    if (timer + 5000 < millis()) {
       stateController.setState(previousState);
     }
   }

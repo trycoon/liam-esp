@@ -4,11 +4,12 @@
 #include <Wire.h>
 #include <Ticker.h>
 #include <SparkFunLSM9DS1.h>
+#include "madgwick_filters.h"
 
-struct orientation {
-  int16_t pitch;
-  int16_t roll;
-  uint16_t heading;
+struct Orientation {
+  int16_t pitch = 0;
+  int16_t roll = 0;
+  uint16_t heading = 0;
 };
 
 class IO_Accelerometer {
@@ -16,7 +17,7 @@ class IO_Accelerometer {
     IO_Accelerometer(TwoWire& w);
     bool isAvailable() const;
     bool isFlipped() const;
-    const orientation& getOrientation() const;
+    const Orientation& getOrientation() const;
     void start();
 
   private:
@@ -25,24 +26,26 @@ class IO_Accelerometer {
     // Use an compass for reference.
     float DECLINATION = -50.0f; // Declination (degrees) in Gotland, SE.
 
-    // How many samples should we take to calculate a median value for the gyro/accelerometer/compass. Don't fiddle with this unless needed.
-    const static uint8_t GYRO_MEDIAN_SAMPLES = 5;
-
+   
     LSM9DS1 imu;
     TwoWire& _Wire;
     Ticker sensorReadingTicker;
-    orientation currentOrientation;
-
-    // All these arrays NEEDS to be of the same size and type!
-    int16_t ax_sample[GYRO_MEDIAN_SAMPLES] = {0};
-    int16_t ay_sample[GYRO_MEDIAN_SAMPLES] = {0};
-    int16_t az_sample[GYRO_MEDIAN_SAMPLES] = {0};
-    int16_t mx_sample[GYRO_MEDIAN_SAMPLES] = {0};
-    int16_t my_sample[GYRO_MEDIAN_SAMPLES] = {0};
-
-    uint8_t medianIndex = 0;
+    Orientation currentOrientation;
+    MadgwickFilters filter;
 
     bool available = false;
+    unsigned long lastUpdate = 0;
+    unsigned long now = 0;
+    float deltaTime = 0.0f;
+    float ax = 0.0f;
+    float ay = 0.0f;
+    float az = 0.0f;
+    float gx = 0.0f;
+    float gy = 0.0f;
+    float gz = 0.0f;
+    float mx = 0.0f;
+    float my = 0.0f;
+    float mz = 0.0f;
     void getReadings();
 };
 
