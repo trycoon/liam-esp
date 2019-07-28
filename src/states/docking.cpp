@@ -7,7 +7,7 @@ Docking::Docking(Definitions::MOWER_STATES myState, StateController& stateContro
 
 void Docking::selected(Definitions::MOWER_STATES lastState) {
   resources.cutter.stop(true);
-  resources.wheelController.forward(0, 100, true);
+  resources.wheelController.forward(0, 80, true);
 }
 
 void Docking::process() {
