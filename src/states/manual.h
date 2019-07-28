@@ -15,6 +15,9 @@ class Manual : public AbstractState {
     }
     void selected(Definitions::MOWER_STATES lastState);
     void process();
+  
+  private:
+    unsigned long dockedDetectedTime = 0;
 };
 
 #endif

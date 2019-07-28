@@ -6,7 +6,7 @@ Manual::Manual(Definitions::MOWER_STATES myState, StateController& stateControll
 }
 
 void Manual::selected(Definitions::MOWER_STATES lastState) {
-
+  dockedDetectedTime = 0;
 }
 
 void Manual::process() {
@@ -21,4 +21,18 @@ void Manual::process() {
       resources.wheelController.stop(true);
     }
   }
+
+  // if we have parked in dockingstation manually and mower detects it's docked, then enter docked-state after a short timeout.
+  if (resources.battery.isDocked() && dockedDetectedTime == 0) {
+    dockedDetectedTime = millis();
+  }
+
+  if (millis() - dockedDetectedTime > 2000) {
+    
+    dockedDetectedTime = 0;
+
+    if (resources.battery.isDocked()) {
+      stateController.setState(Definitions::MOWER_STATES::DOCKED);
+    }
+  }  
 }
