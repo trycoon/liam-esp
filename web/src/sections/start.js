@@ -161,8 +161,8 @@ function updateBattery() {
     let batteryTicks = document.querySelectorAll('.js-battery .js-tick');
   
     if (liam.data.status.isCharging) {
-      document.querySelector('.js-charging').style.visibility = 'visibility';
-      document.querySelector('.js-battery-value').style.display = 'none';
+      document.querySelector('.js-charging').style.visibility = 'visible';
+      document.querySelector('.js-battery-value').style.visibility = 'hidden';
 
       batteryTicks.forEach(function(tick) {
         tick.style.fill = "#880";
@@ -173,7 +173,7 @@ function updateBattery() {
       document.querySelector('.js-charging').style.visibility = 'hidden';
       let batteryValueEl = document.querySelector('.js-battery-value');
       batteryValueEl.textContent = liam.data.status.batteryLevel + '%';
-      batteryValueEl.style.display = 'inline-block';
+      batteryValueEl.style.visibility = 'visible';
 
       batteryTicks.forEach(function(tick) {
         tick.classList.remove('pulsate');
