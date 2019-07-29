@@ -27,7 +27,8 @@ global.liam = {
   }
 };
 
-let currentActiveSection;
+let currentActiveSection,
+    lastUptime = 0;
 
 function addClickEffect() {
   // Add click effect on widgets that are clickable
@@ -45,6 +46,15 @@ function addClickEffect() {
 function setTheme(name) {
   $('html').addClass(name ? 'theme-' + name : liam.config.theme ? 'theme-' + liam.config.theme : 'theme-default');
 }
+
+window.addEventListener('statusUpdated', () => {
+  // if mower has been restarted then reload client also. This is to make sure that we have the latest client-software running in case mower has been restarted due to a firmware update.
+  if (liam.data.status.uptime < lastUptime) {
+    location.reload(true);
+  } else {
+    lastUptime = liam.data.status.uptime;
+  }
+});
 
 function showSection(section) {
   let sections = $('.js-section'),

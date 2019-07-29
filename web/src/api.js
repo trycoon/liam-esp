@@ -50,6 +50,7 @@ export function setupSocket() {
 
     socket.addEventListener('error', (error) => {
       console.warn(`Got WS error: ${error.message}`);
+      showLostConnectionModal();
     });
 
     // Listen for messages
