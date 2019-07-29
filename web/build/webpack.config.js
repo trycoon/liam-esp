@@ -113,6 +113,10 @@ const config = {
         from: resolve(__dirname, '..', 'src', 'html', 'swagger'),
         to: resolve(__dirname, '..', '..', 'data'),
       },
+      {
+        from: resolve(__dirname, '..', 'src', 'favicons'),
+        to: resolve(__dirname, '..', '..', 'data'),
+      },
     ]),
     new CompressionPlugin({
       test: /(\.html|\.js|\.css|\.yaml)$/i,
