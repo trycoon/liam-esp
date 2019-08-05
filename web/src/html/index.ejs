@@ -128,8 +128,8 @@
             <span class="js-restart button">Reboot</span>
             <span class="js-factoryreset button">Factory reset</span>
           </div>
-          <label for="loglever" class="center">Choose loglevel:</label>
-          <select id="loglever" class="center">
+          <label for="loglever" class="center block">Choose loglevel:</label>
+          <select id="loglever" class="center block">
             <option value="0">None</option>
             <option value="2">Error</option>
             <option value="3">Warning</option>
@@ -207,6 +207,8 @@
           <section>
             <h2>System log</h2>
             <textarea id="syslog" name="syslog" rows="10"readonly></textarea>
+            <input id="tailSyslog" type="checkbox" checked>
+            <label for="tailSyslog">Scroll to last message</label>
           </section>
           <section>
             <h2>Firmware update</h2>

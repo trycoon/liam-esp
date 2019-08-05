@@ -30,19 +30,6 @@ global.liam = {
 let currentActiveSection,
     lastUptime = 0;
 
-function addClickEffect() {
-  // Add click effect on widgets that are clickable
-  $(document).on('click', '.clickable', function(e) {
-    let target = $(this);
-
-    target.addClass('clickable-active');
-
-    setTimeout(() => {
-      target.removeClass('clickable-active');
-    }, 20);
-  });
-}
-
 function setTheme(name) {
   $('html').addClass(name ? 'theme-' + name : liam.config.theme ? 'theme-' + liam.config.theme : 'theme-default');
 }
@@ -111,7 +98,6 @@ function init() {
   });
 
   setTheme();
-  addClickEffect();
   initialSetup();
 }
 

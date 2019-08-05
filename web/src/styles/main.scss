@@ -61,10 +61,9 @@ a {
     text-decoration: none;
 }
 
-label,select, textarea {
+label,select,textarea {
     font-family : inherit;
     font-size   : 100%;
-    display: block;
 }
 
 select {
@@ -160,6 +159,10 @@ p {
   text-align: justify;
 }
 
+.block {
+  display: block;
+}
+
 /* Themes */
 .theme-default {
     background: #1a2126;
@@ -169,10 +172,6 @@ p {
         background: #101519;
         border-right: 1px solid #1a2126;
         box-shadow: none;
-    }
-
-    .clickable-active {
-        background: #d8d8d8
     }
 }
 
@@ -184,10 +183,6 @@ p {
         background: #555555;
         border-right: 1px solid #999;
         box-shadow: none;
-    }
-
-    .clickable-active {
-        background: #d8d8d8
     }
 }
 
@@ -243,11 +238,6 @@ p {
     content: "";
     display: table;
     clear: both;
-}
-
-.clickable-active {
-    transition-duration: 0ms;
-    background: #303b44
 }
 
 .button {

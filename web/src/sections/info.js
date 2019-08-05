@@ -2,6 +2,8 @@ import * as api from '../api.js';
 let interval,
     requestInProgress,
     logmessages = [],
+    syslogTextArea = document.getElementById('syslog'),
+    syslogTailCheckbox = document.getElementById('tailSyslog'),
     lastLogNr = 0;
 
 function renderInfo() {
@@ -29,7 +31,11 @@ function getSystemInfoAndRender() {
         logmessages = logmessages.concat(r2[0].messages);
         lastLogNr = r2[0].lastnr;
 
-        $('#syslog').text(logmessages.join('\n'));
+        syslogTextArea.value =  logmessages.join('\n');
+
+        if (syslogTailCheckbox.checked) {
+            syslogTextArea.scrollTop = syslogTextArea.scrollHeight;
+        }
     })
     .always(() => {
         requestInProgress = false;
