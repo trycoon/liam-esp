@@ -365,11 +365,18 @@ components:
           type: integer
           format: uint16
         obstacles:
-          type: array
+          type: object
           description: distance (in centimeters) to possible obstacles, one reading per available sensor
-          items:
-            type: integer
-            format: uint16
+          properties:
+            left:
+              type: integer
+              format: uint16
+            front:
+              type: integer
+              format: uint16
+            right:
+              type: integer
+              format: uint16                            
     System:
       type: object
       properties:

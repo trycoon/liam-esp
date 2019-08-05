@@ -65,10 +65,11 @@ namespace Definitions {
   extern const uint8_t GPS_TX_PIN;
   extern const uint16_t MQTT_QUEUE_LENGTH;
   extern const uint16_t MAX_LOGMESSAGES;
-  extern const uint8_t SONAR1_PIN;
-  extern const uint8_t SONAR2_PIN;
-  extern const uint8_t SONAR3_PIN;
+  extern const uint8_t SONAR_LEFT_PIN;
+  extern const uint8_t SONAR_FRONT_PIN;
+  extern const uint8_t SONAR_RIGHT_PIN;
   extern const uint16_t SONAR_MAXDISTANCE;
+  extern const uint16_t STUCK_RETRY_DELAY;
 };
 
 #endif

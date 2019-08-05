@@ -1,7 +1,6 @@
 #ifndef _sonar_h
 #define _sonar_h
 
-#include <vector>
 #include <Arduino.h>
 #include "processable.h"
 
@@ -12,23 +11,30 @@ struct SonarDevice {
   uint16_t distance = 0;
 };
 
+struct SonarDistances {
+  uint16_t leftDistance = 0;
+  uint16_t frontDistance = 0;
+  uint16_t rightDistance = 0;
+};
+
 class Sonar : public Processable {
   public:
 
     Sonar();
-    uint16_t getObstacleDistance(uint8_t sonar_nr);
+    SonarDistances getObstacleDistances();
     /* Internal use only! */
     void process();
 
   private:
     volatile boolean pingInProgress = false;
-    volatile uint8_t currentSonar = 0;
     volatile unsigned long startTime = 0;
     volatile uint32_t test1=0;
     volatile uint32_t test2=0;
-    std::vector<SonarDevice> sonars;
+    SonarDevice sonarLeft;  // when you stand above mower faceing the same direction
+    SonarDevice sonarFront;
+    SonarDevice sonarRight;
     portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED;
-    void ping();
+    void ping(SonarDevice device);
     void IRAM_ATTR onPing();
 };
 

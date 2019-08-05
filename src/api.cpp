@@ -35,10 +35,10 @@ void Api::statusToJson(statusResponse& obj, JsonObject& json) {
     json["pitch"] = obj.pitch;
     json["roll"] = obj.roll;
     json["heading"] = obj.heading;
-    JsonArray& obstacles = json.createNestedArray("obstacles");
-    obstacles.add(obj.obstacleDistance1);
-    obstacles.add(obj.obstacleDistance2);
-    obstacles.add(obj.obstacleDistance3);
+    JsonObject& obstacles = json.createNestedObject("obstacles");
+    obstacles["left"] = obj.obstacleLeftDistance;
+    obstacles["front"] = obj.obstacleFrontDistance;
+    obstacles["right"] = obj.obstacleRightDistance;
 }
 
 /**
@@ -91,20 +91,18 @@ void Api::collectAndPushNewStatus() {
   if (currentStatus.rightWheelSpd != stat.rightWheelSpeed) {
     currentStatus.rightWheelSpd = stat.rightWheelSpeed;
     statusChanged = true;
-  }
-  auto obstacleDistance1 = resources.sonar.getObstacleDistance(0);
-  auto obstacleDistance2 = resources.sonar.getObstacleDistance(1);
-  auto obstacleDistance3 = resources.sonar.getObstacleDistance(2);
-  if (currentStatus.obstacleDistance1 != obstacleDistance1) {
-    currentStatus.obstacleDistance1 = obstacleDistance1;
+  }  
+  auto obstacleDistances = resources.sonar.getObstacleDistances();
+  if (currentStatus.obstacleLeftDistance != obstacleDistances.leftDistance) {
+    currentStatus.obstacleLeftDistance = obstacleDistances.leftDistance;
     statusChanged = true;
   }
-  if (currentStatus.obstacleDistance2 != obstacleDistance2) {
-    currentStatus.obstacleDistance2 = obstacleDistance2;
+  if (currentStatus.obstacleFrontDistance != obstacleDistances.frontDistance) {
+    currentStatus.obstacleFrontDistance = obstacleDistances.frontDistance;
     statusChanged = true;
   }
-  if (currentStatus.obstacleDistance3 != obstacleDistance3) {
-    currentStatus.obstacleDistance3 = obstacleDistance3;
+  if (currentStatus.obstacleRightDistance != obstacleDistances.rightDistance) {
+    currentStatus.obstacleRightDistance = obstacleDistances.rightDistance;
     statusChanged = true;
   }
 

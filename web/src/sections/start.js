@@ -7,11 +7,13 @@ const sec = $('.js-section-start'),
 let renderer3D,
     camera3D,
     scene3D,
-    grid3D,
     mower3D,
-    obstacle,
+    lawnMesh,
     leftWheel,
     rightWheel,
+    obstacleLeftMech,
+    obstacleFrontMech,
+    obstacleRightMech,
     requestAnimationInstance,
     isModelAvailable3D = false;
 
@@ -230,7 +232,10 @@ function initModel3D(canvas) {
         canvasHeight = canvasWidth;
 
     scene3D = new THREE.Scene();
-
+    scene3D.background = new THREE.Color( 0x87CEEB );
+    scene3D.fog = new THREE.Fog( 0xcce0ff, 100, 1500 );
+        
+    // Renderer
     renderer3D = new THREE.WebGLRenderer({
       antialias: true,
       canvas: canvas
@@ -239,30 +244,87 @@ function initModel3D(canvas) {
     renderer3D.setPixelRatio(window.devicePixelRatio);
     renderer3D.setSize(canvasWidth, canvasHeight);
     renderer3D.setClearColor(0xefefef, 1);
-    //renderer3D.shadowMap.enabled = true;
+    renderer3D.gammaInput = true;
     renderer3D.gammaOutput = true;
+    renderer3D.shadowMap.enabled = true;
     renderer3D.physicallyCorrectLights = true;
 
-    //Camera
-    camera3D = new THREE.PerspectiveCamera(45, canvasWidth / canvasHeight, 0.1, 500);
-    camera3D.position.z = 12; // move camera back some distance, soo that we don't end up in the middle of the model 
+    // Camera
+    camera3D = new THREE.PerspectiveCamera(45, canvasWidth / canvasHeight, 1, 1000);
+    camera3D.position.set(0, 60, -150); // move camera back some distance, soo that we don't end up in the middle of the model
+    // TODO: from above when close to obstacles.
+    //camera3D.position.set(0, 120, -1);  // move camera back some distance, soo that we don't end up in the middle of the model
+
+    camera3D.lookAt(scene3D.position);
     scene3D.add(camera3D);
 
-    let ambientLight = new THREE.AmbientLight(0xcccccc, 0.8);
-    ambientLight.name = "ambientLight"
-    scene3D.add( ambientLight );
+    let ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    scene3D.add(ambientLight);
 
-    let dirLight = new THREE.DirectionalLight(0xffffff, 2);
-    dirLight.position.multiplyScalar(50);
-    dirLight.name = "dirlight";
+    let dirLight = new THREE.DirectionalLight(0xffffff, 1);
+    dirLight.position.set(50, 200, 100);
     dirLight.castShadow = true;
-    camera3D.add(dirLight);
 
-    grid3D = new THREE.GridHelper(50, 50, 0xFF4444, 0x404040);
-    grid3D.rotation.x = mower3D_perspectiveRotation;
-    scene3D.add(grid3D);
+    dirLight.shadow.camera.left = -40;
+    dirLight.shadow.camera.right = 40;
+    dirLight.shadow.camera.top = 40;
+    dirLight.shadow.camera.bottom = -40;
+    dirLight.shadow.camera.near = 3;
+    dirLight.shadow.camera.far = camera3D.far;
+    dirLight.shadow.mapSize.width = 512;
+    dirLight.shadow.mapSize.height = 512;
 
-    //Loader for the model
+    scene3D.add(dirLight);
+
+    // use for debugging shadows
+    //var helper = new THREE.CameraHelper(dirLight.shadow.camera);
+    //scene3D.add(helper);
+
+    // Grass lawn
+    let textureLoader = new THREE.TextureLoader();
+    let groundTexture = textureLoader.load( 'https://smart-home.rocks/liam/grasslight-big.jpg' );
+    groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
+    groundTexture.repeat.set(50, 50);
+    groundTexture.anisotropy = 16;
+    let groundMaterial = new THREE.MeshLambertMaterial({ map: groundTexture });
+
+    lawnMesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(10000, 10000), groundMaterial);
+    lawnMesh.position.y = 0;
+    lawnMesh.rotation.x = - Math.PI / 2;
+    lawnMesh.receiveShadow = true;
+    scene3D.add(lawnMesh);
+
+    // add visualization of ultrasound sensor detected obstacles (one for each sensor).
+    obstacleLeftMech = new THREE.Mesh(new THREE.BoxGeometry(60, 40, 10), new THREE.MeshLambertMaterial({
+      color: 0xcdcdcd,
+    }));
+    obstacleLeftMech.castShadow = true;
+    obstacleLeftMech.visible = false;
+    obstacleLeftMech.rotation.y = THREE.Math.degToRad(45);
+    scene3D.add(obstacleLeftMech);
+
+    obstacleFrontMech = new THREE.Mesh(new THREE.BoxGeometry(60, 40, 10), new THREE.MeshLambertMaterial({
+      color: 0xcdcdcd,
+    }));
+    obstacleFrontMech.castShadow = true;
+    obstacleFrontMech.visible = false;
+    scene3D.add(obstacleFrontMech);
+
+    obstacleRightMech = new THREE.Mesh(new THREE.BoxGeometry(60, 40, 10), new THREE.MeshLambertMaterial({
+      color: 0xcdcdcd,
+    }));
+    obstacleRightMech.castShadow = true;
+    obstacleRightMech.visible = false;
+    obstacleRightMech.rotation.y = THREE.Math.degToRad(-45);
+    scene3D.add(obstacleRightMech);
+
+    // Enable to freely rotate 3D-scene with your mouse (also enable script in index.ejs).
+    /*var controls = new THREE.OrbitControls( camera3D, renderer3D.domElement );
+    controls.minDistance = 3;
+    controls.maxDistance = 1000;
+    controls.maxPolarAngle = (Math.PI / 2) - 0.1;*/
+
+    // Loader for the mower
     const loader = new THREE.GLTFLoader();
     const dracoLoader = new THREE.DRACOLoader();
 
@@ -277,17 +339,21 @@ function initModel3D(canvas) {
 
         mower3D = gltf.scene;
         mower3D.position.set(0, 0, 1);
-        mower3D.rotation.set(mower3D_perspectiveRotation, THREE.Math.degToRad(180), 0); // align mower with grid and in front-facing direction
-        mower3D.scale.set (10, 10, 10);
+        //mower3D.rotation.set(mower3D_perspectiveRotation, THREE.Math.degToRad(180), 0); // align mower with grid and in front-facing direction
+        mower3D.scale.set (100, 100, 100);
+				mower3D.castShadow = true;
+        mower3D.receiveShadow = true;
+        mower3D.traverse(function(child) { 
+          if (child.isMesh) {
+            child.castShadow = true;
+            //child.receiveShadow = true;
+          }
+        });
 
         leftWheel = mower3D.getObjectByName('wheel_left');
         rightWheel = mower3D.getObjectByName('wheel_right');
 
         scene3D.add(mower3D);
- 
-        obstacle = new THREE.Mesh( new THREE.BoxGeometry( 10000, 10000, 10000 ), new THREE.MeshBasicMaterial( {color: 0xff0000} ) );
-        obstacle.position.set(0, 0, 1);
-        scene3D.add( obstacle );
 
         isModelAvailable3D = true;
         drawModel3D();
@@ -349,14 +415,21 @@ function attachModel(child, scene, parent) {
 function drawModel3D() {
   // update model here.
   mower3D.rotation.z = THREE.Math.degToRad(liam.data.status.roll);
-  mower3D.rotation.x = mower3D_perspectiveRotation + THREE.Math.degToRad(liam.data.status.pitch);
-  // animate grid? https://codepen.io/prisoner849/pen/LBWqpZ
-  leftWheel.rotation.x += THREE.Math.degToRad(3 / 100 * liam.data.status.leftWheelSpd);
-  rightWheel.rotation.x += THREE.Math.degToRad(3 / 100 * liam.data.status.rightWheelSpd);
-  // rotate grid to illustrate mower turning
-  grid3D.rotation.y = THREE.Math.degToRad(liam.data.status.heading);
+  mower3D.rotation.x = THREE.Math.degToRad(liam.data.status.pitch);
 
-  camera3D.lookAt(scene3D.position);
+  leftWheel.rotation.x += THREE.Math.degToRad(3 / 200 * liam.data.status.leftWheelSpd);
+  rightWheel.rotation.x += THREE.Math.degToRad(3 / 200 * liam.data.status.rightWheelSpd);
+  // rotate lawn to illustrate mower turning
+  lawnMesh.rotation.z = THREE.Math.degToRad(liam.data.status.heading);
+  lawnMesh.position.z -= (0.6 / 100) * liam.data.status.leftWheelSpd;
+
+  // wrapp lawn soo that we could not escape world
+  if (lawnMesh.position.z < -2500) {
+    lawnMesh.position.z += 2500;
+  } else if (lawnMesh.position.z > 2500) {
+    lawnMesh.position.z -= 2500;
+  }
+
   renderer3D.render(scene3D, camera3D);
   requestAnimationInstance = requestAnimationFrame(drawModel3D);
 }

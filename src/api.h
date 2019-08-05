@@ -26,9 +26,9 @@ struct statusResponse {
   int16_t pitch = 0;
   int16_t roll = 0;
   uint16_t heading = 0;
-  uint16_t obstacleDistance1 = 0;
-  uint16_t obstacleDistance2 = 0;
-  uint16_t obstacleDistance3 = 0;
+  uint16_t obstacleLeftDistance = 0;
+  uint16_t obstacleFrontDistance = 0;
+  uint16_t obstacleRightDistance = 0;
 };
 
 class Api {

@@ -21,7 +21,11 @@ let uptime = new Date(),
       pitch: 0,
       roll: 0,
       heading: 0,
-      obstacles: [0, 0, 0],
+      obstacles: {
+        left: 0,
+        front: 0,
+        right: 0, 
+      },
     },
     currentSystem = {
       name: 'liam-esp',
@@ -48,7 +52,6 @@ module.exports = {
     state.batteryChargeCurrent = 0.0;
 
     state.cutterLoad = Math.round(Math.random() * 100);
-    state.heading = Math.floor(Math.random() * 90) - 45;
 
     state.uptime = Math.round((new Date().getTime() - uptime.getTime()) / 1000);
     state.wifiSignal = Math.floor(Math.random() * (-30 - -90 + 1)) + -90;
@@ -58,6 +61,7 @@ module.exports = {
       let currSequence = moveSequence[seqPos];
       state.roll = currSequence.r || 0;
       state.pitch = currSequence.p || 0;
+      state.heading = currSequence.h || 0;
       state.leftWheelSpd = currSequence.lw || 0;
       state.rightWheelSpd = currSequence.rw || currSequence.lw;
 

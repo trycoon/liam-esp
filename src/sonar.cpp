@@ -12,37 +12,33 @@
  */
 Sonar::Sonar() {
   // define available sensors...
-  SonarDevice sonar1;
-  sonar1.pin = Definitions::SONAR1_PIN;
-  //sonars.push_back(sonar1);
-  /*SonarDevice sonar2;
-  sonar2.pin = Definitions::SONAR2_PIN;
-  sonars.push_back(sonar2);*/
-  /*SonarDevice sonar3;
-  sonar3.pin = Definitions::SONAR3_PIN;
-  sonars.push_back(sonar3);*/
+  SonarDevice sonarLeft;
+  sonarLeft.pin = Definitions::SONAR_LEFT_PIN;
+  /*SonarDevice sonarFront;
+  sonarFront.pin = Definitions::SONAR_FRONT_PIN;
+  SonarDevice sonarRight;
+  sonarRight.pin = Definitions::SONAR_RIGHT_PIN;
+  */
   //pinMode(digitalPinToInterrupt(23), INPUT);
   //attachInterrupt(digitalPinToInterrupt(23), std::bind(&Sonar::onPing, this), CHANGE);
 }
 
-void Sonar::ping() {
+void Sonar::ping(SonarDevice device) {
 
   if (!pingInProgress) {
 
     pingInProgress = true;
     startTime = micros(); // just set it, we will update it later in ISR to be more current. This is needed to check for timeouts in process()
 
-    auto sonar_pin = sonars[currentSonar].pin;
-
-    //detachInterrupt(digitalPinToInterrupt(sonar_pin));  // Don't listen for changes when using pin to send ping.
-    pinMode(sonar_pin, OUTPUT);
-    digitalWrite(sonar_pin, LOW);   // Set the trigger pin low, should already be low, but this will make sure it is.
+    //detachInterrupt(digitalPinToInterrupt(device.pin));  // Don't listen for changes when using pin to send ping.
+    pinMode(device.pin, OUTPUT);
+    digitalWrite(device.pin, LOW);   // Set the trigger pin low, should already be low, but this will make sure it is.
     delayMicroseconds(4);           // Wait for pin to go low.
-    digitalWrite(sonar_pin, HIGH);  // Set trigger pin high, this tells the sensor to send out a ping.
+    digitalWrite(device.pin, HIGH);  // Set trigger pin high, this tells the sensor to send out a ping.
     delayMicroseconds(10);          // Wait long enough for the sensor to realize the trigger pin is high. Sensor specs say to wait 10uS.
-    digitalWrite(sonar_pin, LOW);   // Set trigger pin back to low.
-   // pinMode(sonar_pin, INPUT);      // Set trigger pin to input (when using one Arduino pin, this is technically setting the echo pin to input as both are tied to the same Arduino pin).
-    //attachInterrupt(digitalPinToInterrupt(sonar_pin), std::bind(&Sonar::onPing, this), CHANGE); // Listen for changes.
+    digitalWrite(device.pin, LOW);   // Set trigger pin back to low.
+   // pinMode(device.pin, INPUT);      // Set trigger pin to input (when using one Arduino pin, this is technically setting the echo pin to input as both are tied to the same Arduino pin).
+    //attachInterrupt(digitalPinToInterrupt(device.pin), std::bind(&Sonar::onPing, this), CHANGE); // Listen for changes.
     test1++;
   }
 }
@@ -84,41 +80,36 @@ test2++;
 
 void Sonar::process() {
 
-  if (sonars.size() > 0) {
-
-    portENTER_CRITICAL(&mux);
-    
-    auto sonar = sonars[currentSonar];
-
-    if (pingInProgress && (micros() - startTime) > 30000L) {
-      // if we have not received an response within 30ms since ping started then either our startsignal was not detected by the sonar-sensor or no obstacle was detected within 4,5 meters range.
-      pingInProgress = false;
-    }
-
-    if (!pingInProgress) {
-      sonar.distance = Utils::calculateMedian(sonar.sampleDistances);
-      currentSonar = (currentSonar + 1) % sonars.size();
-      Log.notice("t1: %d, t2: %d, d: %d %d %d %d %d" CR, test1, test2, sonar.sampleDistances[0], sonar.sampleDistances[1], sonar.sampleDistances[2], sonar.sampleDistances[3], sonar.sampleDistances[4]);
-
-      ping();
-    }
-    portEXIT_CRITICAL(&mux);
+  portENTER_CRITICAL(&mux);
+  
+  if (pingInProgress && (micros() - startTime) > 30000L) {
+    // if we have not received an response within 30ms since ping started then either our startsignal was not detected by the sonar-sensor or no obstacle was detected within 4,5 meters range.
+    pingInProgress = false;
   }
+
+  if (!pingInProgress) {
+  //  sonar.distance = Utils::calculateMedian(sonar.sampleDistances);
+  //  currentSonar = (currentSonar + 1) % sonars.size();
+  //  Log.notice("t1: %d, t2: %d, d: %d %d %d %d %d" CR, test1, test2, sonar.sampleDistances[0], sonar.sampleDistances[1], sonar.sampleDistances[2], sonar.sampleDistances[3], sonar.sampleDistances[4]);
+
+    ping(sonarFront);
+  }
+  portEXIT_CRITICAL(&mux);
 }
 
 /**
- * Get distance from mower to closest detected obstacle (in centimeters)
+ * Get distances from mower to closest detected obstacle (in centimeters)
  */
-uint16_t Sonar::getObstacleDistance(uint8_t sonar_nr) {
-  if (sonar_nr > sonars.size() - 1) {
-    return 0;
-  }
+SonarDistances Sonar::getObstacleDistances() {
 
   portENTER_CRITICAL(&mux);
   
-  auto distance = sonars[sonar_nr].distance;
+  SonarDistances distances;
+  distances.leftDistance = sonarLeft.distance;
+  distances.frontDistance = sonarFront.distance;
+  distances.rightDistance = sonarRight.distance;
   
   portEXIT_CRITICAL(&mux);
 
-  return 0;
+  return distances;
 }

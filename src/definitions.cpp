@@ -114,12 +114,13 @@ namespace Definitions
   const uint16_t MAX_LOGMESSAGES = 50;
 
   // Pin used to send and detect a ultrasonic ping for obstacle detection.
-  // SONAR-sensor #1 is the one pointing straight forward.
-  // SONAR-sensor #2 is the one pointing to the left when viewing mower from above (facing the same direction as the mower).
-  // SONAR-sensor #3 is the one pointing to the right when viewing mower from above (facing the same direction as the mower).
-  const uint8_t SONAR1_PIN = 34;
-  const uint8_t SONAR2_PIN = 23;
-  const uint8_t SONAR3_PIN = 27;
+  // when viewing mower from above (facing the same direction as the mower).
+  const uint8_t SONAR_LEFT_PIN = 34;
+  const uint8_t SONAR_FRONT_PIN = 23;
+  const uint8_t SONAR_RIGHT_PIN = 27;
   // Distance ahead the mower should detect obstacles (in centimeters). Between 5-400cm.
   const uint16_t SONAR_MAXDISTANCE = 200;
+
+  // If mower is in Stuck-state, how long (in seconds) should it wait before it tries again? Set "0" for no retries.
+  const uint16_t STUCK_RETRY_DELAY = 20;
 }
