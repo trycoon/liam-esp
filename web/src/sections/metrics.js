@@ -4,6 +4,7 @@ let batteryChart,
     batteryData = [],
     batteryFullThreshold = new Array(MAX_SAMPLES),
     batteryEmptyThreshold = new Array(MAX_SAMPLES),
+    wifiUnusableThreshold = new Array(MAX_SAMPLES),
     wifiChart,
     wifiData = [],
     cutterLoadChart,
@@ -99,7 +100,14 @@ function updatedStatus() {
     }
     wifiData.push(liam.data.status.wifiSignal);
     wifiChart.update({
-        series: [wifiData],
+        series: [{
+            name: 'wifiReception',
+            data: wifiData        
+        },
+        {
+            name: 'wifiUnusableThreshold',
+            data: wifiUnusableThreshold        
+        }],
     });
 
     // prevent chart from growing to infinity (consuming browser memory)
@@ -127,6 +135,7 @@ export function init() {
 
     batteryFullThreshold.fill(liam.data.system.settings.batteryFullVoltage);
     batteryEmptyThreshold.fill(liam.data.system.settings.batteryEmptyVoltage);
+    wifiUnusableThreshold.fill(-81); // dBm
 
     batteryChart = new Chartist.Line('#battery-chart', {
         series: [{
@@ -158,7 +167,14 @@ export function init() {
     });
 
     wifiChart = new Chartist.Line('#wifi-chart', {
-        series: [wifiData],
+        series: [{
+            name: 'wifiReception',
+            data: wifiData        
+        },
+        {
+            name: 'wifiUnusableThreshold',
+            data: wifiUnusableThreshold        
+        }],
     }, {
         axisX: {
             showGrid: false,

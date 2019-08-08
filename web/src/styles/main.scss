@@ -551,6 +551,14 @@ p {
     }
 }
 
+#wifi-chart {
+  .ct-series.ct-series-b .ct-line {
+      stroke: red;
+      stroke-width: 2px;
+      stroke-dasharray: 5px 3px;
+  }
+}
+
 #memory-chart {
   .ct-series.ct-series-b .ct-line {
       stroke: #9da000;
