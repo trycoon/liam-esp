@@ -1,0 +1,22 @@
+EESchema-DOCLIB  Version 2.0  Date: Fri 29 Jun 2012 12:38:31 PM CEST
+#
+$CMP Fabio_USB
+D USB Connector
+K USB usb CONNECTOR connector
+$ENDCMP
+#
+$CMP SKQUCAA010
+D 5 Ways Joystick
+$ENDCMP
+#
+$CMP SOLDER_SWITCH
+D Switch inverseur
+K switch
+$ENDCMP
+#
+$CMP USBmicro
+D USB Connector
+K USB usb CONNECTOR connector
+$ENDCMP
+#
+#End Doc Library

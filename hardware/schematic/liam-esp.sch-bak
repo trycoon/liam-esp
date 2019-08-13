@@ -15,7 +15,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L liam-esp-rescue:R-liam-esp-rescue R21
+L liam-esp-rescue:R R21
 U 1 1 594B8154
 P 13750 3500
 F 0 "R21" H 13900 3550 50  0000 C CNN
@@ -26,7 +26,7 @@ F 3 "" H 13750 3500 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:GND-liam-esp-rescue #PWR030
+L liam-esp-rescue:GND #PWR030
 U 1 1 594E1908
 P 13750 3750
 F 0 "#PWR030" H 13750 3500 50  0001 C CNN
@@ -37,7 +37,7 @@ F 3 "" H 13750 3750 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:Polyfuse-liam-esp-rescue F1
+L liam-esp-rescue:Polyfuse F1
 U 1 1 594E267A
 P 13750 1250
 F 0 "F1" H 13900 1300 50  0000 C CNN
@@ -48,7 +48,7 @@ F 3 "" H 13750 1250 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:R-liam-esp-rescue R18
+L liam-esp-rescue:R R18
 U 1 1 594E2D33
 P 12700 2200
 F 0 "R18" V 12780 2200 50  0000 C CNN
@@ -71,7 +71,7 @@ Cutter_motor(+)
 Text GLabel 1750 6750 2    47   Input ~ 0
 Cutter_motor(-)
 $Comp
-L liam-esp-rescue:GND-liam-esp-rescue #PWR09
+L liam-esp-rescue:GND #PWR09
 U 1 1 59534B5F
 P 1750 8400
 F 0 "#PWR09" H 1750 8150 50  0001 C CNN
@@ -84,7 +84,7 @@ $EndComp
 Text GLabel 2500 7600 2    47   Input ~ 0
 Left_wheel_dir
 $Comp
-L liam-esp-rescue:R-liam-esp-rescue R7
+L liam-esp-rescue:R R7
 U 1 1 5953534D
 P 2050 8150
 F 0 "R7" V 2130 8150 50  0000 C CNN
@@ -95,7 +95,7 @@ F 3 "" H 2050 8150 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:GND-liam-esp-rescue #PWR013
+L liam-esp-rescue:GND #PWR013
 U 1 1 59536E25
 P 2850 1700
 F 0 "#PWR013" H 2850 1450 50  0001 C CNN
@@ -116,7 +116,7 @@ Charge pin -
 Text Notes 1200 1500 2    47   ~ 0
 Charge pin +
 $Comp
-L liam-esp-rescue:Polyfuse-liam-esp-rescue F2
+L liam-esp-rescue:Polyfuse F2
 U 1 1 595378B0
 P 1950 1000
 F 0 "F2" V 1850 1000 50  0000 C CNN
@@ -148,7 +148,7 @@ I2C_SDA
 Text GLabel 6200 6850 0    47   Input ~ 0
 I2C_SCL
 $Comp
-L liam-esp-rescue:IRLB8721PBF-liam-esp-rescue Q2
+L liam-esp-rescue:IRLB8721PBF Q2
 U 1 1 5960A8F2
 P 14300 2800
 F 0 "Q2" H 14500 2850 50  0000 L CNN
@@ -159,7 +159,7 @@ F 3 "" H 14300 2800 50  0001 L CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:R-liam-esp-rescue R20
+L liam-esp-rescue:R R20
 U 1 1 5960ABC9
 P 13300 3500
 F 0 "R20" H 13450 3550 50  0000 C CNN
@@ -170,7 +170,7 @@ F 3 "" H 13300 3500 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:R-liam-esp-rescue R5
+L liam-esp-rescue:R R5
 U 1 1 5960AC39
 P 13050 3050
 F 0 "R5" V 13130 3050 50  0000 C CNN
@@ -181,7 +181,7 @@ F 3 "" H 13050 3050 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L liam-esp-rescue:GND-liam-esp-rescue #PWR028
+L liam-esp-rescue:GND #PWR028
 U 1 1 5960B1D8
 P 13300 3750
 F 0 "#PWR028" H 13300 3500 50  0001 C CNN
@@ -194,7 +194,7 @@ $EndComp
 Text GLabel 12400 3050 0    59   Input ~ 0
 Cutter_Brake
 $Comp
-L liam-esp-rescue:R-liam-esp-rescue R19
+L liam-esp-rescue:R R19
 U 1 1 5966A270
 P 13300 1700
 F 0 "R19" H 13450 1750 50  0000 C CNN
@@ -205,7 +205,7 @@ F 3 "" H 13300 1700 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:2SC1815-liam-esp-rescue Q3
+L liam-esp-rescue:2SC1815 Q3
 U 1 1 5966A492
 P 13200 2200
 F 0 "Q3" H 13400 2275 50  0000 L CNN
@@ -216,7 +216,7 @@ F 3 "" H 13200 2200 50  0001 L CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:D_Schottky-liam-esp-rescue D1
+L liam-esp-rescue:D_Schottky D1
 U 1 1 5967FA0D
 P 13750 2750
 F 0 "D1" V 13700 2850 50  0000 C CNN
@@ -227,7 +227,7 @@ F 3 "" H 13750 2750 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L liam-esp-rescue:GND-liam-esp-rescue #PWR027
+L liam-esp-rescue:GND #PWR027
 U 1 1 59681C4B
 P 13300 2600
 F 0 "#PWR027" H 13300 2350 50  0001 C CNN
@@ -300,7 +300,7 @@ Wire Wire Line
 Wire Wire Line
 	13750 3650 13750 3750
 $Comp
-L liam-esp-rescue:Q_PMOS_GDS-liam-esp-rescue Q1
+L liam-esp-rescue:Q_PMOS_GDS Q1
 U 1 1 596FE708
 P 13650 1950
 F 0 "Q1" H 13850 2000 50  0000 L CNN
@@ -311,7 +311,7 @@ F 3 "" H 13650 1950 50  0001 C CNN
 	1    0    0    1   
 $EndComp
 $Comp
-L liam-esp-rescue:R-liam-esp-rescue R8
+L liam-esp-rescue:R R8
 U 1 1 5970F37E
 P 2050 7350
 F 0 "R8" V 2130 7350 50  0000 C CNN
@@ -322,7 +322,7 @@ F 3 "" H 2050 7350 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:+3.3V-liam-esp-rescue #PWR011
+L liam-esp-rescue:+3.3V #PWR011
 U 1 1 5970F499
 P 2050 7150
 F 0 "#PWR011" H 2050 7000 50  0001 C CNN
@@ -333,7 +333,7 @@ F 3 "" H 2050 7150 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:R-liam-esp-rescue R6
+L liam-esp-rescue:R R6
 U 1 1 5970FC96
 P 12950 2400
 F 0 "R6" H 13050 2450 50  0000 C CNN
@@ -352,7 +352,7 @@ Wire Wire Line
 	12950 2250 12950 2200
 Connection ~ 12950 2200
 $Comp
-L liam-esp-rescue:R-liam-esp-rescue R14
+L liam-esp-rescue:R R14
 U 1 1 5991587C
 P 7550 1900
 F 0 "R14" H 7700 1950 50  0000 C CNN
@@ -363,7 +363,7 @@ F 3 "" H 7550 1900 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:LED-liam-esp-rescue D4
+L liam-esp-rescue:LED D4
 U 1 1 599162A1
 P 7550 1500
 F 0 "D4" H 7550 1600 50  0000 C CNN
@@ -374,7 +374,7 @@ F 3 "" H 7550 1500 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L liam-esp-rescue:LED-liam-esp-rescue D3
+L liam-esp-rescue:LED D3
 U 1 1 599166CC
 P 7950 1500
 F 0 "D3" H 7950 1600 50  0000 C CNN
@@ -385,7 +385,7 @@ F 3 "" H 7950 1500 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L liam-esp-rescue:+3.3V-liam-esp-rescue #PWR018
+L liam-esp-rescue:+3.3V #PWR018
 U 1 1 59916850
 P 7950 1200
 F 0 "#PWR018" H 7950 1050 50  0001 C CNN
@@ -470,7 +470,7 @@ $EndComp
 Wire Wire Line
 	9750 5050 9750 5150
 $Comp
-L liam-esp-rescue:+3.3V-liam-esp-rescue #PWR019
+L liam-esp-rescue:+3.3V #PWR019
 U 1 1 5954C73A
 P 9750 5050
 F 0 "#PWR019" H 9750 4900 50  0001 C CNN
@@ -481,7 +481,7 @@ F 3 "" H 9750 5050 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:+3.3V-liam-esp-rescue #PWR016
+L liam-esp-rescue:+3.3V #PWR016
 U 1 1 5D47B595
 P 7450 5000
 F 0 "#PWR016" H 7450 4850 50  0001 C CNN
@@ -512,7 +512,7 @@ Connection ~ 7450 5550
 Wire Wire Line
 	7450 5150 7450 5000
 $Comp
-L liam-esp-rescue:GND-liam-esp-rescue #PWR017
+L liam-esp-rescue:GND #PWR017
 U 1 1 5D4E124A
 P 7450 6350
 F 0 "#PWR017" H 7450 6100 50  0001 C CNN
@@ -534,7 +534,7 @@ F 3 "~" H 6900 5850 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:GND-liam-esp-rescue #PWR015
+L liam-esp-rescue:GND #PWR015
 U 1 1 5D4F5885
 P 6900 6150
 F 0 "#PWR015" H 6900 5900 50  0001 C CNN
@@ -602,7 +602,7 @@ Wire Wire Line
 Wire Wire Line
 	2850 1000 2850 1050
 $Comp
-L liam-esp-rescue:POT-liam-esp-rescue RV2
+L liam-esp-rescue:POT RV2
 U 1 1 596A95E8
 P 2850 1200
 F 0 "RV2" V 2675 1200 50  0000 C CNN
@@ -639,7 +639,7 @@ $EndComp
 Wire Wire Line
 	7750 7700 7750 7650
 $Comp
-L liam-esp-rescue:GND-liam-esp-rescue #PWR04
+L liam-esp-rescue:GND #PWR04
 U 1 1 5D5A1D5E
 P 1700 6150
 F 0 "#PWR04" H 1700 5900 50  0001 C CNN
@@ -650,7 +650,7 @@ F 3 "" H 1700 6150 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:+3.3V-liam-esp-rescue #PWR03
+L liam-esp-rescue:+3.3V #PWR03
 U 1 1 5D5A1D66
 P 1700 5750
 F 0 "#PWR03" H 1700 5600 50  0001 C CNN
@@ -661,7 +661,7 @@ F 3 "" H 1700 5750 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:+3.3V-liam-esp-rescue #PWR014
+L liam-esp-rescue:+3.3V #PWR014
 U 1 1 5D5AB6E0
 P 6650 6300
 F 0 "#PWR014" H 6650 6150 50  0001 C CNN
@@ -728,7 +728,7 @@ $EndComp
 Text Notes 10100 4100 0    60   ~ 0
 I2C address=0x20
 $Comp
-L liam-esp-rescue:+3.3V-liam-esp-rescue #PWR024
+L liam-esp-rescue:+3.3V #PWR024
 U 1 1 5D448B64
 P 9750 1200
 F 0 "#PWR024" H 9750 1050 50  0001 C CNN
@@ -739,7 +739,7 @@ F 3 "" H 9750 1200 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:GND-liam-esp-rescue #PWR023
+L liam-esp-rescue:GND #PWR023
 U 1 1 5968B58A
 P 10550 3850
 F 0 "#PWR023" H 10550 3600 50  0001 C CNN
@@ -931,7 +931,7 @@ F 3 "~" H 11050 2400 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:R-liam-esp-rescue R13
+L liam-esp-rescue:R R13
 U 1 1 59915920
 P 7950 1900
 F 0 "R13" H 8100 1950 50  0000 C CNN
@@ -986,7 +986,7 @@ Right_wheel_Load
 Wire Wire Line
 	12900 5600 13000 5600
 $Comp
-L liam-esp-rescue:R-liam-esp-rescue R23
+L liam-esp-rescue:R R23
 U 1 1 5D73D526
 P 7050 2650
 F 0 "R23" H 7200 2700 50  0000 C CNN
@@ -1005,7 +1005,7 @@ Wire Wire Line
 Wire Wire Line
 	12900 7800 13000 7800
 $Comp
-L liam-esp-rescue:R-liam-esp-rescue R25
+L liam-esp-rescue:R R25
 U 1 1 5D7AA4E8
 P 8000 2400
 F 0 "R25" V 8080 2400 50  0000 C CNN
@@ -1016,7 +1016,7 @@ F 3 "" H 8000 2400 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L liam-esp-rescue:IRLB8721PBF-liam-esp-rescue Q4
+L liam-esp-rescue:IRLB8721PBF Q4
 U 1 1 5D73285D
 P 6750 2350
 F 0 "Q4" H 7000 2425 50  0000 L CNN
@@ -1042,7 +1042,7 @@ Wire Wire Line
 Wire Wire Line
 	8150 2400 9050 2400
 $Comp
-L liam-esp-rescue:GND-liam-esp-rescue #PWR038
+L liam-esp-rescue:GND #PWR038
 U 1 1 5D85133B
 P 6650 2900
 F 0 "#PWR038" H 6650 2650 50  0001 C CNN
@@ -1067,7 +1067,7 @@ Wire Wire Line
 Wire Wire Line
 	12900 5700 13000 5700
 $Comp
-L liam-esp-rescue:GND-liam-esp-rescue #PWR039
+L liam-esp-rescue:GND #PWR039
 U 1 1 5D5349EB
 P 1800 4000
 F 0 "#PWR039" H 1800 3750 50  0001 C CNN
@@ -1111,7 +1111,7 @@ Wire Wire Line
 Wire Wire Line
 	1600 7600 2050 7600
 $Comp
-L liam-esp-rescue:R-liam-esp-rescue R9
+L liam-esp-rescue:R R9
 U 1 1 5DA49BA8
 P 1750 8150
 F 0 "R9" V 1830 8150 50  0000 C CNN
@@ -1176,7 +1176,7 @@ F 3 "~" H 3300 8000 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:GND-liam-esp-rescue #PWR041
+L liam-esp-rescue:GND #PWR041
 U 1 1 5DD14E3C
 P 3300 8600
 F 0 "#PWR041" H 3300 8350 50  0001 C CNN
@@ -1202,7 +1202,7 @@ Wire Wire Line
 Wire Wire Line
 	3300 7800 1600 7800
 $Comp
-L liam-esp-rescue:GND-liam-esp-rescue #PWR07
+L liam-esp-rescue:GND #PWR07
 U 1 1 5DECD2A0
 P 1750 10050
 F 0 "#PWR07" H 1750 9800 50  0001 C CNN
@@ -1215,7 +1215,7 @@ $EndComp
 Text GLabel 2500 9250 2    47   Input ~ 0
 Right_wheel_dir
 $Comp
-L liam-esp-rescue:R-liam-esp-rescue R16
+L liam-esp-rescue:R R16
 U 1 1 5DECD2A7
 P 2050 9800
 F 0 "R16" V 2130 9800 50  0000 C CNN
@@ -1226,7 +1226,7 @@ F 3 "" H 2050 9800 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:R-liam-esp-rescue R15
+L liam-esp-rescue:R R15
 U 1 1 5DECD2AD
 P 2050 9000
 F 0 "R15" V 2130 9000 50  0000 C CNN
@@ -1237,7 +1237,7 @@ F 3 "" H 2050 9000 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:+3.3V-liam-esp-rescue #PWR040
+L liam-esp-rescue:+3.3V #PWR040
 U 1 1 5DECD2B3
 P 2050 8800
 F 0 "#PWR040" H 2050 8650 50  0001 C CNN
@@ -1267,7 +1267,7 @@ Wire Wire Line
 Wire Wire Line
 	1600 9250 2050 9250
 $Comp
-L liam-esp-rescue:R-liam-esp-rescue R10
+L liam-esp-rescue:R R10
 U 1 1 5DECD2C3
 P 1750 9800
 F 0 "R10" V 1830 9800 50  0000 C CNN
@@ -1332,7 +1332,7 @@ F 3 "~" H 3300 9650 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:GND-liam-esp-rescue #PWR042
+L liam-esp-rescue:GND #PWR042
 U 1 1 5DECD2E7
 P 3300 10250
 F 0 "#PWR042" H 3300 10000 50  0001 C CNN
@@ -1384,7 +1384,7 @@ F 3 "~" H 1400 4800 50  0001 C CNN
 	-1   0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:GND-liam-esp-rescue #PWR02
+L liam-esp-rescue:GND #PWR02
 U 1 1 5D547A3B
 P 1800 5200
 F 0 "#PWR02" H 1800 4950 50  0001 C CNN
@@ -1406,7 +1406,7 @@ F 3 "~" H 1800 4850 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:+3.3V-liam-esp-rescue #PWR01
+L liam-esp-rescue:+3.3V #PWR01
 U 1 1 5D529C35
 P 1800 4600
 F 0 "#PWR01" H 1800 4450 50  0001 C CNN
@@ -1559,7 +1559,7 @@ F 3 "http://diotec.com/tl_files/diotec/files/pdf/datasheets/zpd1" H 1700 2800 50
 	0    1    1    0   
 $EndComp
 $Comp
-L liam-esp-rescue:GND-liam-esp-rescue #PWR05
+L liam-esp-rescue:GND #PWR05
 U 1 1 596A803C
 P 1700 3100
 F 0 "#PWR05" H 1700 2850 50  0001 C CNN
@@ -1575,7 +1575,7 @@ Connection ~ 1700 1200
 Wire Wire Line
 	2450 1500 2450 1200
 $Comp
-L liam-esp-rescue:D_Schottky-liam-esp-rescue D2
+L liam-esp-rescue:D_Schottky D2
 U 1 1 5962D43F
 P 2300 1500
 F 0 "D2" H 2300 1600 50  0000 C CNN
@@ -1591,7 +1591,7 @@ Connection ~ 1700 1500
 Wire Wire Line
 	1700 1500 1800 1500
 $Comp
-L liam-esp-rescue:R-liam-esp-rescue R22
+L liam-esp-rescue:R R22
 U 1 1 5D709C3B
 P 1950 1500
 F 0 "R22" V 2030 1500 50  0000 C CNN
@@ -1676,7 +1676,7 @@ Wire Wire Line
 	7950 2100 9050 2100
 Connection ~ 7550 1300
 $Comp
-L liam-esp-rescue:+14.4V-liam-esp-rescue #PWR012
+L liam-esp-rescue:+14.4V #PWR012
 U 1 1 5D8BEE67
 P 2850 950
 F 0 "#PWR012" H 2850 800 50  0001 C CNN
@@ -1687,7 +1687,7 @@ F 3 "" H 2850 950 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:+14.4V-liam-esp-rescue #PWR010
+L liam-esp-rescue:+14.4V #PWR010
 U 1 1 5D8E9C3D
 P 1800 3750
 F 0 "#PWR010" H 1800 3600 50  0001 C CNN
@@ -1698,7 +1698,7 @@ F 3 "" H 1800 3750 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:+14.4V-liam-esp-rescue #PWR06
+L liam-esp-rescue:+14.4V #PWR06
 U 1 1 5D8EBAAC
 P 1750 7350
 F 0 "#PWR06" H 1750 7200 50  0001 C CNN
@@ -1709,7 +1709,7 @@ F 3 "" H 1750 7350 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:+14.4V-liam-esp-rescue #PWR08
+L liam-esp-rescue:+14.4V #PWR08
 U 1 1 5D8ECD19
 P 1750 9000
 F 0 "#PWR08" H 1750 8850 50  0001 C CNN
@@ -1720,7 +1720,7 @@ F 3 "" H 1750 9000 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:+14.4V-liam-esp-rescue #PWR021
+L liam-esp-rescue:+14.4V #PWR021
 U 1 1 5D8EE0BB
 P 6650 1250
 F 0 "#PWR021" H 6650 1100 50  0001 C CNN
@@ -1731,7 +1731,7 @@ F 3 "" H 6650 1250 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L liam-esp-rescue:+14.4V-liam-esp-rescue #PWR029
+L liam-esp-rescue:+14.4V #PWR029
 U 1 1 5D8EF46E
 P 13750 950
 F 0 "#PWR029" H 13750 800 50  0001 C CNN
@@ -1803,7 +1803,7 @@ Connection ~ 10550 3700
 Wire Wire Line
 	10550 3700 10550 3600
 $Comp
-L liam-esp-rescue:GND-liam-esp-rescue #PWR025
+L liam-esp-rescue:GND #PWR025
 U 1 1 5D708308
 P 9750 4050
 F 0 "#PWR025" H 9750 3800 50  0001 C CNN

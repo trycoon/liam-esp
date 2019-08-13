@@ -38,8 +38,8 @@ and eventually timing out, then you need to press the "flash"-button on the ESP3
 
 ### Compile and upload the Web User interface
 
-The Web UI is used for controlling and montitoring your mower, it's also used to setup and configure the mower for the first time use.
-The user interface is a single-page web application that is served from a web server on the mower, the web UI communicates with the mower using its public available REST-API. To preserve precious memory the Web UI is stored in a separate part of the Flash memory called the SPIFFS-memory. To build a memory image and upload it to SPIFFS a few other build steps needs to be run in Platform.io. Also to keep the size of the Web UI to a minimum it is "minified" and the different files are bundled togather to form just a few, to do this we use common used web developer tools based upon the [Node.js](https://nodejs.org/en/) environment. Soo to build the Web UI first make sure you have Node.js installed!
+The Web UI is used for controlling and monitoring your mower, it's also used to setup and configure the mower for the first time use.
+The user interface is a single-page web application that is served from a web server on the mower, the web UI communicates with the mower using its public available REST-API. To preserve precious memory the Web UI is stored in a separate part of the Flash memory called the SPIFFS-memory. To build a memory image and upload it to SPIFFS a few other build steps needs to be run in Platform.io. Also to keep the size of the Web UI to a minimum it is "minified" and the different files are bundled together to form just a few, to do this we use common used web developer tools based upon the [Node.js](https://nodejs.org/en/) environment. Soo to build the Web UI first make sure you have Node.js installed!
 
 Enter the "web"-directory of this application and then run the following in the terminal:
 ```
