@@ -23,6 +23,8 @@ Power board PCB:
 
 <a href="schematic/liam-power-sch.pdf">Circuit diagram</a>
 
+[Access to EasyEDA project](https://easyeda.com/join?type=project&key=e2e5b1779ec9dbd9f0588d719cd2af5d)
+
 ### Assembly & Testing
 
 1. Start by mount and solder the resistors (variable ones included) and diodes (including LED).
@@ -56,6 +58,8 @@ Logic board PCB:
 <img alt="Liam Logic board PCB" src="schematic/liam-logic-pcb.svg" />
 
 <a href="schematic/liam-logic-sch.pdf">Circuit diagram</a>
+
+[Access to EasyEDA project](https://easyeda.com/join?type=project&key=a9da3aa7958e3e6dfdf2d3d5e9616bfe)
 
 ### Assembly & Testing
 
