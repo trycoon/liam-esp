@@ -131,7 +131,7 @@ void MowingSchedule::loadSchedulesFromFlash() {
       mowingSchedule.push_back(entry);
     }
     
-    Log.notice(F("loaded %i schedules" CR), root.size());
+    Log.notice(F("Loaded %i schedules" CR), root.size());
   }
 }
 

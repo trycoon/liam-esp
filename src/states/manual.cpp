@@ -11,7 +11,7 @@ void Manual::selected(Definitions::MOWER_STATES lastState) {
 
 void Manual::process() {
   // if we drive manually and get disconnected from mower or mower loose WiFi connectivity, then stop mower from driving further.
-  if (resources.wlan.getConnectedWebsocketClientsCount() == 0) {
+  /*if (resources.wlan.getConnectedWebsocketClientsCount() == 0) {
     
     resources.cutter.stop();
 
@@ -20,7 +20,7 @@ void Manual::process() {
     if (wheelStatus.leftWheelSpeed != 0 || wheelStatus.rightWheelSpeed != 0) {
       resources.wheelController.stop(true);
     }
-  }
+  }*/
 
   // if we have parked in dockingstation manually and mower detects it's docked, then enter docked-state after a short timeout.
   if (resources.battery.isDocked() && dockedDetectedTime == 0) {

@@ -6,9 +6,6 @@
 
 namespace Configuration {
 
-  static const char* MQTT_TOPIC = "home/liam-esp/subscribe";
-  static const char* MQTT_TOPIC_COMMAND = "home/liam-esp/command";
-  static const char* DEFAULT_NTP = "pool.ntp.org";
   Preferences preferences;
   configObject config;
 
@@ -19,7 +16,7 @@ namespace Configuration {
 
     preferences.begin("liam-esp", false);
     auto jsonString = preferences.getString("config", "{}");
-    DynamicJsonBuffer jsonBuffer(300);
+    DynamicJsonBuffer jsonBuffer(200);
     JsonObject& json = jsonBuffer.parseObject(jsonString);
 
     if (json.success()) {
@@ -44,30 +41,6 @@ namespace Configuration {
       
       if (json.containsKey("lastState")) {
         config.lastState = json["lastState"].as<String>();
-      }
-
-      if (json.containsKey("mqttServer")) {
-        config.mqttServer = json["mqttServer"].as<String>();
-      }
-
-      config.mqttPort = "1883";
-      if (json.containsKey("mqttPort")) {
-        config.mqttPort = json["mqttPort"].as<String>();
-      }
-
-      config.mqttTopic = MQTT_TOPIC;
-      if (json.containsKey("mqttTopic")) {
-        config.mqttTopic = json["mqttTopic"].as<String>();
-      }
-
-      config.mqttTopicCommand = MQTT_TOPIC_COMMAND;
-      if (json.containsKey("mqttTopicCommand")) {
-        config.mqttTopicCommand = json["mqttTopicCommand"].as<String>();
-      }
-
-      config.ntpServer = DEFAULT_NTP;
-      if (json.containsKey("ntpServer")) {
-        config.ntpServer = json["ntpServer"].as<String>();
       }
 
       config.gmt = "0";
@@ -97,7 +70,7 @@ namespace Configuration {
   }
   
   void save() {    
-    DynamicJsonBuffer jsonBuffer(300);
+    DynamicJsonBuffer jsonBuffer(200);
     JsonObject& json = jsonBuffer.createObject();
 
     json["username"] = config.username;
@@ -107,11 +80,6 @@ namespace Configuration {
     json["lastFullyChargeTime"] = config.lastFullyChargeTime;
     json["lastChargeDuration"] = config.lastChargeDuration;
     json["lastState"] = config.lastState;
-    json["mqttServer"] = config.mqttServer;
-    json["mqttPort"] = config.mqttPort;
-    json["mqttTopic"] = config.mqttTopic;
-    json["mqttTopicCommand"] = config.mqttTopicCommand;    
-    json["ntpServer"] = config.ntpServer;
     json["gmt"] = config.gmt;
     json["wifiPassword"] = config.wifiPassword;
     json["ssid"] = config.ssid;

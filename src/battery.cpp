@@ -9,8 +9,6 @@ Battery::Battery(IO_Analog& io_analog, TwoWire& w) : io_analog(io_analog), wire(
 
 void Battery::start() {
   
-  ina219.begin(&wire);
-  
   // Set initial state.
   for (auto i = 0; i < CURRENT_MEDIAN_SAMPLES; i++) {
     updateChargeCurrent();
@@ -31,7 +29,7 @@ void Battery::start() {
 
 void Battery::updateBatteryVoltage() {
 
-  float adc_reading = io_analog.getVoltage(Definitions::BATTERY_SENSOR_PIN);
+  float adc_reading = io_analog.getVoltageAdc1(Definitions::BATTERY_SENSOR_CHANNEL);
   batteryVoltage = roundf((adc_reading * Definitions::BATTERY_MULTIPLIER) * 100) / 100;  // adjust reading and round to two decimals.
 
   _needRecharge = batteryVoltage <= Definitions::BATTERY_EMPTY;
@@ -50,8 +48,8 @@ void Battery::updateBatteryVoltage() {
 
 void Battery::updateChargeCurrent() {
 
-  auto chargeCurrent = ina219.getCurrent_mA();
-  _isDocked = ina219.getBusVoltage_V() > 5;
+  auto chargeCurrent = 0;//ina219.getCurrent_mA(); TODO
+  _isDocked = false;//ina219.getBusVoltage_V() > 5; TODO
 
   currentMedian[currentMedianIndex++ % CURRENT_MEDIAN_SAMPLES] = chargeCurrent;  // enter new reading into array.
   // we can get some missreadings (1475.10) from time to time, so we record samples to an array an take the median value to filter out all noice.

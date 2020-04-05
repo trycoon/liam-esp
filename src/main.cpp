@@ -8,8 +8,8 @@
 #include "log_store.h"
 #include "resources.h"
 #include "io_analog.h"
+#include "io_digital.h"
 #include "io_accelerometer/io_accelerometer.h"
-#include "wlan.h"
 #include "wheel_controller.h"
 #include "wheel.h"
 #include "cutter.h"
@@ -18,7 +18,7 @@
 #include "sonar.h"
 #include "state_controller.h"
 #include "mowing_schedule.h"
-#include "api.h"
+#include "dockingstation/dockingstation.h"
 
 /*
  * Software for controlling a LIAM robotmower using a ESP-32 microcontroller.
@@ -34,8 +34,8 @@ const uint32_t LOOP_DELAY_WARNING_COOLDOWN = 10000000; // 10 sec
 // Setup references between all classes.
 LogStore logstore;
 IO_Analog io_analog;
+IO_Digital io_digital(Wire);
 IO_Accelerometer io_accelerometer(Wire);
-Wlan wlan;
 Wheel leftWheel(1, Definitions::LEFT_WHEEL_MOTOR_PIN, Definitions::LEFT_WHEEL_MOTOR_DIRECTION_PIN, Definitions::LEFT_WHEEL_ODOMETER_PIN, Definitions::LEFT_WHEEL_MOTOR_INVERTED, Definitions::LEFT_WHEEL_MOTOR_SPEED);
 Wheel rightWheel(2, Definitions::RIGHT_WHEEL_MOTOR_PIN, Definitions::RIGHT_WHEEL_MOTOR_DIRECTION_PIN, Definitions::RIGHT_WHEEL_ODOMETER_PIN, Definitions::RIGHT_WHEEL_MOTOR_INVERTED, Definitions::RIGHT_WHEEL_MOTOR_SPEED);
 WheelController wheelController(leftWheel, rightWheel);
@@ -44,9 +44,9 @@ GPS gps;
 Sonar sonar;
 Battery battery(io_analog, Wire);
 MowingSchedule mowingSchedule;
-Resources resources(wlan, wheelController, cutter, battery, gps, sonar, io_accelerometer, logstore, mowingSchedule);
+Resources resources(wheelController, cutter, battery, gps, sonar, io_accelerometer, logstore, mowingSchedule);
 StateController stateController(resources);
-Api api(stateController, resources);
+Dockingstation dockingstation(stateController, resources);
 
 uint64_t loopDelayWarningTime;
 
@@ -65,7 +65,7 @@ void scan_I2C() {
     error = Wire.endTransmission();
 
     if (error == 0) {
-      Log.trace(F("I2C device found at address %X" CR), address);
+      Log.notice(F("I2C device found at address %X" CR), address);
       devices++;
     } else if (error == 4) {
       Log.warning(F("Unknown error at address %X" CR), address);
@@ -73,10 +73,14 @@ void scan_I2C() {
   }
 
   if (devices == 0) {
-    Log.warning(F("No I2C devices found"));
+    Log.warning(F("No I2C devices found" CR));
   } else {
     Log.trace(F("scanning done." CR));
   }
+}
+
+void check_SPI() {
+  Log.notice(F("SPI pins, MOSI: %d, MISO: %d, SCK: %d, SS: %d." CR), MOSI, MISO, SCK, SS);
 }
 
 /**
@@ -108,6 +112,8 @@ void setup() {
   Wire.setClock(400000);  // 400 kHz I2C speed
   scan_I2C();
 
+  check_SPI();
+
   // set up GPS
   //gps.init();
 
@@ -115,6 +121,7 @@ void setup() {
   delay(100);
 
   io_accelerometer.start();
+  dockingstation.start();
   gps.start();
   battery.start();
   mowingSchedule.start();
@@ -127,17 +134,11 @@ void setup() {
   } else {
     stateController.setState(Definitions::MOWER_STATES::DOCKED);
   }
-
-  wlan.start();
-
-  if (Configuration::config.setupDone) {
-    api.setupApi();
-  } else {
-    Log.notice(F("Starting mower for first time. Please connect to WiFi accesspoint \"%s\" and run installation wizard!" CR), Definitions::APP_NAME);
-  }
 }
 
+//
 // Main program loop
+//
 void loop() {
   uint64_t loopStartTime = esp_timer_get_time();
   
@@ -148,8 +149,6 @@ void loop() {
     ESP.restart();
     return;
   }
-
-  wlan.process();
   
   if (Configuration::config.setupDone) {
     // always check if we are flipped.

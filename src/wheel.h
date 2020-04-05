@@ -7,6 +7,10 @@ class Wheel {
   public:
     Wheel(uint8_t wheel_id, uint8_t motor_pin, uint8_t motor_dir_pin, uint8_t odometer_pin, bool wheel_invert, uint8_t wheel_max_speed);
     ~Wheel();
+    /**
+     * Set motor speed, 0->100% to drive forward, -100->0% to drive backward.
+     * @param speed speed in percent from -100 -> 100.
+     */
     void setSpeed(int8_t speed);
     int8_t getSpeed();
     uint32_t getOdometer();

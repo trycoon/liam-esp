@@ -48,8 +48,24 @@ class WheelController : public Processable {
      */     
     void stop(bool smooth = false);
 
+    /**
+     * Return current speed for all wheels
+     * @return wheels status
+     */
     status getStatus();
 
+    /**
+     * If mower is currently driving forward then this method will try to increase the speed of the wheels even more.
+     * @return if increase could be made
+     */
+    bool increaseForwardSpeed();
+
+    /**
+     * If mower is currently driving forward then this method will try to decrease the speed of the wheels, it will however never stop completely.
+     * @return if decrease could be made
+     */
+    bool decreaseForwardSpeed();
+    
     /* Internal use only! */
     void process();
 

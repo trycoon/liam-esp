@@ -39,7 +39,7 @@ void StateController::setState(Definitions::MOWER_STATES newState) {
     Configuration::config.lastState = currentStateInstance->getStateName();
     Configuration::save();
 
-    resources.wlan.publish_mqtt(currentStateInstance->getStateName(), "/state");
+    //resources.wlan.publish_mqtt(currentStateInstance->getStateName(), "/state");
   }
 }
 

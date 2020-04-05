@@ -1,6 +1,7 @@
 import * as auth from './authorisation.js';
 import ReconnectingWebSocket from 'reconnecting-websocket';
-
+alert('använd denna istället: https://sarus.anephenix.com/get-started som websocket lib!');
+alert('använd denna för klarta: https://leafletjs.com/');
 let socket,
     socketDisconnectedTimeout;
 

@@ -1,4 +1,0 @@
-(sym_lib_table
-  (lib (name liam-esp-rescue)(type Legacy)(uri ${KIPRJMOD}/liam-esp-rescue.lib)(options "")(descr ""))
-  (lib (name alexisvl-kicad-schlib-texas)(type Legacy)(uri /home/trycoon/git/liam-esp/hardware/schematic/kicad-schlib/library/TexasInstruments.lib)(options "")(descr ""))
-)

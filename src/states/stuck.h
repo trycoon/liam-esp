@@ -17,6 +17,10 @@ class Stuck : public AbstractState {
     }
     void selected(Definitions::MOWER_STATES lastState);
     void process();
+
+  private:
+    Definitions::MOWER_STATES previousState;
+    unsigned long retryTimer = 0; // when did we last try if we are still stuck?
 };
 
 #endif

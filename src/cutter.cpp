@@ -64,7 +64,7 @@ bool Cutter::isCutting() {
 
 void Cutter::senseLoad() {
 
-  auto current = round(io_analog.getVoltage(Definitions::CUTTER_LOAD_PIN) / Definitions::CUTTER_LOAD_RESISTOR * 1000); // 1000 for converting ampere to milliampere
+  auto current = round(io_analog.getVoltageAdc1(Definitions::CUTTER_LOAD_CHANNEL) / Definitions::CUTTER_LOAD_RESISTOR * 1000); // 1000 for converting ampere to milliampere
   auto newLoad = round((current - Definitions::CUTTER_NOLOAD_CURRENT) / (Definitions::CUTTER_MAX_CURRENT - Definitions::CUTTER_NOLOAD_CURRENT) * 100);
 
   // make sure we stay within percentage boundaries.
@@ -77,6 +77,13 @@ void Cutter::senseLoad() {
   loadMedian[loadMedianIndex++ % LOAD_MEDIAN_SAMPLES] = newLoad;  // enter new reading into array.
   load = Utils::calculateMedian<uint8_t>(loadMedian);
   
+  // keep count of how long we have been overloaded. This handles short burst of overload.
+  if (load > Definitions::CUTTER_LOAD_THRESHOLD) {
+    overloadCounter++;
+  } else if (overloadCounter > 0) {
+    overloadCounter--;
+  }
+
   //Log.notice("%F mA, %d%%" CR, current, load);
 }
 
@@ -93,6 +100,22 @@ void Cutter::setCutterSpeed(uint8_t speed) {
 
 uint8_t Cutter::getLoad() {
   return load;
+}
+
+/**
+ * Signals that cuttermotor has surpassed the CUTTER_LOAD_THRESHOLD and is working too hard keeping up.
+ * Continue working at this load may blow a fuse.
+ */
+bool Cutter::isOverloaded() {
+  return overloadCounter > 15;
+}
+
+/**
+ * Signals that the cuttermotor fuse has blown and we are no longer cutting any grass.
+ * Stop cutter and wait a while for polyfuse to reset or replace fuse.
+ */
+bool Cutter::isFuseblown() {
+  return isCutting() && load < 2; // are we cutting without any load? That is not possible unless motor is standing still.
 }
 
 void Cutter::process() {

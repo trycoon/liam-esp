@@ -1,0 +1,13 @@
+
+ root["name"] = Definitions::APP_NAME;
+ root["version"] = Definitions::APP_VERSION;
+ root["mowerId"] = Configuration::config.mowerId;
+ root["totalHeap"] = ESP.getHeapSize();      // total heap size
+ root["freeHeap"] = ESP.getFreeHeap();       // available heap
+ root["minFreeHeap"] = ESP.getMinFreeHeap(); // lowest level of free heap we had since boot
+ root["getMaxAllocHeap"] = ESP.getMaxAllocHeap();   // largest block of heap that can be allocated at once (heap is usually fragmented, a large value indicated low fragmentation which is good)
+ root["apiKey"] = Configuration::config.apiKey;
+ root["localTime"] = Utils::getTime();
+ JsonObject& settings = root.createNestedObject("settings");
+ settings["batteryFullVoltage"] = Definitions::BATTERY_FULLY_CHARGED;
+ settings["batteryEmptyVoltage"] = Definitions::BATTERY_EMPTY;

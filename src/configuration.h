@@ -17,12 +17,7 @@ namespace Configuration {
     uint32_t startChargeTime = 0;
     uint32_t lastFullyChargeTime = 0;
     uint32_t lastChargeDuration = 0;
-    String lastState;
-    String mqttServer;
-    String mqttPort;
-    String mqttTopic;
-    String mqttTopicCommand;
-    String ntpServer;
+    String lastState;    
     String gmt;
     String wifiPassword;
     String ssid;

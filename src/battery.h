@@ -6,7 +6,6 @@
 #include <Ticker.h>
 #include <Wire.h>
 #include <deque>
-#include <Adafruit_INA219.h>
 #include "io_analog.h"
 
 struct batterySample {
@@ -37,7 +36,6 @@ class Battery {
 
     IO_Analog& io_analog;
     TwoWire& wire;
-    Adafruit_INA219 ina219;
     float batteryVoltage = 0;
     float lastChargeCurrentReading = 0;
     bool _isDocked = false;

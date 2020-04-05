@@ -5,7 +5,7 @@ import { Joystick } from '../components/joystick.js';
 let joystick;
 
 export function selected() {
-    
+  // TODO: https://github.com/taroz/GNSS-Radar ("skyplot"), switch charist to Highchart for more functionality.
 }
 
 export function unselected() {

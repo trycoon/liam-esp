@@ -110,6 +110,34 @@ status WheelController::getStatus() {
   };
 }
 
+bool WheelController::increaseForwardSpeed() {
+  auto leftSpeed = leftWheel.getSpeed();
+  auto rightSpeed = rightWheel.getSpeed();
+
+  if (leftSpeed == rightSpeed && leftSpeed > 0 && leftSpeed < 100) {
+    leftWheel.setSpeed(leftSpeed + 10);
+    rightWheel.setSpeed(rightSpeed + 10);
+
+    return true;
+  }
+
+  return false;
+}
+
+bool WheelController::decreaseForwardSpeed() {
+  auto leftSpeed = leftWheel.getSpeed();
+  auto rightSpeed = rightWheel.getSpeed();
+
+  if (leftSpeed == rightSpeed && leftSpeed >= 20) {
+    leftWheel.setSpeed(leftSpeed - 10);
+    rightWheel.setSpeed(rightSpeed - 10);
+
+    return true;
+  }
+
+  return false;
+}
+
 void WheelController::process() {
   // TODO: handle smooth-running.
 

@@ -1,7 +1,6 @@
 #ifndef resources_h
 #define resources_h
 
-#include "wlan.h"
 #include "wheel_controller.h"
 #include "cutter.h"
 #include "battery.h"
@@ -19,8 +18,7 @@
 */
 class Resources {
   public:
-    Resources(Wlan& wlan,
-                           WheelController& wheelController,
+    Resources(             WheelController& wheelController,
                            Cutter& cutter,
                            Battery& battery,
                            GPS& gps,
@@ -28,8 +26,7 @@ class Resources {
                            IO_Accelerometer& accelerometer,
                            LogStore& logStore,
                            MowingSchedule& mowingSchedule)
-                           : wlan(wlan),
-                             wheelController(wheelController),
+                           : wheelController(wheelController),
                              cutter(cutter),
                              battery(battery),
                              gps(gps),
@@ -38,7 +35,6 @@ class Resources {
                              logStore(logStore),
                              mowingSchedule(mowingSchedule) { }
 
-    Wlan& wlan;
     WheelController& wheelController;
     Cutter& cutter;
     Battery& battery;

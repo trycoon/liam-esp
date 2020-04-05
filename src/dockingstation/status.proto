@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+message Status {
+  required uint8 state = 1;
+  required double batteryVoltage = 2;
+  required uint8 batteryLevel = 3;
+}
+json["state"] = obj.state;
+json["batteryVoltage"] = obj.batteryVoltage;
+json["batteryLevel"] = obj.batteryLevel;
+json["batteryChargeCurrent"] = obj.batteryChargeCurrent;
+json["isCharging"] = obj.isCharging;
+json["lastFullyChargeTime"] = obj.lastFullyChargeTime;
+json["lastChargeDuration"] = obj.lastChargeDuration;
+json["cutterLoad"] = obj.cutterLoad;
+json["cutterRotating"] = obj.cutterRotating;
+json["uptime"] = obj.uptime;
+json["wifiSignal"] = obj.wifiSignal;
+json["leftWheelSpd"] = obj.leftWheelSpd;
+json["rightWheelSpd"] = obj.rightWheelSpd;
+json["pitch"] = obj.pitch;
+json["roll"] = obj.roll;
+json["heading"] = obj.heading;
+JsonObject& obstacles = json.createNestedObject("obstacles");
+obstacles["left"] = obj.obstacleLeftDistance;
+obstacles["front"] = obj.obstacleFrontDistance;
+obstacles["right"] = obj.obstacleRightDistance;

@@ -29,4 +29,20 @@ void Mowing::process() {
 
     lastShouldMowCheck = millis();
   }
+
+  if (resources.cutter.isFuseblown()) {
+    stateController.setState(Definitions::MOWER_STATES::STUCK);
+    Log.warning(F("Non-working cutter has been detected, loose wire or blown fuse?" CR));
+    return;
+  }
+
+  if (resources.cutter.isOverloaded()) {
+    if (resources.wheelController.decreaseForwardSpeed()) {
+      Log.verbose(F("Cutter overloaded, decreased speed of wheels."));
+    }
+  } else {
+    if (resources.wheelController.increaseForwardSpeed()) {
+      Log.verbose(F("Cutterload back to normal, increased speed of wheels."));
+    }
+  }
 }

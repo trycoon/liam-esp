@@ -18,6 +18,8 @@ class Cutter : public Processable {
     void stop(bool brake = true);
     bool isCutting();
     uint8_t getLoad();
+    bool isOverloaded();
+    bool isFuseblown();
     /* Internal use only! */
     void process();
 
@@ -30,6 +32,7 @@ class Cutter : public Processable {
     uint8_t cutterCurrentSpeed = 0; // current speed, when ramping up to cutterSpeed.
     long cutterLastSpeedRamp = 0;
     uint8_t load = 0;
+    uint16_t overloadCounter = 0;
     uint8_t loadMedian[LOAD_MEDIAN_SAMPLES] = {0};
     uint8_t loadMedianIndex = 0;
     Ticker cutterLoadReadingTicker;
