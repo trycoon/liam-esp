@@ -8,52 +8,63 @@
 // https://github.com/sparkfun/ESP32_Motion_Shield/tree/master/Software
 // https://learn.sparkfun.com/tutorials/esp32-thing-motion-shield-hookup-guide/using-the-imu
 
-IO_Accelerometer::IO_Accelerometer(TwoWire& w): _Wire(w) {
-
-  // the device's communication mode and addresses:
-  imu.settings.device.commInterface = IMU_MODE_I2C;
-  //imu.settings.device.mAddress = LSM9DS1_M;
-  //imu.settings.device.agAddress = LSM9DS1_AG;
+IO_Accelerometer::IO_Accelerometer(TwoWire &w) : _Wire(w)
+{
 }
 
-void IO_Accelerometer::start() {
+void IO_Accelerometer::start()
+{
 
-  if (!imu.begin()) {
+  if (imu.begin(LSM9DS1_AG_ADDR(1), LSM9DS1_M_ADDR(1), _Wire) == false)
+  {
     Log.error(F("Failed to initialize gyro/accelerometer/compass, check connections!"));
-  } else {
+  }
+  else
+  {
     Log.notice(F("Gyro/accelerometer/compass init success." CR));
     available = true;
 
     imu.calibrate(true);
     //imu.calibrateMag(true);   //TODO: check why this crashes with: Guru Meditation Error: Core  1 panic'ed (StoreProhibited). Exception was unhandled.
 
-    sensorReadingTicker.attach_ms<IO_Accelerometer*>(20, [](IO_Accelerometer* instance) {
-      instance->getReadings();
-    }, this);
+    sensorReadingTicker.attach_ms<IO_Accelerometer *>(
+        20, [](IO_Accelerometer *instance) {
+          instance->getReadings();
+        },
+        this);
   }
 }
 
-bool IO_Accelerometer::isAvailable() const {
+bool IO_Accelerometer::isAvailable() const
+{
   return available;
 }
 
-const Orientation& IO_Accelerometer::getOrientation() const {
+const Orientation &IO_Accelerometer::getOrientation() const
+{
   return currentOrientation;
 }
 
-bool IO_Accelerometer::isFlipped() const {
-  if (available == false) {
+bool IO_Accelerometer::isFlipped() const
+{
+  if (available == false)
+  {
     return false;
-  } else {    
+  }
+  else
+  {
     return (abs(currentOrientation.pitch) > Definitions::TILT_ANGLE_MAX || abs(currentOrientation.roll) > Definitions::TILT_ANGLE_MAX);
   }
 }
 
-void IO_Accelerometer::getReadings() {
-  
-  if (available) {    
+void IO_Accelerometer::getReadings()
+{
+
+  if (available)
+  {
     // Update the sensor values whenever new data is available
-    if ( imu.accelAvailable() ) {
+    if (imu.accelAvailable())
+    {
       // To read from the accelerometer, first call the
       // readAccel() function. When it exits, it'll update the
       // ax, ay, and az variables with the most current data.
@@ -62,28 +73,31 @@ void IO_Accelerometer::getReadings() {
       ay = imu.calcAccel(imu.ay);
       az = imu.calcAccel(imu.az);
     }
-    if ( imu.gyroAvailable() ) {
+    if (imu.gyroAvailable())
+    {
       // To read from the gyroscope,  first call the
       // readGyro() function. When it exits, it'll update the
       // gx, gy, and gz variables with the most current data.
       imu.readGyro();
-      gx = imu.calcGyro(imu.gx) * PI / 180.0f;  // convert from radians to degrees
+      gx = imu.calcGyro(imu.gx) * PI / 180.0f; // convert from radians to degrees
       gy = imu.calcGyro(imu.gy) * PI / 180.0f;
       gz = imu.calcGyro(imu.gz) * PI / 180.0f;
     }
-    if ( imu.magAvailable() ) {
+    if (imu.magAvailable())
+    {
       // To read from the magnetometer, first call the
       // readMag() function. When it exits, it'll update the
       // mx, my, and mz variables with the most current data.
       imu.readMag();
       mx = imu.calcMag(imu.mx);
       my = imu.calcMag(imu.my);
-      mz = imu.calcMag(imu.mz);      
+      mz = imu.calcMag(imu.mz);
     }
 
-    for (uint8_t i = 0; i < 10; i++) { // iterate a fixed number of times per data read cycle
+    for (uint8_t i = 0; i < 10; i++)
+    { // iterate a fixed number of times per data read cycle
       now = micros();
- 
+
       deltaTime = (now - lastUpdate) / 1000000.0f; // set integration time by time elapsed since last filter update
       lastUpdate = now;
 
@@ -98,20 +112,21 @@ void IO_Accelerometer::getReadings() {
     auto a32 = 2.0f * (quaternion.q2 * quaternion.q4 - quaternion.q1 * quaternion.q3);
     auto a33 = quaternion.q1 * quaternion.q1 - quaternion.q2 * quaternion.q2 - quaternion.q3 * quaternion.q3 + quaternion.q4 * quaternion.q4;
     auto pitch = -asinf(a32);
-    auto roll  = atan2f(a31, a33);
-    auto yaw   = atan2f(a12, a22);
+    auto roll = atan2f(a31, a33);
+    auto yaw = atan2f(a12, a22);
 
     // Convert everything from radians to degrees:
     pitch *= 180.0f / PI;
-    roll  *= 180.0f / PI;
-    yaw   *= 180.0f / PI; 
+    roll *= 180.0f / PI;
+    yaw *= 180.0f / PI;
 
     yaw -= DECLINATION;
-    
-    if (yaw < 0) {
+
+    if (yaw < 0)
+    {
       yaw += 360.0f; // Ensure yaw stays between 0 and 360
     }
-    
+
     // acceleration without gravity involved, could be used to detect when we bump into obstacles.
     //auto lin_ax1 = ax + a31;
     //auto lin_ay1 = ay + a32;

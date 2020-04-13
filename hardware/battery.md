@@ -1,3 +1,4 @@
+# Battery
 
 ## Li-ion batteries
 
@@ -15,6 +16,6 @@ For optimal use the battery packs should be fitted with a [BMS-card](https://en.
 
 Suitable BMS-cards:
 
-* ["cf-4s30a-a"](https://www.google.com/search?q=cf-4s30a-a), more information about the charger [here](https://mysku.me/blog/aliexpress/58000.html) (in Russia).
-* [yh2204a](https://www.google.com/search?q=yh2204a)
-* [Smart BMS](https://www.lithiumbatterypcb.com/product-instructionev-battery-pcb-boardev-battery-pcb-board/ev-battery-pcb-board/smart-bms-of-power-battery/)
+- ["cf-4s30a-a"](https://www.google.com/search?q=cf-4s30a-a), more information about the charger [here](https://mysku.me/blog/aliexpress/58000.html) (in Russia).
+- [yh2204a](https://www.google.com/search?q=yh2204a)
+- [Smart BMS](https://www.lithiumbatterypcb.com/product-instructionev-battery-pcb-boardev-battery-pcb-board/ev-battery-pcb-board/smart-bms-of-power-battery/)

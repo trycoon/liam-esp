@@ -1,125 +1,162 @@
-Test code :
+/*
+  LoRa-based communication, to keep us connected to the docking station.
+  Using this libary, https://github.com/jgromes/RadioLib, and a Semtech SX1280
+  transceiver. Another useful library with lots of good documentation, however
+  not as nice API and lacking interrupt support:
+  https://github.com/LoRaTracker/SX12XX-LoRa/blob/master/What%20is%20LoRa.md
+*/
+/*
+   RadioLib SX128x Receive with Interrupts Example
 
-#include <AsyncTCP.h>
-#include <ESPAsyncWebServer.h>
-#include <LoRa.h>
-#include <SPI.h>
-    AsyncWebServer server(80);
-//AsyncWebSocket ws("/ws");
+   This example listens for LoRa transmissions and tries to
+   receive them. Once a packet is received, an interrupt is
+   triggered. To successfully receive data, the following
+   settings have to be the same on both transmitter
+   and receiver:
+    - carrier frequency
+    - bandwidth
+    - spreading factor
+    - coding rate
+    - sync word
 
-String outgoing; // outgoing message
+   Other modules from SX128x family can also be used.
 
-byte msgCount = 0;        // count of outgoing messages
-byte localAddress = 0xBB; // address of this device
-byte destination = 0xFF;  // destination to send to
-long lastSendTime = 0;    // last send time
-int interval = 2000;      // interval between sends
+   For full API reference, see the GitHub Pages
+   https://jgromes.github.io/RadioLib/
+*/
 
-const char *ssid = "BlackFox";
-const char *password = "a/@1234567";
+// include the library
+#include <RadioLib.h>
 
-void setup()
-{
-  Serial.begin(115200);
-  WiFi.begin(ssid, password);
+// flag to indicate that a packet was received
+volatile bool receivedFlag = false;
 
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(1000);
-    Serial.println("Connecting to WiFi..");
+// disable interrupt when it's not needed
+volatile bool enableInterrupt = true;
+
+// SX1280 has the following connections:
+// NSS pin:   10
+// DIO1 pin:  2
+// NRST pin:  3
+// BUSY pin:  9
+SX1280 lora = new Module(10, 2, 3, 9);
+
+// this function is called when a complete packet
+// is received by the module
+// IMPORTANT: this function MUST be 'void' type
+//            and MUST NOT have any arguments!
+void setFlag(void) {
+  // check if the interrupt is enabled
+  if (!enableInterrupt) {
+    return;
   }
 
-  Serial.println(WiFi.localIP());
+  // we got a packet, set the flag
+  receivedFlag = true;
+}
 
-  server.on("/hello", HTTP_GET, [](AsyncWebServerRequest *request) {
-    String message = "HeLoRa World! web"; // send a message
-    sendMessage(message);
-    request->send(200, "text/plain", "Hello World");
-  });
+void setup() {
+  Serial.begin(9600);
 
-  while (!Serial)
-    ;
-
-  Serial.println("LoRa Duplex");
-
-  // override the default CS, reset, and IRQ pins (optional)
-  LoRa.setPins(13, 17, -1); // set CS, reset, IRQ pin
-
-  if (!LoRa.begin(433E6))
-  { // initialize ratio at 915 MHz
-    Serial.println("LoRa init failed. Check your connections.");
+  // initialize SX1280 with default settings
+  Serial.print(F("[SX1280] Initializing ... "));
+  // carrier frequency:           2400.0 MHz
+  // bandwidth:                   812.5 kHz
+  // spreading factor:            9
+  // coding rate:                 7
+  // output power:                10 dBm
+  // preamble length:             12 symbols
+  // CRC:                         enabled
+  int state = lora.begin();
+  if (state == ERR_NONE) {
+    Serial.println(F("success!"));
+  } else {
+    Serial.print(F("failed, code "));
+    Serial.println(state);
     while (true)
-      ; // if failed, do nothing
+      ;
   }
-  server.begin();
-  Serial.println("LoRa init succeeded.");
+
+  // set the function that will be called
+  // when new packet is received
+  lora.setDio1Action(setFlag);
+
+  // start listening for LoRa packets
+  Serial.print(F("[SX1280] Starting to listen ... "));
+  state = lora.startReceive();
+  if (state == ERR_NONE) {
+    Serial.println(F("success!"));
+  } else {
+    Serial.print(F("failed, code "));
+    Serial.println(state);
+    while (true)
+      ;
+  }
+
+  // if needed, 'listen' mode can be disabled by calling
+  // any of the following methods:
+  //
+  // lora.standby()
+  // lora.sleep()
+  // lora.transmit();
+  // lora.receive();
+  // lora.readData();
+  // lora.scanChannel();
 }
 
-void loop()
-{
-  if (millis() - lastSendTime > interval)
-  {
-    String message = "HeLoRa World!"; // send a message
-    sendMessage(message);
-    Serial.println("Sending " + message);
-    lastSendTime = millis();        // timestamp the message
-    interval = random(2000) + 1000; // 2-3 seconds
+void loop() {
+  // check if the flag is set
+  if (receivedFlag) {
+    // disable the interrupt service routine while
+    // processing the data
+    enableInterrupt = false;
+
+    // reset flag
+    receivedFlag = false;
+
+    // you can read received data as an Arduino String
+    String str;
+    int state = lora.readData(str);
+
+    // you can also read received data as byte array
+    /*
+      byte byteArr[8];
+      int state = lora.readData(byteArr, 8);
+    */
+
+    if (state == ERR_NONE) {
+      // packet was successfully received
+      Serial.println(F("[SX1280] Received packet!"));
+
+      // print data of the packet
+      Serial.print(F("[SX1280] Data:\t\t"));
+      Serial.println(str);
+
+      // print RSSI (Received Signal Strength Indicator)
+      Serial.print(F("[SX1280] RSSI:\t\t"));
+      Serial.print(lora.getRSSI());
+      Serial.println(F(" dBm"));
+
+      // print SNR (Signal-to-Noise Ratio)
+      Serial.print(F("[SX1280] SNR:\t\t"));
+      Serial.print(lora.getSNR());
+      Serial.println(F(" dB"));
+
+    } else if (state == ERR_CRC_MISMATCH) {
+      // packet was received, but is malformed
+      Serial.println(F("CRC error!"));
+
+    } else {
+      // some other error occurred
+      Serial.print(F("failed, code "));
+      Serial.println(state);
+    }
+
+    // put module back to listen mode
+    lora.startReceive();
+
+    // we're ready to receive more packets,
+    // enable interrupt service routine
+    enableInterrupt = true;
   }
-
-  // parse for a packet, and call onReceive with the result:
-  onReceive(LoRa.parsePacket());
-}
-
-void sendMessage(String outgoing)
-{
-  LoRa.beginPacket();            // start packet
-  LoRa.write(destination);       // add destination address
-  LoRa.write(localAddress);      // add sender address
-  LoRa.write(msgCount);          // add message ID
-  LoRa.write(outgoing.length()); // add payload length
-  LoRa.print(outgoing);          // add payload
-  LoRa.endPacket();              // finish packet and send it
-  msgCount++;                    // increment message ID
-}
-
-void onReceive(int packetSize)
-{
-  if (packetSize == 0)
-    return; // if there's no packet, return
-
-  // read packet header bytes:
-  int recipient = LoRa.read();       // recipient address
-  byte sender = LoRa.read();         // sender address
-  byte incomingMsgId = LoRa.read();  // incoming msg ID
-  byte incomingLength = LoRa.read(); // incoming msg length
-
-  String incoming = "";
-
-  while (LoRa.available())
-  {
-    incoming += (char)LoRa.read();
-  }
-
-  if (incomingLength != incoming.length())
-  { // check length for error
-    Serial.println("error: message length does not match length");
-    return; // skip rest of function
-  }
-
-  // if the recipient isn't this device or broadcast,
-  if (recipient != localAddress && recipient != 0xFF)
-  {
-    Serial.println("This message is not for me.");
-    return; // skip rest of function
-  }
-
-  // if message is for this device, or broadcast, print details:
-  Serial.println("Received from: 0x" + String(sender, HEX));
-  Serial.println("Sent to: 0x" + String(recipient, HEX));
-  Serial.println("Message ID: " + String(incomingMsgId));
-  Serial.println("Message length: " + String(incomingLength));
-  Serial.println("Message: " + incoming);
-  Serial.println("RSSI: " + String(LoRa.packetRssi()));
-  Serial.println("Snr: " + String(LoRa.packetSnr()));
-  Serial.println();
 }

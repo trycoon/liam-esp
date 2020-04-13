@@ -1,5 +1,5 @@
 #include <ArduinoLog.h>
-#include "gps.h"
+#include "gnss.h"
 #include "definitions.h"
 
 // RTK baserad GPS. Här finns karta över närliggande stationer: http://www.epncb.oma.be/_networkdata/data_access/real_time/map.php
@@ -14,35 +14,41 @@
 //https://github.com/Ultimaker/CuraEngine/blob/master/src/slicer.cpp
 //https://github.com/Ultimaker/CuraEngine/blob/master/src/infill.cpp
 
-GPS::GPS() {}
-
-void GPS::init()
+GNSS::GNSS(TwoWire &w) : _Wire(w)
 {
-  if (gps.begin() == false) //Connect to the Ublox module using Wire port
+}
+
+void GNSS::init()
+{
+  if (gnss.begin(_Wire) == false) //Connect to the Ublox module using Wire port
   {
-    Log.warning(F("Ublox GPS not detected at default I2C address. Please check wiring, and restart mower!"));
+    Log.warning(F("Ublox device not detected at default I2C address. Please check wiring, and restart mower!"));
     while (1)
       ;
   }
 
   Serial.print(F("Version: "));
-  byte versionHigh = gps.getProtocolVersionHigh();
+  byte versionHigh = gnss.getProtocolVersionHigh();
   Serial.print(versionHigh);
   Serial.print(".");
-  byte versionLow = gps.getProtocolVersionLow();
+  byte versionLow = gnss.getProtocolVersionLow();
   Serial.print(versionLow);
 
-  gps.setI2COutput(COM_TYPE_UBX); // Set the I2C port to output UBX only (turn off NMEA noise)
-  gps.setNavigationFrequency(10); // Set output to 10 times a second
-  gps.setAutoPVT(true);           // Don't block for updates, library will internally serve the latest readings is has instead of waiting for new ones to finish.
-  gps.saveConfiguration();        // Save the current settings to flash and battery backed RAM
+  // do not overload the buffer system from the device, disable UART output
+  gnss.setUART1Output(0); //Disable the UART1 port output
+  gnss.setUART2Output(0); //Disable Set the UART2 port output
 
-  byte rate = gps.getNavigationFrequency();
+  gnss.setI2COutput(COM_TYPE_UBX); // Set the I2C port to output UBX only (turn off NMEA noise)
+  gnss.setNavigationFrequency(10); // Set output to 10 times a second
+  gnss.setAutoPVT(true);           // Don't block for updates, library will internally serve the latest readings is has instead of waiting for new ones to finish.
+  gnss.saveConfiguration();        // Save the current settings to flash and battery backed RAM
+
+  byte rate = gnss.getNavigationFrequency();
   Serial.print("Current update rate:");
   Serial.println(rate);
 }
 
-void GPS::start()
+void GNSS::start()
 {
   // TODO: remove this code when done debugging, not needed since setAutoPVT(true)!
   if (millis() - lastTime > 1000)
@@ -52,33 +58,33 @@ void GPS::start()
     /* Note: Long/lat are large numbers because they are * 10^9. To convert lat/long
     to something google maps understands simply divide the numbers by 100,000,000. We
     do this so that we don't have to use floating point numbers. */
-    int32_t latitude = gps.getHighResLatitude();
+    int32_t latitude = gnss.getHighResLatitude();
     Serial.print(F("Lat: "));
     Serial.print(latitude);
 
-    int32_t longitude = gps.getHighResLongitude();
+    int32_t longitude = gnss.getHighResLongitude();
     Serial.print(F(" Long: "));
     Serial.print(longitude);
 
-    int32_t altitude = gps.getAltitude();
+    int32_t altitude = gnss.getAltitude();
     Serial.print(F(" Alt: "));
     Serial.print(altitude);
 
-    int32_t speed = gps.getGroundSpeed();
+    int32_t speed = gnss.getGroundSpeed();
     Serial.print(F(" Speed: "));
     Serial.print(speed);
     Serial.print(F(" (mm/s)"));
 
-    int32_t heading = gps.getHeading();
+    int32_t heading = gnss.getHeading();
     Serial.print(F(" Heading: "));
     Serial.print(heading);
     Serial.print(F(" (degrees * 10^-5)"));
 
-    int pDOP = gps.getPDOP();
+    int pDOP = gnss.getPDOP();
     Serial.print(F(" pDOP: "));
     Serial.print(pDOP / 100.0, 2);
 
-    byte fixType = gps.getFixType();
+    byte fixType = gnss.getFixType();
     Serial.print(F(" Fix: "));
     if (fixType == 0)
       Serial.print(F("No fix"));
@@ -91,7 +97,7 @@ void GPS::start()
     else if (fixType == 4)
       Serial.print(F("GNSS+Dead reckoning"));
 
-    byte RTK = gps.getCarrierSolutionType();
+    byte RTK = gnss.getCarrierSolutionType();
     Serial.print(" RTK: ");
     Serial.print(RTK);
     if (RTK == 1)
@@ -100,12 +106,12 @@ void GPS::start()
       Serial.print(F("High precision fix!"));
     Serial.println();
 
-    int32_t accuracy = gps.getPositionAccuracy();
+    int32_t accuracy = gnss.getPositionAccuracy();
     Serial.print(F(" 3D Positional Accuracy: "));
     Serial.print(accuracy);
     Serial.println(F("mm"));
 
-    uint32_t horizontalAccuracy = gps.getHorizontalAccuracy();
+    uint32_t horizontalAccuracy = gnss.getHorizontalAccuracy();
     Serial.print(F(" Horizontal accuracy: "));
     Serial.print(horizontalAccuracy);
     Serial.println(F("mm"));
@@ -115,7 +121,7 @@ void GPS::start()
   }
 }
 
-const std::deque<gpsPosition> &GPS::getGpsPositionHistory() const
+const std::deque<gnssPosition> &GNSS::getGnssPositionHistory() const
 {
-  return gpsPosistionSamples;
+  return gnssPosistionSamples;
 }
