@@ -1,14 +1,49 @@
 import * as auth from './authorisation.js';
-import ReconnectingWebSocket from 'reconnecting-websocket';
-alert('använd denna istället: https://sarus.anephenix.com/get-started som websocket lib!');
-alert('använd denna för klarta: https://leafletjs.com/');
+import { WebSocket as PartySocket } from 'partysocket';
 let socket,
     socketDisconnectedTimeout;
 
-$.ajaxSetup({
-  cache: false,
-  timeout: 5000 // 5 seconds
-});
+const REQUEST_TIMEOUT_MS = 5000;
+
+async function request(url, method = 'GET', data) {
+  const controller = new AbortController();
+  const timeoutHandle = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(url, {
+      method,
+      cache: 'no-store',
+      credentials: 'same-origin',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: data === undefined ? undefined : JSON.stringify(data),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      const error = new Error(`Request failed (${response.status})`);
+      error.status = response.status;
+      throw error;
+    }
+
+    const contentType = response.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      return response.json();
+    }
+
+    return null;
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      const timeoutError = new Error('Request timed out');
+      timeoutError.status = 0;
+      throw timeoutError;
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutHandle);
+  }
+}
 
 function showLostConnectionModal() {
   document.querySelector('.js-no-connection-modal').style.display = 'block';
@@ -25,7 +60,13 @@ function hideLostConnectionModal() {
 export function setupSocket() {
   if (!socket) {
     let protocol = location.protocol.indexOf('https') === 0 ? 'wss' : 'ws';
-    socket = new ReconnectingWebSocket(`${protocol}://${location.host}/ws`);
+    socket = new PartySocket(`${protocol}://${location.host}/ws`, [], {
+      minReconnectionDelay: 0,
+      maxReconnectionDelay: 10000,
+      reconnectionDelayGrowFactor: 1.3,
+      minUptime: 5000,
+      connectionTimeout: 4000,
+    });
 
     socket.addEventListener('open', () => {
       console.info('Got WS connection.');
@@ -79,122 +120,70 @@ export function socketSend(messageType, payload) {
 }
   
 export function selectState(state) {
-  return $.ajax({
-    url: '/api/v1/state',
-    method: 'PUT',
-    headers: {
-      'content-type': 'application/json',
-    },
-    data: JSON.stringify({
-      state: state
-    })
+  return request('/api/v1/state', 'PUT', {
+    state: state,
   });
 }
 
 export function getStatus() {
-  return $.getJSON('/api/v1/status');
+  return request('/api/v1/status');
 }
 
 export function getSystem() {
-  return $.getJSON('/api/v1/system');
+  return request('/api/v1/system');
 }
 
 export function getBatteryHistory() {
-  return $.getJSON('/api/v1/history/battery');
+  return request('/api/v1/history/battery');
 }
 
 export function manual(command, params) {
-  return $.ajax({
-    url: `/api/v1/manual/${command}`,
-    method: 'PUT',
-    headers: {
-      'content-type': 'application/json',
-    },
-    data: params ? JSON.stringify(params) : '{}'
-  });
+  return request(`/api/v1/manual/${command}`, 'PUT', params || {});
 }
 
 export function restart() {
-  return $.ajax({
-    url: `/api/v1/reboot`,
-    method: 'PUT',
-    headers: {
-      'content-type': 'application/json',
-    },
-    data: '{}'
-  });
+  return request('/api/v1/reboot', 'PUT', {});
 }
 
 export function factoryreset() {
-  return $.ajax({
-    url: `/api/v1/factoryreset`,
-    method: 'PUT',
-    headers: {
-      'content-type': 'application/json',
-    },
-    data: '{}'
-  });
+  return request('/api/v1/factoryreset', 'PUT', {});
 }
 
 export function generateNewApiKey() {
-  return $.ajax({
-    url: `/api/v1/apikey`,
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-    },
-    data: '{}'
-  });
+  return request('/api/v1/apikey', 'POST', {});
 }
 
 export function getLoglevel() {
-  return $.getJSON('/api/v1/loglevel');
+  return request('/api/v1/loglevel');
 }
 
 export function getLogmessages(lastnr) {
-  return $.getJSON(`/api/v1/logmessages?lastnr=${lastnr || 0}`);
+  return request(`/api/v1/logmessages?lastnr=${lastnr || 0}`);
 }
 
 export function setLoglevel(level) {
-  return $.ajax({
-    url: `/api/v1/loglevel`,
-    method: 'PUT',
-    headers: {
-      'content-type': 'application/json',
-    },
-    data: JSON.stringify({
-      level: level
-    })
+  return request('/api/v1/loglevel', 'PUT', {
+    level: level,
   });
 }
 
 export function createSession(username, password) {
-  return $.ajax({
-    url: `/api/v1/session`,
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-    },
-    data: JSON.stringify({
-      username: username,
-      password: password
-    })
+  return request('/api/v1/session', 'POST', {
+    username: username,
+    password: password,
   });
 }
 
 export function getSession() {
-  return $.getJSON('/api/v1/session');
+  return request('/api/v1/session');
 }
 
 export function deleteSession() {
-  return $.ajax({
-    url: `/api/v1/session`,
-    method: 'DELETE'    
-  });
+  return request('/api/v1/session', 'DELETE');
 }
 
 export function getScheduleList() {
-  return $.getJSON('/api/v1/schedules');
+  return request('/api/v1/schedules');
 }
 
 /**
@@ -204,17 +193,10 @@ export function getScheduleList() {
  * @param {String} stopTime HH:MM of when mower should stop mowing} activeWeekdays 
  */
 export function addScheduleEntry(activeWeekdays, startTime, stopTime) {
-  return $.ajax({
-    url: `/api/v1/schedules`,
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-    },
-    data: JSON.stringify({
-      activeWeekdays: activeWeekdays,
-      startTime: startTime,
-      stopTime: stopTime
-    })
+  return request('/api/v1/schedules', 'POST', {
+    activeWeekdays: activeWeekdays,
+    startTime: startTime,
+    stopTime: stopTime,
   });
 }
 
@@ -223,11 +205,5 @@ export function addScheduleEntry(activeWeekdays, startTime, stopTime) {
  * @param {Number} position
  */
 export function removeScheduleEntry(position) {
-  return $.ajax({
-    url: `/api/v1/schedules/` + position,
-    method: 'DELETE',
-    headers: {
-      'content-type': 'application/json',
-    }
-  });
+  return request(`/api/v1/schedules/${position}`, 'DELETE');
 }

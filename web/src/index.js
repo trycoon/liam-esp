@@ -1,3 +1,4 @@
+import { renderStaticAppIcons } from './icons.js';
 import './styles/main.scss'
 import * as api from './api.js';
 import * as auth from './authorisation.js';
@@ -31,7 +32,7 @@ let currentActiveSection,
     lastUptime = 0;
 
 function setTheme(name) {
-  $('html').addClass(name ? 'theme-' + name : liam.config.theme ? 'theme-' + liam.config.theme : 'theme-default');
+  document.documentElement.classList.add(name ? 'theme-' + name : liam.config.theme ? 'theme-' + liam.config.theme : 'theme-default');
 }
 
 window.addEventListener('statusUpdated', () => {
@@ -44,15 +45,26 @@ window.addEventListener('statusUpdated', () => {
 });
 
 function showSection(section) {
-  let sections = $('.js-section'),
-      navItems = $('.js-main-nav-item'),
-      sectionEl = $('.js-section-' + section),
-      navSectionEl = $('.js-nav-section-' + section);
+  const sections = document.querySelectorAll('.js-section');
+  const navItems = document.querySelectorAll('.js-main-nav-item');
+  const sectionEl = document.querySelector('.js-section-' + section);
+  const navSectionEl = document.querySelector('.js-nav-section-' + section);
 
-  navItems.removeClass('active');
-  navSectionEl.addClass('active');
-  sections.hide();
-  sectionEl.show();
+  navItems.forEach((item) => {
+    item.classList.remove('active');
+  });
+
+  if (navSectionEl) {
+    navSectionEl.classList.add('active');
+  }
+
+  sections.forEach((sectionNode) => {
+    sectionNode.style.display = 'none';
+  });
+
+  if (sectionEl) {
+    sectionEl.style.display = 'block';
+  }
 
   if (currentActiveSection) {
     currentActiveSection.unselected();
@@ -64,12 +76,12 @@ function showSection(section) {
 
 function initialSetup() {
   // get initial settings and system information.
-  $.when(
+  Promise.all([
     api.getSystem(),
-    api.getStatus()
-  ).done((system, status) => {
-    liam.data.system = system[0];
-    liam.data.status = status[0];
+    api.getStatus(),
+  ]).then(([system, status]) => {
+    liam.data.system = system;
+    liam.data.status = status;
 
     for (let section in global.liam.sections) {
       global.liam.sections[section].init();
@@ -91,10 +103,20 @@ function initialSetup() {
 }
 
 function init() {
+  renderStaticAppIcons();
+
   // Hide all sections first, showSection() will show the appropriate one.
-  $('.section').hide();
-  $('.js-main-nav').on('click', '.js-main-nav-item', function() {
-    showSection($(this).data('section'));
+  document.querySelectorAll('.section').forEach((sectionNode) => {
+    sectionNode.style.display = 'none';
+  });
+
+  document.querySelector('.js-main-nav').addEventListener('click', (event) => {
+    const navItem = event.target.closest('.js-main-nav-item');
+    if (!navItem) {
+      return;
+    }
+
+    showSection(navItem.dataset.section);
   });
 
   setTheme();

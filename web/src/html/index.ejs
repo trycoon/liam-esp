@@ -10,23 +10,37 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=1">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=1">
     <link rel="manifest" href="/site.webmanifest?v=1">
-    <link rel="mask-icon" href="/safari-pinned-tab.svg?v=1" color="#5bbad5">
-    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-config" content="none"/>
     <meta name="theme-color" content="#ffffff">
-    <link rel="preconnect" href="https://smart-home.rocks">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chartist@0.11.0/dist/chartist.css" integrity="sha256-ZdPdgx9fZU2qFRxu9ejkHfEBScOXb4TdG9xq82Dd6J8=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chartist@1.5.0/dist/index.css" crossorigin="anonymous">
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.min.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/"
+      }
+    }
+    </script>
+    <script type="module">
+      import * as THREE from 'three';
+      import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+      import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+      window.THREE = Object.assign({}, THREE);
+      window.THREE.GLTFLoader = GLTFLoader;
+      window.THREE.DRACOLoader = DRACOLoader;
+    </script>
     <title>Liam-ESP</title>
   </head>
   <body>
     <div class="all-wrapper" style="opacity: 0;">
       <div id="modal" class="center">
         <div class="js-no-connection-modal vertical-center">
-          <i class="fas fa-ban fa-10x"></i>
+          <span class="js-icon-no-connection"></span>
           <h2>No connection with mower!</h2>
           <p>Mower out of range, mower turned off, or WiFi not working?</p>
         </div>
         <div class="loginbox js-loginbox">
-          <i class="fas fa-user fa-3x"></i>
+          <span class="js-icon-login"></span>
           <h2>Login</h2>
           <form autocapitalize="off" autocorrect="off">
             <p>Username</p>
@@ -40,13 +54,13 @@
       </div>
       <nav class="main-nav js-main-nav">
         <ul class="js-main-nav-list">
-          <li class="js-main-nav-item js-nav-section-start" data-section="start"><span class="fas fa-home fa-fw fa-2x"></span></li>
-          <li class="js-main-nav-item js-nav-section-manual" data-section="manual"><span class="fas fa-gamepad fa-fw fa-2x"></span></li>
-          <li class="js-main-nav-item js-nav-section-metrics" data-section="metrics"><span class="fas fa-chart-bar fa-fw fa-2x"></span></li>
-          <li class="js-main-nav-item js-nav-section-schedule" data-section="schedule"><span class="far fa-clock fa-fw fa-2x"></span></li>
-          <li class="js-main-nav-item js-nav-section-map" data-section="map"><span class="fas fa-route fa-fw fa-2x"></span></li>
-          <li class="js-main-nav-item js-nav-section-settings" data-section="settings"><span class="fas fa-cogs fa-fw fa-2x"></span></li>
-          <li class="js-main-nav-item js-nav-section-info" data-section="info"><span class="fas fa-info-circle fa-fw fa-2x"></span></li>
+          <li class="js-main-nav-item js-nav-section-start" data-section="start"><span class="js-icon-nav-start"></span></li>
+          <li class="js-main-nav-item js-nav-section-manual" data-section="manual"><span class="js-icon-nav-manual"></span></li>
+          <li class="js-main-nav-item js-nav-section-metrics" data-section="metrics"><span class="js-icon-nav-metrics"></span></li>
+          <li class="js-main-nav-item js-nav-section-schedule" data-section="schedule"><span class="js-icon-nav-schedule"></span></li>
+          <li class="js-main-nav-item js-nav-section-map" data-section="map"><span class="js-icon-nav-map"></span></li>
+          <li class="js-main-nav-item js-nav-section-settings" data-section="settings"><span class="js-icon-nav-settings"></span></li>
+          <li class="js-main-nav-item js-nav-section-info" data-section="info"><span class="js-icon-nav-info"></span></li>
         </ul>
       </nav>
       <div class="main js-main">
@@ -67,7 +81,7 @@
             </div>
           </div>
           <div class="battery center">
-            <i class="fas fa-plug fa-2x charging js-charging" style="visibility: hidden"></i>
+            <span class="charging js-charging js-icon-charging" style="visibility: hidden"></span>
             <svg class="js-battery" viewBox="0 0 1200 500" preserveAspectRatio="xMaxYMax meet">
                 <g transform="translate(200)">
                   <path class="outline" d="m -136.9163,50.635005 c -42.68166,1.67 -58.75641,8.8 -71.91854,32.11 -4.96498,9.04 -5.55488,19.029995 -5.55488,167.689995 0,148.43 0.5899,158.66 5.55488,167.7 6.42745,11.65 18.42206,21.64 33.03435,27.59 10.51987,4.28 25.42712,4.52 511.86041,4.52 h 500.75064 l 15.79209,-7.85 c 18.40978,-9.04 32.1618,-26.88 32.1618,-42.34 v -9.28 h 24.2596 c 38.88419,-0.24 61.38638,-9.99 73.95861,-31.87 L 990,346.775 v -96.34 c 0,-91.82 -0.29495,-96.81 -6.13249,-107.04 -13.14984,-23.55 -30.10944,-31.4 -70.45608,-32.83 l -28.64698,-0.95 v -8.8 c 0,-19.979995 -25.14445,-45.669995 -48.23654,-49.239995 -11.40472,-1.65 -928.710191,-2.61 -973.44421,-0.94 z m 970.51929,41.62 c 6.72239,5.23 7.31229,7.37 7.31229,29.499995 v 23.79 l 45.60658,0.71 45.60657,0.71 7.01734,6.66 7.01735,6.66 v 90.15 90.15 l -7.01735,6.66 c -7.01734,6.66 -7.59494,6.66 -41.7968,7.14 -18.99967,0.24 -39.4618,0.47 -45.31163,0.47 l -11.10977,0.24 v 23.79 c 0,22.36 -0.5899,24.5 -7.31229,29.73 l -7.01735,5.95 H 335.77726 c -479.121,0 -491.10332,0 -497.82572,-4.52 l -7.01734,-4.52 V 250.435 95.345005 l 7.01734,-4.52 c 6.7224,-4.52 18.70472,-4.52 497.82572,-4.52 h 490.80838 z" style="fill: #b3b3b3;" />
@@ -226,15 +240,6 @@
         </section>
       </div>
     </div>
-    <script async src="https://use.fontawesome.com/releases/v5.3.1/js/all.js" integrity="sha384-kW+oWsYx3YpxvjtZjFXqazFpA7UP/MbiY4jvs+RWZo2+N94PFZ36T6TFkc9O3qoB" crossorigin="anonymous"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/chartist@0.11.2/dist/chartist.min.js" integrity="sha256-dV9yEU66gO4KERizbr/66K8HtNHA+BRYeNEbaqXoI5M=" crossorigin="anonymous"></script>
-    <!--<script defer src="https://cdn.jsdelivr.net/npm/chartist-plugin-legend@0.6.2/chartist-plugin-legend.min.js"></script>-->
-    <script defer src="https://cdn.jsdelivr.net/npm/three@0.106.2/build/three.min.js" integrity="sha256-tAVw6WRAXc3td2Esrjd28l54s3P2y7CDFu1271mu5LE=" crossorigin="anonymous"></script>
-    <!--
-      Enable to freely rotate 3D-scene with your mouse.
-      <script defer src="https://smart-home.rocks/liam/ThreeOrbitControls.js"></script>-->
-    <script defer src="https://smart-home.rocks/liam/GLTFLoader.min.js"></script>
-    <script defer src="https://smart-home.rocks/liam/DRACOLoader.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/chartist@1.5.0/dist/index.umd.js" crossorigin="anonymous"></script>
   </body>
 </html>

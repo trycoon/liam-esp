@@ -1,17 +1,27 @@
 
 module.exports = (port, mock) => {
   let http = require('http');
-  let sockjs = require('sockjs');
+  let WebSocket = require('ws');
   let clients = new Map();
 
-  let wsServerer = sockjs.createServer({ sockjs_url: 'http://cdn.jsdelivr.net/sockjs/1.0.1/sockjs.min.js' });
-  wsServerer.on('connection', (conn) => {
-    clients.set(conn.id, conn);
-    console.log(`Websocket client connected, id: ${conn.id}`);
+  let httpServer = http.createServer();
+  let wsServer = new WebSocket.Server({
+    server: httpServer,
+    path: '/websocket',
+  });
 
-    conn.on('data', (message) => {
+  wsServer.on('connection', (conn) => {
+    clients.set(conn, conn);
+    console.log('Websocket client connected');
+
+    conn.on('error', (error) => {
+      console.warn(`Websocket client error: ${error.message}`);
+      clients.delete(conn);
+    });
+
+    conn.on('message', (message) => {
       console.log('websocket got:' + message);
-      let json = JSON.parse(message);
+      let json = JSON.parse(message.toString());
 
       if (json.type === 'forward') {
         mock.forward(json.payload.speed, json.payload.turnrate, json.payload.smooth);
@@ -20,19 +30,17 @@ module.exports = (port, mock) => {
       }
 
     });
-    conn.on('close', () => {
-      console.log(`Websocket client disconnected, id: ${conn.id}`);
-      clients.delete(conn.id);
+    conn.on('close', function() {
+      console.log('Websocket client disconnected');
+      clients.delete(conn);
     });
   });
-  
-  let httpServer = http.createServer();
-  wsServerer.installHandlers(httpServer);
+
   httpServer.listen(port, '0.0.0.0');
 
   setInterval(() => {
     clients.forEach((client) => {
-      client.write(JSON.stringify({
+      client.send(JSON.stringify({
         type: "status",
         payload: mock.getCurrentState(),
       }));

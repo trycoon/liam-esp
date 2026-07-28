@@ -1,4 +1,5 @@
 import * as api from '../api.js';
+import { getMdiIconMarkup, mdiIcons } from '../icons.js';
 
 const MAX_SCHEDULE_ENTRIES = 10;
 let scheduleListEl = document.getElementById('scheduleList'),
@@ -18,6 +19,12 @@ function getScheduleEntryFragment(position, activeWeekdays, startTime, stopTime)
         return `<span class="day ${activeWeekdays[index] ? 'selected' : ''}">${day}</span>`;
     }).join('');
 
+    const trashIconMarkup = getMdiIconMarkup(mdiIcons.trash, {
+      size: 20,
+      className: 'app-icon',
+      title: 'Remove schedule entry'
+    });
+
     return `
       <li class="center">
         <div>
@@ -26,7 +33,7 @@ function getScheduleEntryFragment(position, activeWeekdays, startTime, stopTime)
         <div>
           <span>${startTime} - ${stopTime}</span>
           <div class="js-removeSchedule removeSchedule" data-pos="${position}">
-            <i title="remove schedule" class="far fa-trash-alt"></i>
+            ${trashIconMarkup}
           </div>
         </div>
       </li>
@@ -45,8 +52,8 @@ function addScheduleEntry() {
 
   // check that atleast one day of week is selected, that start- and stoptime is valid, and that there is no more than 10 schedules.
   if (!activeWeekdays.every(selected => {return selected === false}) && startTime.match(timeRegExp) && stopTime.match(timeRegExp) && scheduleEntries < MAX_SCHEDULE_ENTRIES) {
-    $.when(api.addScheduleEntry(activeWeekdays, startTime, stopTime))
-    .done(() => {
+    api.addScheduleEntry(activeWeekdays, startTime, stopTime)
+    .then(() => {
       renderScheduleList();
     });
   }
@@ -54,8 +61,8 @@ function addScheduleEntry() {
 
 function removeScheduleEntry(event) {
 
-  $.when(api.removeScheduleEntry(event.currentTarget.dataset.pos))
-  .done(() => {
+  api.removeScheduleEntry(event.currentTarget.dataset.pos)
+  .then(() => {
     renderScheduleList();
   });
 
@@ -63,8 +70,8 @@ function removeScheduleEntry(event) {
 
 function renderScheduleList() {
 
-  $.when(api.getScheduleList())
-  .done(schedules => {
+  api.getScheduleList()
+  .then(schedules => {
     // remove old list first
     [ ...scheduleListEl.childNodes ].forEach(el => el.remove());
 
@@ -84,7 +91,7 @@ function renderScheduleList() {
     if (schedules.length === 0) {
       scheduleListEl.appendChild(document.createTextNode("No active schedule! Add one above."));
     } 
-  });   
+  });
 
 }
 

@@ -1,8 +1,17 @@
+import * as THREE from 'three';
 import * as api from '../api.js';
 import * as auth from '../authorisation.js';
 
-const sec = $('.js-section-start'),
-      mower3D_perspectiveRotation = THREE.Math.degToRad(30);  // rotate 30⁰ to give better 3rd-person perspective
+const isLocalMockHost = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+const grassTextureUrl = isLocalMockHost
+  ? '/resources/grasslight-1024.webp'
+  : 'https://cdn.jsdelivr.net/gh/trycoon/liam-esp@master/web/src/resources/grasslight-1024.webp';
+const mowerModelUrl = isLocalMockHost
+  ? '/resources/3d_mower-optimized.glb'
+  : 'https://cdn.jsdelivr.net/gh/trycoon/liam-esp@master/web/src/resources/3d_mower-optimized.glb';
+
+const sec = document.querySelector('.js-section-start'),
+      mower3D_perspectiveRotation = THREE.MathUtils.degToRad(30);  // rotate 30⁰ to give better 3rd-person perspective
 
 let renderer3D,
     camera3D,
@@ -25,7 +34,7 @@ function setLaunchMowerState() {
         setLaunchMowerState();
       });
     } else {
-      console.error(e.message);
+      console.error(error.message);
     }
   });
 }
@@ -38,7 +47,7 @@ function setMowingState() {
         setMowingState();
       });
     } else {
-      console.error(e.message);
+      console.error(error.message);
     }
   });
 }
@@ -51,7 +60,7 @@ function setDockingState() {
         setDockingState();
       });
     } else {
-      console.error(e.message);
+      console.error(error.message);
     }
   });
 }
@@ -64,7 +73,7 @@ function setStopState() {
         setStopState();
       });
     } else {
-      console.error(e.message);
+      console.error(error.message);
     }
   });
 }
@@ -218,7 +227,7 @@ function updatedStatus() {
     default: text = '...';
   }
 
-  sec.find('.js-state').text(text);
+  sec.querySelector('.js-state').textContent = text;
 
   toggleStateButtons();
   updateBattery();
@@ -228,7 +237,7 @@ function initModel3D(canvas) {
 
   try {
     
-    let canvasWidth = $('.js-main').width(),
+    let canvasWidth = document.querySelector('.js-main').clientWidth,
         canvasHeight = canvasWidth;
 
     scene3D = new THREE.Scene();
@@ -244,10 +253,8 @@ function initModel3D(canvas) {
     renderer3D.setPixelRatio(window.devicePixelRatio);
     renderer3D.setSize(canvasWidth, canvasHeight);
     renderer3D.setClearColor(0xefefef, 1);
-    renderer3D.gammaInput = true;
-    renderer3D.gammaOutput = true;
+    renderer3D.outputColorSpace = THREE.SRGBColorSpace;
     renderer3D.shadowMap.enabled = true;
-    renderer3D.physicallyCorrectLights = true;
 
     // Camera
     camera3D = new THREE.PerspectiveCamera(45, canvasWidth / canvasHeight, 1, 1000);
@@ -282,13 +289,13 @@ function initModel3D(canvas) {
 
     // Grass lawn
     let textureLoader = new THREE.TextureLoader();
-    let groundTexture = textureLoader.load( 'https://smart-home.rocks/liam/grasslight-big.jpg' );
+    let groundTexture = textureLoader.load(grassTextureUrl);
     groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
     groundTexture.repeat.set(50, 50);
     groundTexture.anisotropy = 16;
     let groundMaterial = new THREE.MeshLambertMaterial({ map: groundTexture });
 
-    lawnMesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(10000, 10000), groundMaterial);
+    lawnMesh = new THREE.Mesh(new THREE.PlaneGeometry(10000, 10000), groundMaterial);
     lawnMesh.position.y = 0;
     lawnMesh.rotation.x = - Math.PI / 2;
     lawnMesh.receiveShadow = true;
@@ -300,7 +307,7 @@ function initModel3D(canvas) {
     }));
     obstacleLeftMech.castShadow = true;
     obstacleLeftMech.visible = false;
-    obstacleLeftMech.rotation.y = THREE.Math.degToRad(45);
+    obstacleLeftMech.rotation.y = THREE.MathUtils.degToRad(45);
     scene3D.add(obstacleLeftMech);
 
     obstacleFrontMech = new THREE.Mesh(new THREE.BoxGeometry(60, 40, 10), new THREE.MeshLambertMaterial({
@@ -315,7 +322,7 @@ function initModel3D(canvas) {
     }));
     obstacleRightMech.castShadow = true;
     obstacleRightMech.visible = false;
-    obstacleRightMech.rotation.y = THREE.Math.degToRad(-45);
+    obstacleRightMech.rotation.y = THREE.MathUtils.degToRad(-45);
     scene3D.add(obstacleRightMech);
 
     // Enable to freely rotate 3D-scene with your mouse (also enable script in index.ejs).
@@ -328,18 +335,17 @@ function initModel3D(canvas) {
     const loader = new THREE.GLTFLoader();
     const dracoLoader = new THREE.DRACOLoader();
 
-    THREE.DRACOLoader.setDecoderPath('https://smart-home.rocks/liam/');
-    //dracoLoader.setVerbosity(1);  // Verbose console logging.
+    dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/libs/draco/');
     loader.setDRACOLoader(dracoLoader);
 
-    loader.load('https://smart-home.rocks/liam/3d_mower.glb?v=1',
+    loader.load(mowerModelUrl,
       // called when model has been loaded
       function (gltf) {    
         document.querySelector('.js-model3D-loader').hidden = true;
 
         mower3D = gltf.scene;
         mower3D.position.set(0, 0, 1);
-        //mower3D.rotation.set(mower3D_perspectiveRotation, THREE.Math.degToRad(180), 0); // align mower with grid and in front-facing direction
+        //mower3D.rotation.set(mower3D_perspectiveRotation, THREE.MathUtils.degToRad(180), 0); // align mower with grid and in front-facing direction
         mower3D.scale.set (100, 100, 100);
 				mower3D.castShadow = true;
         mower3D.receiveShadow = true;
@@ -374,7 +380,7 @@ function initModel3D(canvas) {
     window.addEventListener('resize', onWindowResize, false);
     
     function onWindowResize() {
-      canvasWidth = $('.js-main').width();
+      canvasWidth = document.querySelector('.js-main').clientWidth;
       canvasHeight = canvasWidth;
 
       camera3D.aspect = canvasWidth / canvasHeight;
@@ -393,7 +399,7 @@ function initModel3D(canvas) {
  * @param {*} scene 
  */
 function detachModel(child, parent, scene) {
-  child.applyMatrix(parent.matrixWorld);
+  child.applyMatrix4(parent.matrixWorld);
   parent.remove(child);
   parent.updateMatrixWorld();
   scene.add(child);
@@ -406,7 +412,7 @@ function detachModel(child, parent, scene) {
  * @param {*} parent 
  */
 function attachModel(child, scene, parent) {
-  child.applyMatrix(new THREE.Matrix4().getInverse(parent.matrixWorld));
+  child.applyMatrix4(new THREE.Matrix4().copy(parent.matrixWorld).invert());
   scene.remove(child);
   parent.add(child);
   parent.updateMatrixWorld();
@@ -414,13 +420,13 @@ function attachModel(child, scene, parent) {
 
 function drawModel3D() {
   // update model here.
-  mower3D.rotation.z = THREE.Math.degToRad(liam.data.status.roll);
-  mower3D.rotation.x = THREE.Math.degToRad(liam.data.status.pitch);
+  mower3D.rotation.z = THREE.MathUtils.degToRad(liam.data.status.roll);
+  mower3D.rotation.x = THREE.MathUtils.degToRad(liam.data.status.pitch);
 
-  leftWheel.rotation.x += THREE.Math.degToRad(3 / 200 * liam.data.status.leftWheelSpd);
-  rightWheel.rotation.x += THREE.Math.degToRad(3 / 200 * liam.data.status.rightWheelSpd);
+  leftWheel.rotation.x += THREE.MathUtils.degToRad(3 / 200 * liam.data.status.leftWheelSpd);
+  rightWheel.rotation.x += THREE.MathUtils.degToRad(3 / 200 * liam.data.status.rightWheelSpd);
   // rotate lawn to illustrate mower turning
-  lawnMesh.rotation.z = THREE.Math.degToRad(liam.data.status.heading);
+  lawnMesh.rotation.z = THREE.MathUtils.degToRad(liam.data.status.heading);
   lawnMesh.position.z -= (0.6 / 100) * liam.data.status.leftWheelSpd;
 
   // wrapp lawn soo that we could not escape world
@@ -449,22 +455,22 @@ export function init() {
   window.addEventListener('statusUpdated', updatedStatus);
   updatedStatus();
 
-  sec.find('.js-launching').on('click', function() {
+  sec.querySelector('.js-launching').addEventListener('click', function() {
     if (!this.hasAttribute('disabled')) {
       setLaunchMowerState();
     }
   });
-  sec.find('.js-mowing').on('click', function() {
+  sec.querySelector('.js-mowing').addEventListener('click', function() {
     if (!this.hasAttribute('disabled')) {
       setMowingState();
     }
   });
-  sec.find('.js-docking').on('click', function() {
+  sec.querySelector('.js-docking').addEventListener('click', function() {
     if (!this.hasAttribute('disabled')) {
       setDockingState();
     }
   });
-  sec.find('.js-stop').on('click', function() {
+  sec.querySelector('.js-stop').addEventListener('click', function() {
     if (!this.hasAttribute('disabled')) {
       setStopState();
     }

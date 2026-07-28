@@ -2,16 +2,17 @@ import * as api from '../api.js';
 let interval,
     requestInProgress,
     logmessages = [],
+    infoSection = document.querySelector('.js-section-info'),
     syslogTextArea = document.getElementById('syslog'),
     syslogTailCheckbox = document.getElementById('tailSyslog'),
     lastLogNr = 0;
 
 function renderInfo() {
     let info = liam.data.system;
-    $('.js-section-info .appName').text(info.name);
-    $('.js-section-info .appVersion').text(info.version);
-    $('.js-section-info .mowerId').text(info.mowerId);
-    $('.js-section-info .localTime').text(info.localTime);
+    infoSection.querySelector('.appName').textContent = info.name;
+    infoSection.querySelector('.appVersion').textContent = info.version;
+    infoSection.querySelector('.mowerId').textContent = info.mowerId;
+    infoSection.querySelector('.localTime').textContent = info.localTime;
 }
 
 function getSystemInfoAndRender() {
@@ -21,15 +22,15 @@ function getSystemInfoAndRender() {
 
     requestInProgress = true;
 
-    $.when(
+    Promise.all([
         api.getSystem(),
-        api.getLogmessages(lastLogNr)
-    ).done((r1, r2) => {
-        liam.data.system = r1[0];
+        api.getLogmessages(lastLogNr),
+    ]).then(([system, logs]) => {
+        liam.data.system = system;
         renderInfo();
 
-        logmessages = logmessages.concat(r2[0].messages);
-        lastLogNr = r2[0].lastnr;
+        logmessages = logmessages.concat(logs.messages);
+        lastLogNr = logs.lastnr;
 
         syslogTextArea.value =  logmessages.join('\n');
 
@@ -37,7 +38,10 @@ function getSystemInfoAndRender() {
             syslogTextArea.scrollTop = syslogTextArea.scrollHeight;
         }
     })
-    .always(() => {
+    .catch((error) => {
+        console.error(error.message);
+    })
+    .finally(() => {
         requestInProgress = false;
     });
 }
@@ -73,8 +77,8 @@ function updatedStatus() {
         wifiQuality = 'Unusable';
     }
 
-    $('.js-section-info .wifiSignal').text(`${wifiQuality} (${status.wifiSignal} dBm)`);
-    $('.js-section-info .uptime').html(uptimeFormat(status.uptime));
+    infoSection.querySelector('.wifiSignal').textContent = `${wifiQuality} (${status.wifiSignal} dBm)`;
+    infoSection.querySelector('.uptime').innerHTML = uptimeFormat(status.uptime);
 }
 
 export function selected() {

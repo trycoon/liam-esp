@@ -66,25 +66,25 @@ function updatedStatus() {
   }
 
   if (liam.data.status.cutterRotating) {
-    startMowerButton.hide();
-    stopMowerButton.show();
+    startMowerButton.style.display = 'none';
+    stopMowerButton.style.display = '';
   } else {
-    startMowerButton.show();
-    stopMowerButton.hide();
+    startMowerButton.style.display = '';
+    stopMowerButton.style.display = 'none';
   }
 }
 
 export function init() {
   
-  let sec = $('.js-section-manual');
+  const sec = document.querySelector('.js-section-manual');
 
-  startMowerButton = sec.find('.js-startmower');
-  startMowerButton.on('click', () => {
+  startMowerButton = sec.querySelector('.js-startmower');
+  startMowerButton.addEventListener('click', () => {
     startMowerMotor();
   });
 
-  stopMowerButton = sec.find('.js-stopmower');
-  stopMowerButton.on('click', () => {
+  stopMowerButton = sec.querySelector('.js-stopmower');
+  stopMowerButton.addEventListener('click', () => {
     stopMowerMotor();
   });
 

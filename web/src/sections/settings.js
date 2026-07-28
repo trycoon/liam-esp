@@ -1,13 +1,13 @@
 import * as api from '../api.js';
 import * as auth from '../authorisation.js';
 
-let sec = $('.js-section-settings');
+const sec = document.querySelector('.js-section-settings');
 
 export function selected() {
     api.getSystem()
     .then(function(data) {
         liam.data.system = data;
-        sec.find('#apikey').val(data.apiKey);
+        sec.querySelector('#apikey').value = data.apiKey;
     })
     .catch(error => {
         if (error.status === 401) {
@@ -15,16 +15,19 @@ export function selected() {
             selected();
           });
         } else {
-            console.error(e.message);
+            console.error(error.message);
         }
     });
 
     api.getLoglevel()
     .then(function(data) {
-        $(`#loglever option[value="${data.level}"]`).prop('selected', true);
+        const option = sec.querySelector(`#loglever option[value="${data.level}"]`);
+        if (option) {
+            option.selected = true;
+        }
     })
-    .catch(function(e) {
-        console.error(e.message);
+    .catch(function(error) {
+        console.error(error.message);
     });
 }
 
@@ -40,7 +43,7 @@ function restart() {
             restart();
           });
         } else {
-            console.error(e.message);
+                        console.error(error.message);
         }
     });
 }
@@ -53,43 +56,43 @@ function factoryreset() {
             factoryreset();
           });
         } else {
-            console.error(e.message);
+            console.error(error.message);
         }
     });
 }
 
 export function init() {
-    sec.find('.js-restart').on('click', function() {
+    sec.querySelector('.js-restart').addEventListener('click', function() {
       restart();
     });
-    sec.find('.js-factoryreset').on('click', function() {
+    sec.querySelector('.js-factoryreset').addEventListener('click', function() {
         if (confirm('Are you sure you want to wipe ALL settings and return mower to "factory" defaults?')) {
             factoryreset();
         }
     });
-    sec.find('#loglever').change(function() {
+    sec.querySelector('#loglever').addEventListener('change', function() {
         api.setLoglevel(parseInt(this.value))
         .then(function() {
             alert("You must reboot system for loglevel changes to be used.")
         })
-        .catch(function(e) {
-            console.error(e.message);
+        .catch(function(error) {
+            console.error(error.message);
         });
     });
-    sec.find('.js-generateApiKey').on('click', function() {
+    sec.querySelector('.js-generateApiKey').addEventListener('click', function() {
         api.generateNewApiKey()
         .then(function() {
             api.getSystem()
             .then(function(data) {
                 liam.data.system = data;
-                sec.find('#apikey').val(data.apiKey);
+                sec.querySelector('#apikey').value = data.apiKey;
             })
-            .catch(function(e) {
-                console.error(e.message);
+            .catch(function(error) {
+                console.error(error.message);
             });
         })
-        .catch(function(e) {
-            console.error(e.message);
+        .catch(function(error) {
+            console.error(error.message);
         });
     });
 }

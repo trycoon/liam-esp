@@ -190,17 +190,20 @@ p {
 .all-wrapper {
     height: 100%;
     display: grid;
+  --nav-column-width: clamp(56px, 18vw, 82px);
 
-    /* Navigation width in percent of viewport */
-    grid-template-columns: 15vw 100vw - 15vw;
-    @media (min-width: 1280px) {
-      grid-template-columns: 4vw 100vw - 4vw;
-    }
+    /* Mobile first: keep nav touch friendly while preserving content width */
+  grid-template-columns: var(--nav-column-width) calc(100vw - var(--nav-column-width));
 
     -webkit-animation: fadein 2s; /* Safari, Chrome and Opera > 12.1 */
     -webkit-animation-fill-mode: forwards;
     animation: fadein 2s;
     animation-fill-mode: forwards;
+
+    @media (min-width: 1280px) {
+      --nav-column-width: clamp(56px, 6vw, 92px);
+      grid-template-columns: var(--nav-column-width) calc(100vw - var(--nav-column-width));
+    }
 }
 
 /* Navigation menu */
@@ -208,17 +211,30 @@ p {
     text-align: center;
     position: relative;
     z-index: 30;
-    padding: 1rem 0 0 0;
+    padding: 0.8rem 0;
     display: block;
 
     >ul {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.45rem;
+
         >li {
             position: relative;
             cursor: pointer;
             opacity: 0.5;
+            width: 100%;
+            min-height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.2rem 0;
+            touch-action: manipulation;
 
-            .fa-fw {
-                margin: 1rem auto 1rem auto;
+            .app-icon {
+                width: 24px;
+                height: 24px;
             }
         }
 
@@ -226,6 +242,23 @@ p {
             opacity: 1;
         }
     }
+}
+
+@media (max-width: 767px) {
+  .main-nav {
+    >ul {
+      gap: 0.65rem;
+
+      >li {
+        min-height: 52px;
+
+        .app-icon {
+          width: 26px;
+          height: 26px;
+        }
+      }
+    }
+  }
 }
 
 /* Main area */

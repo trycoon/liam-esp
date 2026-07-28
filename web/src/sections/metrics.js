@@ -25,12 +25,12 @@ function getMetricsAndRender() {
 
     requestInProgress = true;
 
-    $.when(
+    Promise.all([
         api.getBatteryHistory(),
-        api.getSystem()
-    ).done((battery, system) => {
-        let values = battery[0].samples.value,
-            times = battery[0].samples.time;
+        api.getSystem(),
+    ]).then(([battery, system]) => {
+        let values = battery.samples.value,
+            times = battery.samples.time;
         // limit number of samples
         if (values.length > MAX_SAMPLES) {
             values = values.slice(-MAX_SAMPLES);
@@ -52,7 +52,7 @@ function getMetricsAndRender() {
             }],
         });
 
-        liam.data.system = system[0];
+        liam.data.system = system;
         // prevent chart from growing to infinity (consuming browser memory)
         if (memoryHeapFree.length > MAX_SAMPLES) {
             memoryHeapFree = memoryHeapFree.slice(-MAX_SAMPLES);
@@ -78,7 +78,7 @@ function getMetricsAndRender() {
     .catch(function(e) {
         console.error(e.message);
     })
-    .always(() => {
+    .finally(() => {
         requestInProgress = false;
     });
 }
@@ -137,7 +137,7 @@ export function init() {
     batteryEmptyThreshold.fill(liam.data.system.settings.batteryEmptyVoltage);
     wifiUnusableThreshold.fill(-81); // dBm
 
-    batteryChart = new Chartist.Line('#battery-chart', {
+    batteryChart = new Chartist.LineChart('#battery-chart', {
         series: [{
             name: 'batteryVoltage',
             data: batteryData        
@@ -166,7 +166,7 @@ export function init() {
         low: liam.data.system.settings.batteryEmptyVoltage - 1.0,
     });
 
-    wifiChart = new Chartist.Line('#wifi-chart', {
+    wifiChart = new Chartist.LineChart('#wifi-chart', {
         series: [{
             name: 'wifiReception',
             data: wifiData        
@@ -187,7 +187,7 @@ export function init() {
         low: -100,
     });
 
-    cutterLoadChart = new Chartist.Line('#cutterload-chart', {
+    cutterLoadChart = new Chartist.LineChart('#cutterload-chart', {
         series: [cutterLoadData],
     }, {
         axisX: {
@@ -204,7 +204,7 @@ export function init() {
         low: 0,
     });
 
-    memoryChart = new Chartist.Line('#memory-chart', {
+    memoryChart = new Chartist.LineChart('#memory-chart', {
         series: [{
                 name: 'memoryHeapFree',
                 data: memoryHeapFree        
@@ -231,7 +231,7 @@ export function init() {
         low: 0,
     });
 
-    batteryChargeChart = new Chartist.Line('#battery-charge-chart', {
+    batteryChargeChart = new Chartist.LineChart('#battery-charge-chart', {
         series: [batteryChargeData],
     }, {
         axisX: {
