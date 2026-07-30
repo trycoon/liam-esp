@@ -21,7 +21,7 @@
     "lint": "biome lint src mock build",
     "lint:fix": "biome lint --write src mock build",
     "format": "biome format --write src mock build",
-    "size-check": "node build/check-size.js",
+    "size-check": "node scripts/check-size.js",
     "build:ci": "npm run build && npm run size-check"
   },
   "homepage": "https://github.com/trycoon/liam-esp",
