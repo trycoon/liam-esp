@@ -61,11 +61,8 @@ const uint8_t TILT_ANGLE_MAX =
 */
 const uint8_t LEFT_WHEEL_MOTOR_PIN = 27;
 const uint8_t LEFT_WHEEL_MOTOR_DIRECTION_PIN = 25;
-const uint8_t LEFT_WHEEL_MOTOR_LOAD_CHANNEL =
-    1;  // Channel on ADC for measuring motor load.
-const uint8_t LEFT_WHEEL_ODOMETER_PIN = 5;  // TODO: Remove this?
-const uint8_t LEFT_WHEEL_MOTOR_SPEED =
-    100;  // 0-100 (%), used to compensate for drifting motors, lower this value
+const uint8_t LEFT_WHEEL_MOTOR_LOAD_CHANNEL = 1;  // Channel on ADC for measuring motor load.
+const uint8_t LEFT_WHEEL_MOTOR_SPEED = 100;  // 0-100 (%), used to compensate for drifting motors, lower this value
           // if mower drift to the right.
 const bool LEFT_WHEEL_MOTOR_INVERTED =
     false;  // Set to "true" if left wheel runs backward when mower should be
@@ -75,7 +72,6 @@ const uint8_t RIGHT_WHEEL_MOTOR_PIN = 32;
 const uint8_t RIGHT_WHEEL_MOTOR_DIRECTION_PIN = 26;
 const uint8_t RIGHT_WHEEL_MOTOR_LOAD_CHANNEL =
     2;  // Channel on ADC for measuring motor load.
-const uint8_t RIGHT_WHEEL_ODOMETER_PIN = 4;  // TODO: Remove this?
 const uint8_t RIGHT_WHEEL_MOTOR_SPEED =
     100;  // 0-100 (%), used to compensate for drifting motors, lower this value
           // if mower drift to the left.
@@ -92,9 +88,12 @@ const uint8_t WHEEL_MOTOR_TURN_SPEED =
 const bool WHEEL_MOTOR_DECREASE_SPEED_AT_CUTTER_LOAD =
     true;  // reduce forward movement of mower when there is a high load on
            // cutter (like high grass)
-const uint16_t WHEEL_ODOMETERPULSES_PER_ROTATION =
-    90;  // number of odometer pulses from motor that equals a full rotation of
-         // the shaft (check with motor manufacturer).
+const float WHEEL_NOLOAD_CURRENT =
+    500;  // Milliampere of wheel motor when no load is applied, see motor
+           // specs for no-load current or find a suitable value yourself.
+const float WHEEL_MAX_CURRENT =
+    1100;  // Max milliampere of wheel motor, see motor specs for stall
+           // current.
 const uint8_t WHEEL_DIAMETER = 190;  // in millimeter
 const uint8_t WHEEL_PAIR_DISTANCE =
     27;  // distance measured between the wheel pairs, in centimeters
@@ -116,18 +115,18 @@ const uint8_t CUTTER_LOAD_CHANNEL =
 const float CUTTER_LOAD_RESISTOR = 0.1;  // Size of shunt resistor connected in
                                          // serial with cutter motor, in Ohm.
 const float CUTTER_NOLOAD_CURRENT =
-    200;  // Milliampere of cutter motor when no load is applied, see motor
+    1000;  // Milliampere of cutter motor when no load is applied, see motor
           // specs for no-load current or find a suitable value yourself. (used
           // for calculating cutter load percentage)
 const float CUTTER_MAX_CURRENT =
-    3100;  // Max milliampere of cutter motor, see motor specs for stall
+    5000;  // Max milliampere of cutter motor, see motor specs for stall
            // current. (used to calculate cutter load percentage)
 const uint8_t CUTTER_MAX_SPEED =
     100;  // 1-100 (%), lower this value if cutter spinning too fast.
 // When the load on the cutter motor surpasses this limit, the cutter is working
 // too hard cutting the grass (and we should reduce speed of wheels to
 // compensate).
-const uint16_t CUTTER_LOAD_THRESHOLD = 80;
+const uint16_t CUTTER_LOAD_THRESHOLD = 70;
 
 /*
   Battery settings

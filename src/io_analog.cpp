@@ -5,6 +5,7 @@
 
 // http://henrysbench.capnfatz.com/henrys-bench/arduino-voltage-measurements/arduino-ads1115-module-getting-started-tutorial/
 // https://learn.adafruit.com/adafruit-4-channel-adc-breakouts/arduino-code
+// https://www.best-microcontroller-projects.com/ads1115.html
 
 IO_Analog::IO_Analog() : adc1(Definitions::ADC1_ADDR), adc2(Definitions::ADC2_ADDR) {
 

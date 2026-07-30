@@ -1,4 +1,3 @@
-- icons.js explain what it does, remove backwardcompability with fontawesome, fix icons and spacing
 - convert from master-branch to main-branch in github
 - Generate a Github action workflow that runs "npm run build:ci" and performe linting of javascript and unittest of C++ code. Remove .travis.yml
 - check all travis*-files, are they needed

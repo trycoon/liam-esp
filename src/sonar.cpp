@@ -1,4 +1,3 @@
-#include <FunctionalInterrupt.h>
 #include <ArduinoLog.h>
 #include "sonar.h"
 #include "utils.h"
@@ -17,7 +16,7 @@ Sonar::Sonar() {
   sonarFront.sense_pin = Definitions::SONAR_FRONT_SENSE_PIN;
   pinMode(sonarFront.ping_pin, OUTPUT);
   pinMode(sonarFront.sense_pin, INPUT);
-  attachInterrupt(sonarFront.sense_pin, std::bind(&Sonar::onPing, this), CHANGE);
+  attachInterrupt(sonarFront.sense_pin, []() { &Sonar::onPing; }, CHANGE);
 }
 
 void Sonar::ping(SonarDevice device) {
@@ -35,6 +34,10 @@ void Sonar::ping(SonarDevice device) {
 
   }
 }
+
+// TODO: issus with std::bind and FunctionalInterrupts
+// https://github.com/espressif/arduino-esp32/issues/3697
+// possible solution: https://www.embeddedclass.com/2019/06/03/learn-freertos-with-arduino-7-task-notification/
 
 void IRAM_ATTR Sonar::onPing() {
   auto time = micros();

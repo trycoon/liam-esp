@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <ArduinoLog.h>
-#include <FunctionalInterrupt.h>
 #include "definitions.h"
 #include "io_accelerometer.h"
 #include "utils.h"

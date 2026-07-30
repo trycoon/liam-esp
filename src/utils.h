@@ -2,6 +2,8 @@
 #define _utils_h
 
 #include <string>
+#include <vector>
+#include <algorithm>
 #include <Arduino.h>
 
 
@@ -32,7 +34,7 @@ namespace Utils {
       if (size == 0) {
           return 0;  // Undefined, really.
       } else {
-          sort(entries.begin(), entries.end());
+          std::sort(entries.begin(), entries.end());
 
           if (size % 2 == 0) {
               return (entries[size / 2 - 1] + entries[size / 2]) / 2;

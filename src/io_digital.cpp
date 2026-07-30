@@ -7,7 +7,8 @@
 IO_Digital::IO_Digital(TwoWire& w): _Wire(w), device(Definitions::DIGITAL_EXPANDER_ADDR, w) {
 
   device.init();
-  device.interruptMode(MCP23017_INTMODE::OR);
+  // Optional interrupt mode setup varies between MCP23017 library versions.
+  // Keep default mode for compatibility.
 
 }
 

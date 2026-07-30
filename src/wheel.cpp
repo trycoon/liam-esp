@@ -1,32 +1,25 @@
 #include "wheel.h"
 
-#include <FunctionalInterrupt.h>
-
 #include "definitions.h"
 
 Wheel::Wheel(uint8_t wheel_id, uint8_t motor_pin, uint8_t motor_dir_pin,
-             uint8_t odometer_pin, bool wheel_invert, uint8_t wheel_max_speed)
+             bool wheel_invert, uint8_t wheel_max_speed)
     : wheel_id(wheel_id),
       motor_pin(motor_pin),
       motor_dir_pin(motor_dir_pin),
-      odometer_pin(odometer_pin),
       wheel_invert(wheel_invert),
       max_speed(constrain(wheel_max_speed, 0, 100)) {
   pinMode(motor_pin, OUTPUT);
   pinMode(motor_dir_pin, OUTPUT);
-  pinMode(odometer_pin, INPUT_PULLUP);
   ledcSetup(wheel_id, Definitions::MOTOR_BASE_FREQ,
             Definitions::MOTOR_TIMER_13_BIT);
   ledcAttachPin(motor_pin, wheel_id);
-  attachInterrupt(digitalPinToInterrupt(odometer_pin),
-                  std::bind(&Wheel::updateOdometer, this), RISING);
 
   setSpeed(0);
 }
 
 Wheel::~Wheel() {
   setSpeed(0);
-  detachInterrupt(digitalPinToInterrupt(odometer_pin));
 }
 
 void Wheel::setSpeed(int8_t speed) {
@@ -47,11 +40,3 @@ void Wheel::setSpeed(int8_t speed) {
 }
 
 int8_t Wheel::getSpeed() { return current_speed; }
-
-void IRAM_ATTR Wheel::updateOdometer() {
-  portENTER_CRITICAL_ISR(&mux);
-  odometer++;
-  portEXIT_CRITICAL_ISR(&mux);
-}
-
-uint32_t Wheel::getOdometer() { return odometer; }

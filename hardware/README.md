@@ -25,6 +25,19 @@ Power board PCB:
 
 [Access to EasyEDA project](https://easyeda.com/join?type=project&key=e2e5b1779ec9dbd9f0588d719cd2af5d)
 
+### Components
+
+Most resistors and capacitors values are not critical, you could normally make it work with something in the +-10% span.
+The 0.1 Ohm effect resistors however need to be within a few percent of the value, since the program need to know their exact value to conduct correct power measurements.
+
+R7 2 Ohm 5W
+R3 0.1 Ohm 50W
+R12 0.1 Ohm 50W
+R14 0.1 Ohm 50W
+R17 0.1 Ohm 50W
+
+<TBD>
+
 ### Assembly & Testing
 
 1. Start by mount and solder the resistors (variable ones included) and diodes (including LED).
@@ -60,6 +73,10 @@ Logic board PCB:
 <a href="schematic/liam-logic-sch.pdf">Circuit diagram</a>
 
 [Access to EasyEDA project](https://easyeda.com/join?type=project&key=a9da3aa7958e3e6dfdf2d3d5e9616bfe)
+
+### Components
+
+<TDB>
 
 ### Assembly & Testing
 

@@ -2,13 +2,13 @@
 #include <ArduinoLog.h>
 #include <Wire.h>
 #include <esp_log.h>
+#include <esp_heap_caps.h>
 #include <rom/rtc.h>
 
 #include "battery.h"
 #include "configuration.h"
 #include "cutter.h"
 #include "definitions.h"
-#include "dockingstation/dockingstation.h"
 #include "gnss.h"
 #include "io_accelerometer/io_accelerometer.h"
 #include "io_analog.h"
@@ -40,12 +40,10 @@ IO_Digital io_digital(Wire);
 IO_Accelerometer io_accelerometer(Wire);
 Wheel leftWheel(1, Definitions::LEFT_WHEEL_MOTOR_PIN,
                 Definitions::LEFT_WHEEL_MOTOR_DIRECTION_PIN,
-                Definitions::LEFT_WHEEL_ODOMETER_PIN,
                 Definitions::LEFT_WHEEL_MOTOR_INVERTED,
                 Definitions::LEFT_WHEEL_MOTOR_SPEED);
 Wheel rightWheel(2, Definitions::RIGHT_WHEEL_MOTOR_PIN,
                  Definitions::RIGHT_WHEEL_MOTOR_DIRECTION_PIN,
-                 Definitions::RIGHT_WHEEL_ODOMETER_PIN,
                  Definitions::RIGHT_WHEEL_MOTOR_INVERTED,
                  Definitions::RIGHT_WHEEL_MOTOR_SPEED);
 WheelController wheelController(leftWheel, rightWheel);
@@ -57,7 +55,6 @@ MowingSchedule mowingSchedule;
 Resources resources(wheelController, cutter, battery, gnss, sonar,
                     io_accelerometer, logstore, mowingSchedule);
 StateController stateController(resources);
-Dockingstation dockingstation(stateController, resources);
 
 uint64_t loopDelayWarningTime;
 
@@ -137,7 +134,6 @@ void setup() {
   io_accelerometer.start();
   gnss.start();
   battery.start();
-  dockingstation.start();
   mowingSchedule.start();
 
   auto lastState = Configuration::config.lastState;
@@ -150,6 +146,16 @@ void setup() {
   } else {
     stateController.setState(Definitions::MOWER_STATES::DOCKED);
   }
+}
+
+// https://cpp4arduino.com/2018/11/06/what-is-heap-fragmentation.html
+float getFragmentation() {
+  const float largest = (float)heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
+  const float total = (float)heap_caps_get_free_size(MALLOC_CAP_8BIT);
+  if (total <= 0.0f) {
+    return 0.0f;
+  }
+  return 100.0f - (largest * 100.0f / total);
 }
 
 //

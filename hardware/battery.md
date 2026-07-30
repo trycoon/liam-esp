@@ -10,6 +10,7 @@ Read up on [Li-ion functionality](http://batteryuniversity.com/learn/article/typ
 
 If you take on the quest to build your own battery pack, then these battery cells could be suitable [Samsung INR18650-15M](https://secondlifestorage.com/t-Samsung-INR18650-15M-Cell-Specifications) and [Samsung INR18650-30Q](https://secondlifestorage.com/t-Samsung-INR18650-30Q-Cell-Specifications).
 
+These are also great, [Sanyo NCR18650GA](https://batteridoktorn.se/butik/sanyo-ncr18650ga-3500mah-10a-3-7v-lithium-cell-18650/), but you could also go for bigger batteries that store more energy like [Samsung INR21700-50E](https://batteridoktorn.se/butik/samsung-inr21700-50e/). 
 ## Balancer Management System (BMS) cards for Li-ion batteries
 
 For optimal use the battery packs should be fitted with a [BMS-card](https://en.wikipedia.org/wiki/Battery_management_system) to protect the cells and help balancing cells during charge-phase.
@@ -19,3 +20,4 @@ Suitable BMS-cards:
 - ["cf-4s30a-a"](https://www.google.com/search?q=cf-4s30a-a), more information about the charger [here](https://mysku.me/blog/aliexpress/58000.html) (in Russia).
 - [yh2204a](https://www.google.com/search?q=yh2204a)
 - [Smart BMS](https://www.lithiumbatterypcb.com/product-instructionev-battery-pcb-boardev-battery-pcb-board/ev-battery-pcb-board/smart-bms-of-power-battery/)
+

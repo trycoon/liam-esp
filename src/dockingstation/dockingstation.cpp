@@ -1,7 +1,6 @@
 #include "dockingstation.h"
 
 #include <ArduinoLog.h>
-#include <FunctionalInterrupt.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 
@@ -9,9 +8,14 @@
 #include "esp_log.h"
 #include "io_accelerometer/io_accelerometer.h"
 #include "utils.h"
+#include <PJONThroughLora.h>
+
 
 // Useful LoRa information:
 // https://www.youtube.com/channel/UCG5_CT_KjexxjbgNE4lVGkg/videos
+
+// Use PJON, https://github.com/gioblu/PJON, as LoRa communiccation protocol!
+// https://github.com/gioblu/PJON/tree/master/src/strategies/ThroughLoRahttps://github.com/gioblu/PJON/tree/master/src/strategies/ThroughLoRa
 
 /**
  * Class used for all communication with the docking station, over a low
@@ -47,7 +51,7 @@ void Dockingstation::start() {
   // output power:                10 dBm
   // preamble length:             12 symbols
   int16_t state = lora.begin(2400.0, 1625, 6, 5, 10, 12);
-  if (state == ERR_NONE) {
+  if (state == RADIOLIB_ERR_NONE) {
     Log.notice(F("LoRa initialized." CR));
   } else {
     Log.error(F("LoRa failed to initialize, code %d" CR), state);
@@ -57,14 +61,14 @@ void Dockingstation::start() {
 
   // set the function that will be called
   // when new packets is received
-  lora.setDio1Action(std::bind(&Dockingstation::setReceivedFlag, this));
+  lora.setDio1Action([]() { &Dockingstation::setReceivedFlag; });
 
   startReceive();
 }
 
 void Dockingstation::startReceive() {
   int16_t state = lora.startReceive();
-  if (state != ERR_NONE) {
+  if (state != RADIOLIB_ERR_NONE) {
     Log.error(F("LoRa failed to start receive, code %d" CR), state);
     delay(2000);
     startReceive();
@@ -72,7 +76,7 @@ void Dockingstation::startReceive() {
 }
 
 bool Dockingstation::transmit(uint8_t buffer[]) {
-  auto length = sizeof(buffer) / sizeof(uint8_t);
+  auto length = sizeof(buffer);
   if (length > 253) {
     Log.warning(F("LoRa transmission fault, buffer size (%d) excede allowed "
                   "size of 253 bytes! Ignoring transmission." CR),
@@ -83,20 +87,20 @@ bool Dockingstation::transmit(uint8_t buffer[]) {
   // start scanning current channel for ongoing transmissions
   int state = lora.scanChannel();
 
-  if (state == LORA_DETECTED) {
+  if (state == RADIOLIB_LORA_DETECTED) {
     Log.trace(
         F("Ongoing LoRa transmission detected, waiting a moment and trying "
           "again." CR));
     delay(random(20, 25));
     return transmit(buffer);
-  } else if (state != CHANNEL_FREE) {
+  } else if (state != RADIOLIB_CHANNEL_FREE) {
     Log.warning(F("LoRa unknown fault during channel scanning: %d. Trying to "
                   "send anyway." CR),
                 state);
   }
 
   state = lora.transmit(buffer, length);
-  if (state != ERR_NONE) {
+  if (state != RADIOLIB_ERR_NONE) {
     Log.warning(
         F("LoRa unknown transmission fault: %d. Ignoring transmission." CR),
         state);

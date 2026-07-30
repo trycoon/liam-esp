@@ -14,6 +14,9 @@
 //https://github.com/Ultimaker/CuraEngine/blob/master/src/slicer.cpp
 //https://github.com/Ultimaker/CuraEngine/blob/master/src/infill.cpp
 
+// OBS!
+// Sparkfun rekommenderar att man inte kör några pull-ups på I2C bussen då kortet redan har egna motstånd för pullups! Och de rekommendeerar att man kör busseen i 100KHz hastighet! Stäng också av NMEA occh UART om vi inte behöver dom, för att avlast kortet.
+///
 GNSS::GNSS(TwoWire &w) : _Wire(w)
 {
 }
@@ -118,6 +121,7 @@ void GNSS::start()
 
     // https://github.com/sparkfun/SparkFun_Ublox_Arduino_Library/blob/master/examples/Example13_PVT/Example1_AutoPVT/Example1_AutoPVT.ino
     // https://github.com/sparkfun/SparkFun_Ublox_Arduino_Library/commit/63fb62ebd12c46c062d059c0fabe309f2d280098
+    // https://overheadtransport.hostingerapp.com/autolawnmover/Index.htm
   }
 }
 

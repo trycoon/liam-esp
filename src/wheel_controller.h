@@ -72,7 +72,6 @@ class WheelController : public Processable {
   private:
     Wheel& leftWheel;
     Wheel& rightWheel;
-    uint32_t targetOdometer = 0;
     int8_t targetSpeed = 0;
     int8_t lastSpeed = 0;
     TargetReachedCallback reachedTargetCallback;
