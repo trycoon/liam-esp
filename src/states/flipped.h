@@ -5,21 +5,23 @@
 #include "resources.h"
 
 /**
-* State the mower enters when it is flipped upside down or tilted too much.
-* This is a state that should not occur under normal conditions.
-*/
-class Flipped : public AbstractState {
-  public:
+ * State the mower enters when it is flipped upside down or tilted too much.
+ * This is a state that should not occur under normal conditions.
+ */
+class Flipped : public AbstractState
+{
+public:
     Flipped(Definitions::MOWER_STATES myState, StateController& stateController, Resources& resources);
-    const char* const getStateName() {
-      return "FLIPPED";
+    const char* const getStateName()
+    {
+        return "FLIPPED";
     }
     void selected(Definitions::MOWER_STATES lastState);
     void process();
-  
-  private:
+
+private:
     Definitions::MOWER_STATES previousState = Definitions::MOWER_STATES::DOCKED;
-    uint32_t timer = 0;
+    uint32_t timer                          = 0;
 };
 
 #endif

@@ -21,24 +21,25 @@
  * with not as nice API and lacking interrupt support is
  * https://github.com/LoRaTracker/SX12XX-LoRa/blob/master/What%20is%20LoRa.md
  */
-class Dockingstation {
- public:
-  Dockingstation(StateController& stateController, Resources& resources);
-  void start();
+class Dockingstation
+{
+public:
+    Dockingstation(StateController& stateController, Resources& resources);
+    void start();
 
- private:
-  // flag to indicate that a packet was received
-  volatile bool receivedFlag = false;
-  // disable interrupt when it's not needed
-  volatile bool enableInterrupt = true;
-  StateController& stateController;
-  Resources& resources;
-  Ticker pushNewInfoTicker;
-  SX1280 lora;
-  void IRAM_ATTR setReceivedFlag();
-  void startReceive();
-  bool transmit(uint8_t* buffer, size_t length);
-  void collectAndPushNewStatus();
+private:
+    // flag to indicate that a packet was received
+    volatile bool receivedFlag = false;
+    // disable interrupt when it's not needed
+    volatile bool enableInterrupt = true;
+    StateController& stateController;
+    Resources& resources;
+    Ticker pushNewInfoTicker;
+    SX1280 lora;
+    void IRAM_ATTR setReceivedFlag();
+    void startReceive();
+    bool transmit(uint8_t* buffer, size_t length);
+    void collectAndPushNewStatus();
 };
 
 #endif

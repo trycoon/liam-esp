@@ -17,28 +17,36 @@
  * each method must take, but also making it easier to add additional references
  * in the future.
  */
-class Resources {
- public:
-  Resources(WheelController &wheelController, Cutter &cutter, Battery &battery,
-            GNSS &gnss, Sonar &sonar, IO_Accelerometer &accelerometer,
-            LogStore &logStore, MowingSchedule &mowingSchedule)
-      : wheelController(wheelController),
-        cutter(cutter),
-        battery(battery),
-        gnss(gnss),
-        sonar(sonar),
-        accelerometer(accelerometer),
-        logStore(logStore),
-        mowingSchedule(mowingSchedule) {}
+class Resources
+{
+public:
+    Resources(WheelController& wheelController,
+              Cutter& cutter,
+              Battery& battery,
+              GNSS& gnss,
+              Sonar& sonar,
+              IO_Accelerometer& accelerometer,
+              LogStore& logStore,
+              MowingSchedule& mowingSchedule)
+        : wheelController(wheelController)
+        , cutter(cutter)
+        , battery(battery)
+        , gnss(gnss)
+        , sonar(sonar)
+        , accelerometer(accelerometer)
+        , logStore(logStore)
+        , mowingSchedule(mowingSchedule)
+    {
+    }
 
-  WheelController &wheelController;
-  Cutter &cutter;
-  Battery &battery;
-  GNSS &gnss;
-  Sonar &sonar;
-  IO_Accelerometer &accelerometer;
-  LogStore &logStore;
-  MowingSchedule &mowingSchedule;
+    WheelController& wheelController;
+    Cutter& cutter;
+    Battery& battery;
+    GNSS& gnss;
+    Sonar& sonar;
+    IO_Accelerometer& accelerometer;
+    LogStore& logStore;
+    MowingSchedule& mowingSchedule;
 };
 
 #endif

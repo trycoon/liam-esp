@@ -13,8 +13,9 @@ struct scheduled_fn_t
     std::function<void(void)> func;
 };
 
-class Scheduler {
-  public:
+class Scheduler
+{
+public:
     Scheduler(bool inSeries = false);
     uint16_t schedule(const std::function<void(void)> fn, uint32_t time, bool repeat = false);
     void unschedule(uint16_t id);
@@ -22,10 +23,10 @@ class Scheduler {
     void clear();
     void process();
 
-  private:
+private:
     std::list<scheduled_fn_t> scheduled_fn_list;
     uint16_t task_counter = 0;
-    bool in_series = false;
+    bool in_series        = false;
 };
 
 #endif

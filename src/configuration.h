@@ -5,31 +5,34 @@
 #include <Preferences.h>
 
 /**
-* Class handling user configurable parameters of the application. It also takes care of storing and retereiving these from flash memory.
-*/
-namespace Configuration {
+ * Class handling user configurable parameters of the application. It also takes care of storing and retereiving these
+ * from flash memory.
+ */
+namespace Configuration
+{
 
-  struct configObject {
+struct configObject
+{
     String mowerId;
     String username;
     String password;
     int8_t logLevel;
-    uint32_t startChargeTime = 0;
+    uint32_t startChargeTime     = 0;
     uint32_t lastFullyChargeTime = 0;
-    uint32_t lastChargeDuration = 0;
-    String lastState;    
+    uint32_t lastChargeDuration  = 0;
+    String lastState;
     String gmt;
     String wifiPassword;
     String ssid;
     String apiKey;
     bool setupDone = false;
-  };
+};
 
-  extern Preferences preferences;
-  extern configObject config;
-  extern void load();
-  extern void save();
-  extern void wipe();
-}
+extern Preferences preferences;
+extern configObject config;
+extern void load();
+extern void save();
+extern void wipe();
+} // namespace Configuration
 
 #endif

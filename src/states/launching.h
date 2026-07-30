@@ -5,13 +5,15 @@
 #include "resources.h"
 
 /**
-* State the mower enters when it is heading out from the charging station to begin mowing.
-*/
-class Launching : public AbstractState {
-  public:
+ * State the mower enters when it is heading out from the charging station to begin mowing.
+ */
+class Launching : public AbstractState
+{
+public:
     Launching(Definitions::MOWER_STATES myState, StateController& stateController, Resources& resources);
-    const char* const getStateName() {
-      return "LAUNCHING";
+    const char* const getStateName()
+    {
+        return "LAUNCHING";
     }
     void selected(Definitions::MOWER_STATES lastState);
     void process();

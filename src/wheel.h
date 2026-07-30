@@ -3,8 +3,9 @@
 
 #include <Arduino.h>
 
-class Wheel {
-  public:
+class Wheel
+{
+public:
     Wheel(uint8_t wheel_id, uint8_t motor_pin, uint8_t motor_dir_pin, bool wheel_invert, uint8_t wheel_max_speed);
     ~Wheel();
     /**
@@ -14,12 +15,12 @@ class Wheel {
     void setSpeed(int8_t speed);
     int8_t getSpeed();
 
-  private:
+private:
     uint8_t wheel_id;
     uint8_t motor_pin;
     uint8_t motor_dir_pin;
     bool wheel_invert;
-    uint8_t max_speed;    
+    uint8_t max_speed;
     int8_t current_speed = 0;
 };
 

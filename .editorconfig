@@ -1,0 +1,21 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.md]
+trim_trailing_whitespace = false
+
+[{Makefile,*.mk}]
+indent_style = tab
+
+[*.{c,cc,cpp,cxx,h,hh,hpp,hxx,ino}]
+indent_style = space
+indent_size = 4
+
+[*.{js,mjs,cjs,json,yml,yaml,scss,css,html,ejs}]
+indent_style = space
+indent_size = 2

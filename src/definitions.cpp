@@ -6,26 +6,25 @@
 // https://randomnerdtutorials.com/esp32-pinout-reference-gpios/
 //
 
-namespace Definitions {
+namespace Definitions
+{
 /*
  * Constants and other global stuff that you should probably only need to adjust
  * once.
  */
-const char* const APP_NAME = "liam-esp";
+const char* const APP_NAME    = "liam-esp";
 const char* const APP_VERSION = "1.0.0";
 
 /*
   I2C pins
 */
-const uint8_t SDA_PIN =
-    21;  // could be any free and suitable pin. We use default 21 here.
-const uint8_t SCL_PIN =
-    22;  // could be any free and suitable pin. We use default 22 here.
+const uint8_t SDA_PIN = 21; // could be any free and suitable pin. We use default 21 here.
+const uint8_t SCL_PIN = 22; // could be any free and suitable pin. We use default 22 here.
 
 /*
   I2C address for MCP23017 port expander
 */
-const uint16_t DIGITAL_EXPANDER_ADDR = 0x20;
+const uint16_t DIGITAL_EXPANDER_ADDR          = 0x20;
 const uint16_t DIGITAL_EXPANDER_INTERRUPT_PIN = 34;
 
 /*
@@ -37,7 +36,7 @@ const uint16_t ADC2_ADDR = 0x49;
 /*
   LoRa pins
 */
-const uint8_t LORA_NSS_PIN = 5;
+const uint8_t LORA_NSS_PIN  = 5;
 const uint8_t LORA_NRST_PIN = -1;
 const uint8_t LORA_BUSY_PIN = 17;
 const uint8_t LORA_DIO1_PIN = 33;
@@ -45,84 +44,68 @@ const uint8_t LORA_DIO1_PIN = 33;
 /*
   Generic motor PWM settings
 */
-const uint8_t MOTOR_TIMER_13_BIT = 13;  // use 13 bit precission for MOTOR timer
-const uint16_t MOTOR_BASE_FREQ = 5000;  // use 5000 Hz as a MOTOR base frequency
+const uint8_t MOTOR_TIMER_13_BIT = 13;   // use 13 bit precission for MOTOR timer
+const uint16_t MOTOR_BASE_FREQ   = 5000; // use 5000 Hz as a MOTOR base frequency
 
 /*
   Accelerometer/Gyro/Compass
 */
-const uint8_t TILT_ANGLE_MAX =
-    35;  // Max angle (degrees) the mower is allowed to tilt, going above this
-         // value will stop mower and enter FLIPPED-state. This is a safety
-         // setting!
+const uint8_t TILT_ANGLE_MAX = 35; // Max angle (degrees) the mower is allowed to tilt, going above this
+                                   // value will stop mower and enter FLIPPED-state. This is a safety
+                                   // setting!
 
 /*
   Wheel motor settings
 */
-const uint8_t LEFT_WHEEL_MOTOR_PIN = 27;
+const uint8_t LEFT_WHEEL_MOTOR_PIN           = 27;
 const uint8_t LEFT_WHEEL_MOTOR_DIRECTION_PIN = 25;
-const uint8_t LEFT_WHEEL_MOTOR_LOAD_CHANNEL = 1;  // Channel on ADC for measuring motor load.
-const uint8_t LEFT_WHEEL_MOTOR_SPEED = 100;  // 0-100 (%), used to compensate for drifting motors, lower this value
-          // if mower drift to the right.
-const bool LEFT_WHEEL_MOTOR_INVERTED =
-    false;  // Set to "true" if left wheel runs backward when mower should be
-            // running forward.
+const uint8_t LEFT_WHEEL_MOTOR_LOAD_CHANNEL  = 1; // Channel on ADC for measuring motor load.
+const uint8_t LEFT_WHEEL_MOTOR_SPEED = 100;       // 0-100 (%), used to compensate for drifting motors, lower this value
+                                                  // if mower drift to the right.
+const bool LEFT_WHEEL_MOTOR_INVERTED = false;     // Set to "true" if left wheel runs backward when mower should be
+                                                  // running forward.
 
-const uint8_t RIGHT_WHEEL_MOTOR_PIN = 32;
+const uint8_t RIGHT_WHEEL_MOTOR_PIN           = 32;
 const uint8_t RIGHT_WHEEL_MOTOR_DIRECTION_PIN = 26;
-const uint8_t RIGHT_WHEEL_MOTOR_LOAD_CHANNEL =
-    2;  // Channel on ADC for measuring motor load.
-const uint8_t RIGHT_WHEEL_MOTOR_SPEED =
-    100;  // 0-100 (%), used to compensate for drifting motors, lower this value
-          // if mower drift to the left.
-const bool RIGHT_WHEEL_MOTOR_INVERTED =
-    true;  // Set to "true" if right wheel runs backward when mower should be
-           // running forward.
+const uint8_t RIGHT_WHEEL_MOTOR_LOAD_CHANNEL  = 2; // Channel on ADC for measuring motor load.
+const uint8_t RIGHT_WHEEL_MOTOR_SPEED = 100;  // 0-100 (%), used to compensate for drifting motors, lower this value
+                                              // if mower drift to the left.
+const bool RIGHT_WHEEL_MOTOR_INVERTED = true; // Set to "true" if right wheel runs backward when mower should be
+                                              // running forward.
 
-const uint8_t WHEEL_MOTOR_MIN_SPEED =
-    20;  // 0-100 (%), set the minimum speed that the wheel motors should use.
-         // This is used in combination with e.g.
-         // WHEEL_MOTOR_DECREASE_SPEED_AT_CUTTER_LOAD.
-const uint8_t WHEEL_MOTOR_TURN_SPEED =
-    40;  // 0-100 (%), speed to use when turning.
-const bool WHEEL_MOTOR_DECREASE_SPEED_AT_CUTTER_LOAD =
-    true;  // reduce forward movement of mower when there is a high load on
-           // cutter (like high grass)
-const float WHEEL_NOLOAD_CURRENT =
-    500;  // Milliampere of wheel motor when no load is applied, see motor
-           // specs for no-load current or find a suitable value yourself.
-const float WHEEL_MAX_CURRENT =
-    1100;  // Max milliampere of wheel motor, see motor specs for stall
-           // current.
-const uint8_t WHEEL_DIAMETER = 190;  // in millimeter
-const uint8_t WHEEL_PAIR_DISTANCE =
-    27;  // distance measured between the wheel pairs, in centimeters
+const uint8_t WHEEL_MOTOR_MIN_SPEED = 20; // 0-100 (%), set the minimum speed that the wheel motors should use.
+                                          // This is used in combination with e.g.
+                                          // WHEEL_MOTOR_DECREASE_SPEED_AT_CUTTER_LOAD.
+const uint8_t WHEEL_MOTOR_TURN_SPEED                 = 40;   // 0-100 (%), speed to use when turning.
+const bool WHEEL_MOTOR_DECREASE_SPEED_AT_CUTTER_LOAD = true; // reduce forward movement of mower when there is a high
+                                                             // load on cutter (like high grass)
+const float WHEEL_NOLOAD_CURRENT = 500;  // Milliampere of wheel motor when no load is applied, see motor
+                                         // specs for no-load current or find a suitable value yourself.
+const float WHEEL_MAX_CURRENT = 1100;    // Max milliampere of wheel motor, see motor specs for stall
+                                         // current.
+const uint8_t WHEEL_DIAMETER      = 190; // in millimeter
+const uint8_t WHEEL_PAIR_DISTANCE = 27;  // distance measured between the wheel pairs, in centimeters
 
 /*
   Settings for "launching" mower from charging station
 */
-const uint8_t LAUNCH_DISTANCE =
-    100;  // the distance the mower should back out of the charging station
-          // before turning around and begin mowing, in centimeters.
+const uint8_t LAUNCH_DISTANCE = 100; // the distance the mower should back out of the charging station
+                                     // before turning around and begin mowing, in centimeters.
 
 /*
   Cutter settings
 */
-const uint8_t CUTTER_MOTOR_PIN = 2;  // Pin to PWM-control motor.
-const uint8_t CUTTER_BRAKE_PIN = 4;  // Pin for braking cutter motor.
-const uint8_t CUTTER_LOAD_CHANNEL =
-    0;  // Channel on ADC for measuring cutter motor load.
-const float CUTTER_LOAD_RESISTOR = 0.1;  // Size of shunt resistor connected in
-                                         // serial with cutter motor, in Ohm.
-const float CUTTER_NOLOAD_CURRENT =
-    1000;  // Milliampere of cutter motor when no load is applied, see motor
-          // specs for no-load current or find a suitable value yourself. (used
-          // for calculating cutter load percentage)
-const float CUTTER_MAX_CURRENT =
-    5000;  // Max milliampere of cutter motor, see motor specs for stall
-           // current. (used to calculate cutter load percentage)
-const uint8_t CUTTER_MAX_SPEED =
-    100;  // 1-100 (%), lower this value if cutter spinning too fast.
+const uint8_t CUTTER_MOTOR_PIN    = 2;    // Pin to PWM-control motor.
+const uint8_t CUTTER_BRAKE_PIN    = 4;    // Pin for braking cutter motor.
+const uint8_t CUTTER_LOAD_CHANNEL = 0;    // Channel on ADC for measuring cutter motor load.
+const float CUTTER_LOAD_RESISTOR  = 0.1;  // Size of shunt resistor connected in
+                                          // serial with cutter motor, in Ohm.
+const float CUTTER_NOLOAD_CURRENT = 1000; // Milliampere of cutter motor when no load is applied, see motor
+                                          // specs for no-load current or find a suitable value yourself. (used
+                                          // for calculating cutter load percentage)
+const float CUTTER_MAX_CURRENT = 5000;    // Max milliampere of cutter motor, see motor specs for stall
+                                          // current. (used to calculate cutter load percentage)
+const uint8_t CUTTER_MAX_SPEED = 100;     // 1-100 (%), lower this value if cutter spinning too fast.
 // When the load on the cutter motor surpasses this limit, the cutter is working
 // too hard cutting the grass (and we should reduce speed of wheels to
 // compensate).
@@ -137,11 +120,9 @@ const uint16_t CUTTER_LOAD_THRESHOLD = 70;
 // fully charged cell is 4.2 volt and quickly drops down to 3.6 volt, as battery
 // is closing depleated it will drop from 3.6 down to 2.5 volt. 2.5 volts should
 // be considered an completely discharged cell, below that will damage the cell.
-const float BATTERY_FULLY_CHARGED =
-    16.8;  // in volt. e.g. 4.2 volt * 4 cells = 16.8 volt.
-const float BATTERY_EMPTY =
-    12.00;  // in volt. e.g. 2.5 volt * 4 cells = 10.0 volt and then we add a
-            // few volts to give us enough power to get us back to the charger.
+const float BATTERY_FULLY_CHARGED = 16.8;  // in volt. e.g. 4.2 volt * 4 cells = 16.8 volt.
+const float BATTERY_EMPTY         = 12.00; // in volt. e.g. 2.5 volt * 4 cells = 10.0 volt and then we add a
+                                           // few volts to give us enough power to get us back to the charger.
 
 // Nickel–metal hydride / NiMH example.
 // http://batteryuniversity.com/learn/article/charging_nickel_metal_hydride
@@ -152,21 +133,17 @@ const float BATTERY_EMPTY =
 // const float BATTERY_FULLY_CHARGED = 13.30;
 // const float BATTERY_EMPTY = 11.90;
 
-const float BATTERY_MULTIPLIER =
-    BATTERY_FULLY_CHARGED / 3.04;  // Battery voltage divided by ADC max value,
-                                   // used to calculate real battery voltage.
-const uint8_t BATTERY_SENSOR_CHANNEL =
-    3;  // Channel on ADC for measuring battery voltage.
-const uint8_t DOCKED_DETECTION_PIN = 35;
+const float BATTERY_MULTIPLIER = BATTERY_FULLY_CHARGED / 3.04; // Battery voltage divided by ADC max value,
+                                                               // used to calculate real battery voltage.
+const uint8_t BATTERY_SENSOR_CHANNEL = 3;                      // Channel on ADC for measuring battery voltage.
+const uint8_t DOCKED_DETECTION_PIN   = 35;
 
 /*
   Charger Settings
 */
-const float CHARGE_CURRENT_THRESHOLD =
-    100;  // Current going into the battery that are above this threshold will
-          // be interpreted as the battery is charging.
-const float CHARGE_SHUNT_VALUE =
-    0.1;  // Value of charge shunt resistor (in Ohm)
+const float CHARGE_CURRENT_THRESHOLD = 100; // Current going into the battery that are above this threshold will
+                                            // be interpreted as the battery is charging.
+const float CHARGE_SHUNT_VALUE = 0.1;       // Value of charge shunt resistor (in Ohm)
 
 /*
   Factory reset switch
@@ -184,7 +161,7 @@ const uint16_t MAX_LOGMESSAGES = 50;
 
 // Pin used to send and detect a ultrasonic ping for obstacle detection.
 // when viewing mower from above (facing the same direction as the mower).
-const uint8_t SONAR_FRONT_PING_PIN = 16;
+const uint8_t SONAR_FRONT_PING_PIN  = 16;
 const uint8_t SONAR_FRONT_SENSE_PIN = 39;
 // Distance ahead the mower should detect obstacles (in centimeters). Between
 // 5-400cm.
@@ -200,4 +177,4 @@ const uint8_t MOWER_WIDTH = 30;
 const uint8_t MOWER_LENGTH = 40;
 // Diameter of cutter disc (in centimeters)
 const uint8_t CUTTER_DIAMETER = 10;
-}  // namespace Definitions
+} // namespace Definitions

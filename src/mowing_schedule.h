@@ -5,14 +5,16 @@
 #include <deque>
 #include <regex>
 
-struct scheduleEntry {
-  std::deque<bool> activeWeekdays;
-  String startTime;
-  String stopTime;
+struct scheduleEntry
+{
+    std::deque<bool> activeWeekdays;
+    String startTime;
+    String stopTime;
 };
 
-class MowingSchedule {
-  public:
+class MowingSchedule
+{
+public:
     MowingSchedule();
     int8_t addScheduleEntry(const std::deque<bool>& activeWeekdays, String startTime, String stopTime);
     const std::deque<scheduleEntry>& getScheduleEntries() const;
@@ -20,8 +22,8 @@ class MowingSchedule {
     void setManualMowingOverride(bool enable);
     bool isTimeToMow();
     void start();
-    
-  private:
+
+private:
     bool manualMowingOverride = false;
     std::deque<scheduleEntry> mowingSchedule;
     void saveSchedulesToFlash();

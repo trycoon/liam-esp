@@ -22,38 +22,38 @@
 #ifndef IMUMATH_VECTOR_HPP
 #define IMUMATH_VECTOR_HPP
 
-#include <string.h>
-#include <stdint.h>
 #include <math.h>
-
+#include <stdint.h>
+#include <string.h>
 
 namespace imu
 {
 
-template <uint8_t N> class Vector
+template <uint8_t N>
+class Vector
 {
 public:
     Vector()
     {
-        memset(p_vec, 0, sizeof(double)*N);
+        memset(p_vec, 0, sizeof(double) * N);
     }
 
     Vector(double a)
     {
-        memset(p_vec, 0, sizeof(double)*N);
+        memset(p_vec, 0, sizeof(double) * N);
         p_vec[0] = a;
     }
 
     Vector(double a, double b)
     {
-        memset(p_vec, 0, sizeof(double)*N);
+        memset(p_vec, 0, sizeof(double) * N);
         p_vec[0] = a;
         p_vec[1] = b;
     }
 
     Vector(double a, double b, double c)
     {
-        memset(p_vec, 0, sizeof(double)*N);
+        memset(p_vec, 0, sizeof(double) * N);
         p_vec[0] = a;
         p_vec[1] = b;
         p_vec[2] = c;
@@ -61,24 +61,25 @@ public:
 
     Vector(double a, double b, double c, double d)
     {
-        memset(p_vec, 0, sizeof(double)*N);
+        memset(p_vec, 0, sizeof(double) * N);
         p_vec[0] = a;
         p_vec[1] = b;
         p_vec[2] = c;
         p_vec[3] = d;
     }
 
-    Vector(const Vector<N> &v)
+    Vector(const Vector<N>& v)
     {
         for (int x = 0; x < N; x++)
             p_vec[x] = v.p_vec[x];
     }
 
-    ~Vector()
-    {
-    }
+    ~Vector() {}
 
-    uint8_t n() { return N; }
+    uint8_t n()
+    {
+        return N;
+    }
 
     double magnitude() const
     {
@@ -118,7 +119,7 @@ public:
     Vector scale(double scalar) const
     {
         Vector ret;
-        for(int i = 0; i < N; i++)
+        for (int i = 0; i < N; i++)
             ret.p_vec[i] = p_vec[i] * scalar;
         return ret;
     }
@@ -126,34 +127,34 @@ public:
     Vector invert() const
     {
         Vector ret;
-        for(int i = 0; i < N; i++)
+        for (int i = 0; i < N; i++)
             ret.p_vec[i] = -p_vec[i];
         return ret;
     }
 
     Vector& operator=(const Vector& v)
     {
-        for (int x = 0; x < N; x++ )
+        for (int x = 0; x < N; x++)
             p_vec[x] = v.p_vec[x];
         return *this;
     }
 
-    double& operator [](int n)
+    double& operator[](int n)
     {
         return p_vec[n];
     }
 
-    double operator [](int n) const
+    double operator[](int n) const
     {
         return p_vec[n];
     }
 
-    double& operator ()(int n)
+    double& operator()(int n)
     {
         return p_vec[n];
     }
 
-    double operator ()(int n) const
+    double operator()(int n) const
     {
         return p_vec[n];
     }
@@ -161,7 +162,7 @@ public:
     Vector operator+(const Vector& v) const
     {
         Vector ret;
-        for(int i = 0; i < N; i++)
+        for (int i = 0; i < N; i++)
             ret.p_vec[i] = p_vec[i] + v.p_vec[i];
         return ret;
     }
@@ -169,59 +170,73 @@ public:
     Vector operator-(const Vector& v) const
     {
         Vector ret;
-        for(int i = 0; i < N; i++)
+        for (int i = 0; i < N; i++)
             ret.p_vec[i] = p_vec[i] - v.p_vec[i];
         return ret;
     }
 
-    Vector operator * (double scalar) const
+    Vector operator*(double scalar) const
     {
         return scale(scalar);
     }
 
-    Vector operator / (double scalar) const
+    Vector operator/(double scalar) const
     {
         Vector ret;
-        for(int i = 0; i < N; i++)
+        for (int i = 0; i < N; i++)
             ret.p_vec[i] = p_vec[i] / scalar;
         return ret;
     }
 
     void toDegrees()
     {
-        for(int i = 0; i < N; i++)
-            p_vec[i] *= 57.2957795131; //180/pi
+        for (int i = 0; i < N; i++)
+            p_vec[i] *= 57.2957795131; // 180/pi
     }
 
     void toRadians()
     {
-        for(int i = 0; i < N; i++)
-            p_vec[i] *= 0.01745329251;  //pi/180
+        for (int i = 0; i < N; i++)
+            p_vec[i] *= 0.01745329251; // pi/180
     }
 
-    double& x() { return p_vec[0]; }
-    double& y() { return p_vec[1]; }
-    double& z() { return p_vec[2]; }
-    double x() const { return p_vec[0]; }
-    double y() const { return p_vec[1]; }
-    double z() const { return p_vec[2]; }
-
+    double& x()
+    {
+        return p_vec[0];
+    }
+    double& y()
+    {
+        return p_vec[1];
+    }
+    double& z()
+    {
+        return p_vec[2];
+    }
+    double x() const
+    {
+        return p_vec[0];
+    }
+    double y() const
+    {
+        return p_vec[1];
+    }
+    double z() const
+    {
+        return p_vec[2];
+    }
 
 private:
     double p_vec[N];
 };
 
-
 template <>
 inline Vector<3> Vector<3>::cross(const Vector& v) const
 {
-    return Vector(
-        p_vec[1] * v.p_vec[2] - p_vec[2] * v.p_vec[1],
-        p_vec[2] * v.p_vec[0] - p_vec[0] * v.p_vec[2],
-        p_vec[0] * v.p_vec[1] - p_vec[1] * v.p_vec[0]
-    );
+    return Vector(p_vec[1] * v.p_vec[2] - p_vec[2] * v.p_vec[1],
+                  p_vec[2] * v.p_vec[0] - p_vec[0] * v.p_vec[2],
+                  p_vec[0] * v.p_vec[1] - p_vec[1] * v.p_vec[0]);
 }
 
-} // namespace
+} // namespace imu
 
 #endif

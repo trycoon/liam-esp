@@ -1,19 +1,21 @@
 #ifndef _wheel_controller_h
 #define _wheel_controller_h
 
-#include <functional>
-#include <Arduino.h>
-#include "wheel.h"
 #include "definitions.h"
 #include "processable.h"
+#include "wheel.h"
+#include <Arduino.h>
+#include <functional>
 
-struct status {
-  int16_t leftWheelSpeed;
-  int16_t rightWheelSpeed;
+struct status
+{
+    int16_t leftWheelSpeed;
+    int16_t rightWheelSpeed;
 };
 
-class WheelController : public Processable {
-  public:
+class WheelController : public Processable
+{
+public:
     typedef std::function<void(void)> TargetReachedCallback;
 
     WheelController(Wheel& leftWheel, Wheel& rightWheel);
@@ -25,8 +27,12 @@ class WheelController : public Processable {
      * @param smooth smoothly take us to target speed.
      * @param distance [optional] distance we want mower to move (in centimeters).
      * @param fn [optional] callback that will be executed once mower has moved desired distance.
-     */ 
-    void forward(int8_t turnrate, uint8_t speed, bool smooth = false, uint32_t distance = 0, const TargetReachedCallback& fn = nullptr);
+     */
+    void forward(int8_t turnrate,
+                 uint8_t speed,
+                 bool smooth                     = false,
+                 uint32_t distance               = 0,
+                 const TargetReachedCallback& fn = nullptr);
     /**
      * Drives mower backward at specified speed and turning at specified speed.
      * @param turnrate speed of turning (-1 to -100 left, 1 to 100 right). 0 = don't turn.
@@ -34,18 +40,23 @@ class WheelController : public Processable {
      * @param smooth smoothly take us to target speed.
      * @param distance [optional] distance we want mower to move (in centimeters).
      * @param fn [optional] callback that will be executed once mower has moved desired distance.
-     */ 
-    void backward(int8_t turnrate, uint8_t speed, bool smooth = false, uint32_t distance = 0, const TargetReachedCallback& fn = nullptr);
+     */
+    void backward(int8_t turnrate,
+                  uint8_t speed,
+                  bool smooth                     = false,
+                  uint32_t distance               = 0,
+                  const TargetReachedCallback& fn = nullptr);
     /**
      * Turns mower on the spot.
-     * @param direction turns mower to the specified direction. Direction is -360 -> 360 degrees relative current heading.
+     * @param direction turns mower to the specified direction. Direction is -360 -> 360 degrees relative current
+     * heading.
      * @param fn [optional] callback that will be executed once mower is facing desired direction.
-     */ 
+     */
     void turn(int16_t direction, const TargetReachedCallback& fn = nullptr);
     /**
      * Stop mowers movement.
      * @param smooth smoothly take us to halt.
-     */     
+     */
     void stop(bool smooth = false);
 
     /**
@@ -61,19 +72,20 @@ class WheelController : public Processable {
     bool increaseForwardSpeed();
 
     /**
-     * If mower is currently driving forward then this method will try to decrease the speed of the wheels, it will however never stop completely.
+     * If mower is currently driving forward then this method will try to decrease the speed of the wheels, it will
+     * however never stop completely.
      * @return if decrease could be made
      */
     bool decreaseForwardSpeed();
-    
+
     /* Internal use only! */
     void process();
 
-  private:
+private:
     Wheel& leftWheel;
     Wheel& rightWheel;
     int8_t targetSpeed = 0;
-    int8_t lastSpeed = 0;
+    int8_t lastSpeed   = 0;
     TargetReachedCallback reachedTargetCallback;
 };
 
