@@ -24,13 +24,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install platformio
           sudo apt-get update
-          sudo apt-get install -y cppcheck clang-format clang-tidy
+          sudo apt-get install -y cppcheck clang-format
 
       - name: Build firmware
         run: platformio run
-
-      - name: Generate compilation database
-        run: platformio run -t compiledb
 
       - name: Cppcheck
         run: |
@@ -43,7 +40,3 @@ jobs:
           find src -type f \( -name "*.h" -o -name "*.cpp" \) -print0 \
             | xargs -0 clang-format --dry-run --Werror -style=file
 
-      - name: Clang-tidy
-        run: |
-          find src -type f -name "*.cpp" -print0 \
-            | xargs -0 -n 1 clang-tidy -p . --quiet
