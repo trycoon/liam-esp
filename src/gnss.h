@@ -30,7 +30,7 @@ class GNSS {
   long lastTime =
       0;  // Simple local timer. TODO: remove this when done debugging.
   std::deque<gnssPosition> gnssPosistionSamples;
-  gnssPosition lastMowingPosition;
+  gnssPosition lastMowingPosition{};
 };
 
 #endif

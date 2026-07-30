@@ -14,7 +14,7 @@ MowingSchedule::MowingSchedule() {}
  * @param time to stop mowing, the format MUST be "HH:MM"
  * @return -1 malformated activeWeekdays, -2 malformated startTime, -3 malformated stopTime, -4 too many entries. 0 or greater = success
  */
-int8_t MowingSchedule::addScheduleEntry(std::deque<bool> activeWeekdays, String startTime, String stopTime) {
+int8_t MowingSchedule::addScheduleEntry(const std::deque<bool>& activeWeekdays, String startTime, String stopTime) {
   const std::regex timeRegex("(00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20|21|22|23):(0|1|2|3|4|5)\\d");
 
   if (mowingSchedule.size() >= 10) {

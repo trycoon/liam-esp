@@ -37,7 +37,7 @@ class Dockingstation {
   SX1280 lora;
   void IRAM_ATTR setReceivedFlag();
   void startReceive();
-  bool transmit(uint8_t buffer[]);
+  bool transmit(uint8_t* buffer, size_t length);
   void collectAndPushNewStatus();
 };
 

@@ -75,8 +75,7 @@ void Dockingstation::startReceive() {
   }
 }
 
-bool Dockingstation::transmit(uint8_t buffer[]) {
-  auto length = sizeof(buffer);
+bool Dockingstation::transmit(uint8_t* buffer, size_t length) {
   if (length > 253) {
     Log.warning(F("LoRa transmission fault, buffer size (%d) excede allowed "
                   "size of 253 bytes! Ignoring transmission." CR),
@@ -92,7 +91,7 @@ bool Dockingstation::transmit(uint8_t buffer[]) {
         F("Ongoing LoRa transmission detected, waiting a moment and trying "
           "again." CR));
     delay(random(20, 25));
-    return transmit(buffer);
+    return transmit(buffer, length);
   } else if (state != RADIOLIB_CHANNEL_FREE) {
     Log.warning(F("LoRa unknown fault during channel scanning: %d. Trying to "
                   "send anyway." CR),

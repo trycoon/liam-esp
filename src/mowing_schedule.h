@@ -14,7 +14,7 @@ struct scheduleEntry {
 class MowingSchedule {
   public:
     MowingSchedule();
-    int8_t addScheduleEntry(std::deque<bool> activeWeekdays, String startTime, String stopTime);
+    int8_t addScheduleEntry(const std::deque<bool>& activeWeekdays, String startTime, String stopTime);
     const std::deque<scheduleEntry>& getScheduleEntries() const;
     void removeScheduleEntry(uint8_t position);
     void setManualMowingOverride(bool enable);

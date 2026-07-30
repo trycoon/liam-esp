@@ -33,7 +33,7 @@ class StateController {
     AbstractState* getStateInstance();
 
   private:
-    AbstractState* currentStateInstance;
+    AbstractState* currentStateInstance = nullptr;
     Resources& resources;
     // https://stackoverflow.com/questions/18837857/cant-use-enum-class-as-unordered-map-key
     struct EnumClassHash {

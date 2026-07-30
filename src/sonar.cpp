@@ -11,7 +11,6 @@
  */
 Sonar::Sonar() {
   // define available sensors...
-  SonarDevice sonarFront;
   sonarFront.ping_pin = Definitions::SONAR_FRONT_PING_PIN;
   sonarFront.sense_pin = Definitions::SONAR_FRONT_SENSE_PIN;
   pinMode(sonarFront.ping_pin, OUTPUT);

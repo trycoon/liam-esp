@@ -34,8 +34,9 @@ jobs:
 
       - name: Cppcheck
         run: |
-          cppcheck --std=c++11 --enable=performance,portability,information \
-            --quiet --error-exitcode=1 src/
+          cppcheck --std=c++11 --language=c++ --enable=warning,performance,portability \
+            --suppress=missingInclude --suppress=missingIncludeSystem \
+            -Isrc --quiet --error-exitcode=1 src/
 
       - name: Clang-format (check only)
         run: |
