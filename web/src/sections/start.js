@@ -5,10 +5,10 @@ import * as auth from '../authorisation.js';
 const isLocalMockHost = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
 const grassTextureUrl = isLocalMockHost
   ? '/resources/grasslight-1024.webp'
-  : 'https://cdn.jsdelivr.net/gh/trycoon/liam-esp@master/web/src/resources/grasslight-1024.webp';
+  : 'https://cdn.jsdelivr.net/gh/trycoon/liam-esp@main/web/src/resources/grasslight-1024.webp';
 const mowerModelUrl = isLocalMockHost
   ? '/resources/3d_mower-optimized.glb'
-  : 'https://cdn.jsdelivr.net/gh/trycoon/liam-esp@master/web/src/resources/3d_mower-optimized.glb';
+  : 'https://cdn.jsdelivr.net/gh/trycoon/liam-esp@main/web/src/resources/3d_mower-optimized.glb';
 
 const sec = document.querySelector('.js-section-start'),
       mower3D_perspectiveRotation = THREE.MathUtils.degToRad(30);  // rotate 30⁰ to give better 3rd-person perspective

@@ -1,0 +1,48 @@
+name: Firmware CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build-and-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install toolchain
+        run: |
+          python -m pip install --upgrade pip
+          pip install platformio
+          sudo apt-get update
+          sudo apt-get install -y cppcheck clang-format clang-tidy
+
+      - name: Build firmware
+        run: platformio run
+
+      - name: Generate compilation database
+        run: platformio run -t compiledb
+
+      - name: Cppcheck
+        run: |
+          cppcheck --std=c++11 --enable=performance,portability,information \
+            --quiet --error-exitcode=1 src/
+
+      - name: Clang-format (check only)
+        run: |
+          find src -type f \( -name "*.h" -o -name "*.cpp" \) -print0 \
+            | xargs -0 clang-format --dry-run --Werror -style=file
+
+      - name: Clang-tidy
+        run: |
+          find src -type f -name "*.cpp" -print0 \
+            | xargs -0 -n 1 clang-tidy -p . --quiet
