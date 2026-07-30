@@ -45,9 +45,9 @@ void GNSS::init()
 
     gnss.setI2COutput(COM_TYPE_UBX); // Set the I2C port to output UBX only (turn off NMEA noise)
     gnss.setNavigationFrequency(10); // Set output to 10 times a second
-    gnss.setAutoPVT(true); // Don't block for updates, library will internally serve the latest readings is has instead
-                           // of waiting for new ones to finish.
-    gnss.saveConfiguration(); // Save the current settings to flash and battery backed RAM
+    gnss.setAutoPVT(true);           // Don't block for updates, library will internally serve the latest readings is has instead
+                                     // of waiting for new ones to finish.
+    gnss.saveConfiguration();        // Save the current settings to flash and battery backed RAM
 
     byte rate = gnss.getNavigationFrequency();
     Serial.print("Current update rate:");

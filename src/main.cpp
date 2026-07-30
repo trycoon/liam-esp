@@ -38,16 +38,9 @@ LogStore logstore;
 IO_Analog io_analog;
 IO_Digital io_digital(Wire);
 IO_Accelerometer io_accelerometer(Wire);
-Wheel leftWheel(1,
-                Definitions::LEFT_WHEEL_MOTOR_PIN,
-                Definitions::LEFT_WHEEL_MOTOR_DIRECTION_PIN,
-                Definitions::LEFT_WHEEL_MOTOR_INVERTED,
-                Definitions::LEFT_WHEEL_MOTOR_SPEED);
-Wheel rightWheel(2,
-                 Definitions::RIGHT_WHEEL_MOTOR_PIN,
-                 Definitions::RIGHT_WHEEL_MOTOR_DIRECTION_PIN,
-                 Definitions::RIGHT_WHEEL_MOTOR_INVERTED,
-                 Definitions::RIGHT_WHEEL_MOTOR_SPEED);
+Wheel leftWheel(1, Definitions::LEFT_WHEEL_MOTOR_PIN, Definitions::LEFT_WHEEL_MOTOR_DIRECTION_PIN, Definitions::LEFT_WHEEL_MOTOR_INVERTED, Definitions::LEFT_WHEEL_MOTOR_SPEED);
+Wheel
+    rightWheel(2, Definitions::RIGHT_WHEEL_MOTOR_PIN, Definitions::RIGHT_WHEEL_MOTOR_DIRECTION_PIN, Definitions::RIGHT_WHEEL_MOTOR_INVERTED, Definitions::RIGHT_WHEEL_MOTOR_SPEED);
 WheelController wheelController(leftWheel, rightWheel);
 Cutter cutter(io_analog);
 GNSS gnss(Wire);
@@ -196,8 +189,7 @@ void loop()
     if (Configuration::config.setupDone)
     {
         // always check if we are flipped.
-        if (io_accelerometer.isFlipped()
-            && stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::FLIPPED)
+        if (io_accelerometer.isFlipped() && stateController.getStateInstance()->getState() != Definitions::MOWER_STATES::FLIPPED)
         {
             stateController.setState(Definitions::MOWER_STATES::FLIPPED);
         }

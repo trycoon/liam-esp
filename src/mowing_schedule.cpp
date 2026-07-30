@@ -16,8 +16,7 @@ MowingSchedule::MowingSchedule() {}
  */
 int8_t MowingSchedule::addScheduleEntry(const std::deque<bool>& activeWeekdays, String startTime, String stopTime)
 {
-    const std::regex timeRegex(
-        "(00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20|21|22|23):(0|1|2|3|4|5)\\d");
+    const std::regex timeRegex("(00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20|21|22|23):(0|1|2|3|4|5)\\d");
 
     if (mowingSchedule.size() >= 10)
     {
@@ -104,11 +103,8 @@ bool MowingSchedule::isTimeToMow()
         if (schedule.activeWeekdays[dayOfWeek])
         {
             int currentTimeInMinutes = timeinfo.tm_hour * 60 + timeinfo.tm_min;
-            int startTimeInMinutes
-                = schedule.startTime.substring(0, 2).toInt() * 60
-                  + schedule.startTime.substring(3).toInt(); // turn string, like "08:45", into minutes.
-            int stopTimeInMinutes
-                = schedule.stopTime.substring(0, 2).toInt() * 60 + schedule.stopTime.substring(3).toInt();
+            int startTimeInMinutes   = schedule.startTime.substring(0, 2).toInt() * 60 + schedule.startTime.substring(3).toInt(); // turn string, like "08:45", into minutes.
+            int stopTimeInMinutes    = schedule.stopTime.substring(0, 2).toInt() * 60 + schedule.stopTime.substring(3).toInt();
 
             if (currentTimeInMinutes >= startTimeInMinutes && currentTimeInMinutes < stopTimeInMinutes)
             {

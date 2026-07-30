@@ -24,19 +24,16 @@ void Battery::start()
     Log.trace("Battery voltage: %F volt, charge current: %F mA" CR, batteryVoltage, lastChargeCurrentReading);
 
     // update battery voltage readings every XX second.
-    batteryVoltageTicker.attach<Battery*>(
-        BATTERY_VOLTAGE_DELAY, [](Battery* instance) { instance->updateBatteryVoltage(); }, this);
+    batteryVoltageTicker.attach<Battery*>(BATTERY_VOLTAGE_DELAY, [](Battery* instance) { instance->updateBatteryVoltage(); }, this);
     // update battery charge current readings every XXX milliseconds.
-    chargeCurrentTicker.attach_ms<Battery*>(
-        BATTERY_CHARGECURRENT_DELAY, [](Battery* instance) { instance->updateChargeCurrent(); }, this);
+    chargeCurrentTicker.attach_ms<Battery*>(BATTERY_CHARGECURRENT_DELAY, [](Battery* instance) { instance->updateChargeCurrent(); }, this);
 }
 
 void Battery::updateBatteryVoltage()
 {
 
     float adc_reading = io_analog.getVoltageAdc1(Definitions::BATTERY_SENSOR_CHANNEL);
-    batteryVoltage    = roundf((adc_reading * Definitions::BATTERY_MULTIPLIER) * 100)
-                     / 100; // adjust reading and round to two decimals.
+    batteryVoltage    = roundf((adc_reading * Definitions::BATTERY_MULTIPLIER) * 100) / 100; // adjust reading and round to two decimals.
 
     _needRecharge   = batteryVoltage <= Definitions::BATTERY_EMPTY;
     _isFullyCharged = batteryVoltage >= Definitions::BATTERY_FULLY_CHARGED && !_isCharging;
@@ -120,8 +117,7 @@ float Battery::getChargeCurrent() const
 uint8_t Battery::getBatteryStatus() const
 {
 
-    auto level = round((batteryVoltage - Definitions::BATTERY_EMPTY)
-                       / (Definitions::BATTERY_FULLY_CHARGED - Definitions::BATTERY_EMPTY) * 100);
+    auto level = round((batteryVoltage - Definitions::BATTERY_EMPTY) / (Definitions::BATTERY_FULLY_CHARGED - Definitions::BATTERY_EMPTY) * 100);
     if (level < 0)
     {
         level = 0;

@@ -58,10 +58,7 @@ uint16_t Scheduler::schedule(const std::function<void(void)> fn, uint32_t delay,
  */
 void Scheduler::unschedule(uint16_t id)
 {
-    scheduled_fn_list.erase(find_if(scheduled_fn_list.begin(),
-                                    scheduled_fn_list.end(),
-                                    [id](const scheduled_fn_t& i) { return i.id == id; }),
-                            scheduled_fn_list.end());
+    scheduled_fn_list.erase(find_if(scheduled_fn_list.begin(), scheduled_fn_list.end(), [id](const scheduled_fn_t& i) { return i.id == id; }), scheduled_fn_list.end());
 }
 
 /**

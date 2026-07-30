@@ -59,32 +59,32 @@ const uint8_t TILT_ANGLE_MAX = 35; // Max angle (degrees) the mower is allowed t
 */
 const uint8_t LEFT_WHEEL_MOTOR_PIN           = 27;
 const uint8_t LEFT_WHEEL_MOTOR_DIRECTION_PIN = 25;
-const uint8_t LEFT_WHEEL_MOTOR_LOAD_CHANNEL  = 1; // Channel on ADC for measuring motor load.
-const uint8_t LEFT_WHEEL_MOTOR_SPEED = 100;       // 0-100 (%), used to compensate for drifting motors, lower this value
-                                                  // if mower drift to the right.
-const bool LEFT_WHEEL_MOTOR_INVERTED = false;     // Set to "true" if left wheel runs backward when mower should be
-                                                  // running forward.
+const uint8_t LEFT_WHEEL_MOTOR_LOAD_CHANNEL  = 1;   // Channel on ADC for measuring motor load.
+const uint8_t LEFT_WHEEL_MOTOR_SPEED         = 100; // 0-100 (%), used to compensate for drifting motors, lower this value
+                                                    // if mower drift to the right.
+const bool LEFT_WHEEL_MOTOR_INVERTED = false;       // Set to "true" if left wheel runs backward when mower should be
+                                                    // running forward.
 
 const uint8_t RIGHT_WHEEL_MOTOR_PIN           = 32;
 const uint8_t RIGHT_WHEEL_MOTOR_DIRECTION_PIN = 26;
-const uint8_t RIGHT_WHEEL_MOTOR_LOAD_CHANNEL  = 2; // Channel on ADC for measuring motor load.
-const uint8_t RIGHT_WHEEL_MOTOR_SPEED = 100;  // 0-100 (%), used to compensate for drifting motors, lower this value
-                                              // if mower drift to the left.
-const bool RIGHT_WHEEL_MOTOR_INVERTED = true; // Set to "true" if right wheel runs backward when mower should be
-                                              // running forward.
+const uint8_t RIGHT_WHEEL_MOTOR_LOAD_CHANNEL  = 2;   // Channel on ADC for measuring motor load.
+const uint8_t RIGHT_WHEEL_MOTOR_SPEED         = 100; // 0-100 (%), used to compensate for drifting motors, lower this value
+                                                     // if mower drift to the left.
+const bool RIGHT_WHEEL_MOTOR_INVERTED = true;        // Set to "true" if right wheel runs backward when mower should be
+                                                     // running forward.
 
-const uint8_t WHEEL_MOTOR_MIN_SPEED = 20; // 0-100 (%), set the minimum speed that the wheel motors should use.
-                                          // This is used in combination with e.g.
-                                          // WHEEL_MOTOR_DECREASE_SPEED_AT_CUTTER_LOAD.
+const uint8_t WHEEL_MOTOR_MIN_SPEED = 20;                    // 0-100 (%), set the minimum speed that the wheel motors should use.
+                                                             // This is used in combination with e.g.
+                                                             // WHEEL_MOTOR_DECREASE_SPEED_AT_CUTTER_LOAD.
 const uint8_t WHEEL_MOTOR_TURN_SPEED                 = 40;   // 0-100 (%), speed to use when turning.
 const bool WHEEL_MOTOR_DECREASE_SPEED_AT_CUTTER_LOAD = true; // reduce forward movement of mower when there is a high
                                                              // load on cutter (like high grass)
-const float WHEEL_NOLOAD_CURRENT = 500;  // Milliampere of wheel motor when no load is applied, see motor
-                                         // specs for no-load current or find a suitable value yourself.
-const float WHEEL_MAX_CURRENT = 1100;    // Max milliampere of wheel motor, see motor specs for stall
-                                         // current.
-const uint8_t WHEEL_DIAMETER      = 190; // in millimeter
-const uint8_t WHEEL_PAIR_DISTANCE = 27;  // distance measured between the wheel pairs, in centimeters
+const float WHEEL_NOLOAD_CURRENT = 500;                      // Milliampere of wheel motor when no load is applied, see motor
+                                                             // specs for no-load current or find a suitable value yourself.
+const float WHEEL_MAX_CURRENT = 1100;                        // Max milliampere of wheel motor, see motor specs for stall
+                                                             // current.
+const uint8_t WHEEL_DIAMETER      = 190;                     // in millimeter
+const uint8_t WHEEL_PAIR_DISTANCE = 27;                      // distance measured between the wheel pairs, in centimeters
 
 /*
   Settings for "launching" mower from charging station

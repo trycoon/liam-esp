@@ -232,9 +232,7 @@ private:
 template <>
 inline Vector<3> Vector<3>::cross(const Vector& v) const
 {
-    return Vector(p_vec[1] * v.p_vec[2] - p_vec[2] * v.p_vec[1],
-                  p_vec[2] * v.p_vec[0] - p_vec[0] * v.p_vec[2],
-                  p_vec[0] * v.p_vec[1] - p_vec[1] * v.p_vec[0]);
+    return Vector(p_vec[1] * v.p_vec[2] - p_vec[2] * v.p_vec[1], p_vec[2] * v.p_vec[0] - p_vec[0] * v.p_vec[2], p_vec[0] * v.p_vec[1] - p_vec[1] * v.p_vec[0]);
 }
 
 } // namespace imu

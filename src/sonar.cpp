@@ -26,16 +26,15 @@ void Sonar::ping(SonarDevice device)
     {
 
         pingInProgress = true;
-        startTime = micros(); // just set it, we will update it later in ISR to be more current. This is needed to check
-                              // for timeouts in process()
+        startTime      = micros(); // just set it, we will update it later in ISR to be more current. This is needed to check
+                                   // for timeouts in process()
 
         digitalWrite(device.ping_pin,
-                     LOW);    // Set the trigger pin low, should already be low, but this will make sure it is.
-        delayMicroseconds(4); // Wait for pin to go low.
+                     LOW);                   // Set the trigger pin low, should already be low, but this will make sure it is.
+        delayMicroseconds(4);                // Wait for pin to go low.
         digitalWrite(device.ping_pin, HIGH); // Set trigger pin high, this tells the sensor to send out a ping.
-        delayMicroseconds(
-            10); // Wait long enough for the sensor to realize the trigger pin is high. Sensor specs say to wait 10uS.
-        digitalWrite(device.ping_pin, LOW); // Set trigger pin back to low.
+        delayMicroseconds(10);               // Wait long enough for the sensor to realize the trigger pin is high. Sensor specs say to wait 10uS.
+        digitalWrite(device.ping_pin, LOW);  // Set trigger pin back to low.
     }
 }
 
@@ -69,8 +68,7 @@ void IRAM_ATTR Sonar::onPing()
         if (distance <= Definitions::SONAR_MAXDISTANCE)
         {
             sonarFront.sampleDistances[sonarFront.sampleIndex] = distance;
-            sonarFront.sampleIndex
-                = (sonarFront.sampleIndex + 1) % (sizeof(sonarFront.sampleDistances) / sizeof(uint16_t));
+            sonarFront.sampleIndex                             = (sonarFront.sampleIndex + 1) % (sizeof(sonarFront.sampleDistances) / sizeof(uint16_t));
         }
 
         pingInProgress = false;

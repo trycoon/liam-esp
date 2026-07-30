@@ -28,8 +28,7 @@ void IO_Accelerometer::start()
         // imu.calibrateMag(true);   //TODO: check why this crashes with: Guru Meditation Error: Core  1 panic'ed
         // (StoreProhibited). Exception was unhandled.
 
-        sensorReadingTicker.attach_ms<IO_Accelerometer*>(
-            20, [](IO_Accelerometer* instance) { instance->getReadings(); }, this);
+        sensorReadingTicker.attach_ms<IO_Accelerometer*>(20, [](IO_Accelerometer* instance) { instance->getReadings(); }, this);
     }
 }
 
@@ -51,8 +50,7 @@ bool IO_Accelerometer::isFlipped() const
     }
     else
     {
-        return (abs(currentOrientation.pitch) > Definitions::TILT_ANGLE_MAX
-                || abs(currentOrientation.roll) > Definitions::TILT_ANGLE_MAX);
+        return (abs(currentOrientation.pitch) > Definitions::TILT_ANGLE_MAX || abs(currentOrientation.roll) > Definitions::TILT_ANGLE_MAX);
     }
 }
 
@@ -97,8 +95,7 @@ void IO_Accelerometer::getReadings()
         { // iterate a fixed number of times per data read cycle
             now = micros();
 
-            deltaTime
-                = (now - lastUpdate) / 1000000.0f; // set integration time by time elapsed since last filter update
+            deltaTime  = (now - lastUpdate) / 1000000.0f; // set integration time by time elapsed since last filter update
             lastUpdate = now;
 
             filter.madgwickQuaternionUpdate(deltaTime, -ax, +ay, +az, gx, -gy, -gz, my, -mx, mz);
@@ -106,13 +103,11 @@ void IO_Accelerometer::getReadings()
 
         auto quaternion = filter.getQuaternions();
 
-        auto a12 = 2.0f * (quaternion.q2 * quaternion.q3 + quaternion.q1 * quaternion.q4);
-        auto a22 = quaternion.q1 * quaternion.q1 + quaternion.q2 * quaternion.q2 - quaternion.q3 * quaternion.q3
-                   - quaternion.q4 * quaternion.q4;
-        auto a31 = 2.0f * (quaternion.q1 * quaternion.q2 + quaternion.q3 * quaternion.q4);
-        auto a32 = 2.0f * (quaternion.q2 * quaternion.q4 - quaternion.q1 * quaternion.q3);
-        auto a33 = quaternion.q1 * quaternion.q1 - quaternion.q2 * quaternion.q2 - quaternion.q3 * quaternion.q3
-                   + quaternion.q4 * quaternion.q4;
+        auto a12   = 2.0f * (quaternion.q2 * quaternion.q3 + quaternion.q1 * quaternion.q4);
+        auto a22   = quaternion.q1 * quaternion.q1 + quaternion.q2 * quaternion.q2 - quaternion.q3 * quaternion.q3 - quaternion.q4 * quaternion.q4;
+        auto a31   = 2.0f * (quaternion.q1 * quaternion.q2 + quaternion.q3 * quaternion.q4);
+        auto a32   = 2.0f * (quaternion.q2 * quaternion.q4 - quaternion.q1 * quaternion.q3);
+        auto a33   = quaternion.q1 * quaternion.q1 - quaternion.q2 * quaternion.q2 - quaternion.q3 * quaternion.q3 + quaternion.q4 * quaternion.q4;
         auto pitch = -asinf(a32);
         auto roll  = atan2f(a31, a33);
         auto yaw   = atan2f(a12, a22);

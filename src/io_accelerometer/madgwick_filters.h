@@ -22,14 +22,13 @@ struct Quaternion
 class MadgwickFilters
 {
 private:
-    float GyroMeasError = PI * (40.0f / 180.0f); // gyroscope measurement error in rads/s (start at 40 deg/s)
+    float GyroMeasError = PI * (40.0f / 180.0f);              // gyroscope measurement error in rads/s (start at 40 deg/s)
     float beta          = sqrtf(3.0f / 4.0f) * GyroMeasError; // compute beta
     Quaternion quaternion;
 
 public:
     MadgwickFilters();
-    __attribute__((optimize("O3"))) void madgwickQuaternionUpdate(
-        float deltaTime, float ax, float ay, float az, float gx, float gy, float gz, float mx, float my, float mz);
+    __attribute__((optimize("O3"))) void madgwickQuaternionUpdate(float deltaTime, float ax, float ay, float az, float gx, float gy, float gz, float mx, float my, float mz);
     const Quaternion& getQuaternions() const;
 };
 

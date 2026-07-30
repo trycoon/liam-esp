@@ -10,8 +10,7 @@ void Docked::selected(Definitions::MOWER_STATES lastState)
 {
     resources.cutter.stop(true);
     resources.wheelController.stop();
-    resources.mowingSchedule.setManualMowingOverride(
-        false); // if docked then reset mowing override so that it will only launch on schedule.
+    resources.mowingSchedule.setManualMowingOverride(false); // if docked then reset mowing override so that it will only launch on schedule.
     lastShouldMowCheck = millis();
 }
 

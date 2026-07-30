@@ -9,10 +9,8 @@ struct SonarDevice
     uint8_t ping_pin;
     uint8_t sense_pin;
     uint8_t sampleIndex         = 0;
-    uint16_t sampleDistances[5] = {
-        0, 0, 0, 0, 0
-    }; // Numer of samples before calculating distance, higher value means we get less affected of false readings (like
-       // reflecting grass) but consuming more memory and less responsive to sudden obstacles.
+    uint16_t sampleDistances[5] = { 0, 0, 0, 0, 0 }; // Numer of samples before calculating distance, higher value means we get less affected of false readings (like
+                                                     // reflecting grass) but consuming more memory and less responsive to sudden obstacles.
     uint16_t distance = 0;
 };
 

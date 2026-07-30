@@ -75,10 +75,8 @@ bool Cutter::isCutting()
 void Cutter::senseLoad()
 {
 
-    auto current = round(io_analog.getVoltageAdc1(Definitions::CUTTER_LOAD_CHANNEL) / Definitions::CUTTER_LOAD_RESISTOR
-                         * 1000); // 1000 for converting ampere to milliampere
-    auto newLoad = round((current - Definitions::CUTTER_NOLOAD_CURRENT)
-                         / (Definitions::CUTTER_MAX_CURRENT - Definitions::CUTTER_NOLOAD_CURRENT) * 100);
+    auto current = round(io_analog.getVoltageAdc1(Definitions::CUTTER_LOAD_CHANNEL) / Definitions::CUTTER_LOAD_RESISTOR * 1000); // 1000 for converting ampere to milliampere
+    auto newLoad = round((current - Definitions::CUTTER_NOLOAD_CURRENT) / (Definitions::CUTTER_MAX_CURRENT - Definitions::CUTTER_NOLOAD_CURRENT) * 100);
 
     // make sure we stay within percentage boundaries.
     if (newLoad < 0)
@@ -141,8 +139,7 @@ bool Cutter::isOverloaded()
  */
 bool Cutter::isFuseblown()
 {
-    return isCutting()
-           && load < 2; // are we cutting without any load? That is not possible unless motor is standing still.
+    return isCutting() && load < 2; // are we cutting without any load? That is not possible unless motor is standing still.
 }
 
 void Cutter::process()

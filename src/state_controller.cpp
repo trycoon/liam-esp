@@ -15,18 +15,16 @@
 StateController::StateController(Resources& resources)
     : resources(resources)
 {
-    stateLookup[Definitions::MOWER_STATES::DOCKED] = new Docked(Definitions::MOWER_STATES::DOCKED, *this, resources);
-    stateLookup[Definitions::MOWER_STATES::LAUNCHING]
-        = new Launching(Definitions::MOWER_STATES::LAUNCHING, *this, resources);
-    stateLookup[Definitions::MOWER_STATES::MOWING]  = new Mowing(Definitions::MOWER_STATES::MOWING, *this, resources);
-    stateLookup[Definitions::MOWER_STATES::DOCKING] = new Docking(Definitions::MOWER_STATES::DOCKING, *this, resources);
-    stateLookup[Definitions::MOWER_STATES::CHARGING]
-        = new Charging(Definitions::MOWER_STATES::CHARGING, *this, resources);
-    stateLookup[Definitions::MOWER_STATES::STUCK]   = new Stuck(Definitions::MOWER_STATES::STUCK, *this, resources);
-    stateLookup[Definitions::MOWER_STATES::FLIPPED] = new Flipped(Definitions::MOWER_STATES::FLIPPED, *this, resources);
-    stateLookup[Definitions::MOWER_STATES::MANUAL]  = new Manual(Definitions::MOWER_STATES::MANUAL, *this, resources);
-    stateLookup[Definitions::MOWER_STATES::STOP]    = new Stop(Definitions::MOWER_STATES::STOP, *this, resources);
-    stateLookup[Definitions::MOWER_STATES::TEST]    = new Test(Definitions::MOWER_STATES::TEST, *this, resources);
+    stateLookup[Definitions::MOWER_STATES::DOCKED]    = new Docked(Definitions::MOWER_STATES::DOCKED, *this, resources);
+    stateLookup[Definitions::MOWER_STATES::LAUNCHING] = new Launching(Definitions::MOWER_STATES::LAUNCHING, *this, resources);
+    stateLookup[Definitions::MOWER_STATES::MOWING]    = new Mowing(Definitions::MOWER_STATES::MOWING, *this, resources);
+    stateLookup[Definitions::MOWER_STATES::DOCKING]   = new Docking(Definitions::MOWER_STATES::DOCKING, *this, resources);
+    stateLookup[Definitions::MOWER_STATES::CHARGING]  = new Charging(Definitions::MOWER_STATES::CHARGING, *this, resources);
+    stateLookup[Definitions::MOWER_STATES::STUCK]     = new Stuck(Definitions::MOWER_STATES::STUCK, *this, resources);
+    stateLookup[Definitions::MOWER_STATES::FLIPPED]   = new Flipped(Definitions::MOWER_STATES::FLIPPED, *this, resources);
+    stateLookup[Definitions::MOWER_STATES::MANUAL]    = new Manual(Definitions::MOWER_STATES::MANUAL, *this, resources);
+    stateLookup[Definitions::MOWER_STATES::STOP]      = new Stop(Definitions::MOWER_STATES::STOP, *this, resources);
+    stateLookup[Definitions::MOWER_STATES::TEST]      = new Test(Definitions::MOWER_STATES::TEST, *this, resources);
 }
 
 void StateController::setState(Definitions::MOWER_STATES newState)
@@ -36,8 +34,7 @@ void StateController::setState(Definitions::MOWER_STATES newState)
     {
         // save reference to previous state before we switching to a new one. We check for nullptr because the first
         // time there will be no previous state.
-        Definitions::MOWER_STATES previousState
-            = currentStateInstance == nullptr ? newState : currentStateInstance->getState();
+        Definitions::MOWER_STATES previousState = currentStateInstance == nullptr ? newState : currentStateInstance->getState();
 
         currentStateInstance = stateLookup[newState];
         currentStateInstance->selected(previousState);

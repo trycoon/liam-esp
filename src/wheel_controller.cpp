@@ -12,8 +12,7 @@ WheelController::~WheelController()
     stop(false);
 }
 
-void WheelController::forward(
-    int8_t turnrate, uint8_t speed, bool smooth, uint32_t distance, const TargetReachedCallback& fn)
+void WheelController::forward(int8_t turnrate, uint8_t speed, bool smooth, uint32_t distance, const TargetReachedCallback& fn)
 {
     turnrate  = constrain(turnrate, -100, 100);
     speed     = constrain(speed, 0, 100);
@@ -24,11 +23,7 @@ void WheelController::forward(
         speed = Definitions::WHEEL_MOTOR_MIN_SPEED;
     }
 
-    Log.trace(F("WheelController-forward, speed: %d, turnrate: %d, smooth: %d, distance: %d" CR),
-              speed,
-              turnrate,
-              smooth,
-              distance);
+    Log.trace(F("WheelController-forward, speed: %d, turnrate: %d, smooth: %d, distance: %d" CR), speed, turnrate, smooth, distance);
 
     if (turnrate < 0)
     {
@@ -47,8 +42,7 @@ void WheelController::forward(
     }
 }
 
-void WheelController::backward(
-    int8_t turnrate, uint8_t speed, bool smooth, uint32_t distance, const TargetReachedCallback& fn)
+void WheelController::backward(int8_t turnrate, uint8_t speed, bool smooth, uint32_t distance, const TargetReachedCallback& fn)
 {
     turnrate  = constrain(turnrate, -100, 100);
     speed     = constrain(speed, 0, 100);
@@ -59,11 +53,7 @@ void WheelController::backward(
         speed = Definitions::WHEEL_MOTOR_MIN_SPEED;
     }
 
-    Log.trace(F("WheelController-backward, speed: %d, turnrate: %d, smooth: %d, distance: %d" CR),
-              speed,
-              turnrate,
-              smooth,
-              distance);
+    Log.trace(F("WheelController-backward, speed: %d, turnrate: %d, smooth: %d, distance: %d" CR), speed, turnrate, smooth, distance);
 
     if (turnrate < 0)
     {

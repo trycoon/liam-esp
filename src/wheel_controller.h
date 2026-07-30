@@ -28,11 +28,7 @@ public:
      * @param distance [optional] distance we want mower to move (in centimeters).
      * @param fn [optional] callback that will be executed once mower has moved desired distance.
      */
-    void forward(int8_t turnrate,
-                 uint8_t speed,
-                 bool smooth                     = false,
-                 uint32_t distance               = 0,
-                 const TargetReachedCallback& fn = nullptr);
+    void forward(int8_t turnrate, uint8_t speed, bool smooth = false, uint32_t distance = 0, const TargetReachedCallback& fn = nullptr);
     /**
      * Drives mower backward at specified speed and turning at specified speed.
      * @param turnrate speed of turning (-1 to -100 left, 1 to 100 right). 0 = don't turn.
@@ -41,11 +37,7 @@ public:
      * @param distance [optional] distance we want mower to move (in centimeters).
      * @param fn [optional] callback that will be executed once mower has moved desired distance.
      */
-    void backward(int8_t turnrate,
-                  uint8_t speed,
-                  bool smooth                     = false,
-                  uint32_t distance               = 0,
-                  const TargetReachedCallback& fn = nullptr);
+    void backward(int8_t turnrate, uint8_t speed, bool smooth = false, uint32_t distance = 0, const TargetReachedCallback& fn = nullptr);
     /**
      * Turns mower on the spot.
      * @param direction turns mower to the specified direction. Direction is -360 -> 360 degrees relative current

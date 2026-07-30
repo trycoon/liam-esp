@@ -23,10 +23,7 @@
 Dockingstation::Dockingstation(StateController& stateController, Resources& resources)
     : stateController(stateController)
     , resources(resources)
-    , lora(new Module(Definitions::LORA_NSS_PIN,
-                      Definitions::LORA_DIO1_PIN,
-                      Definitions::LORA_NRST_PIN,
-                      Definitions::LORA_BUSY_PIN))
+    , lora(new Module(Definitions::LORA_NSS_PIN, Definitions::LORA_DIO1_PIN, Definitions::LORA_NRST_PIN, Definitions::LORA_BUSY_PIN))
 {
 }
 
