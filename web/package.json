@@ -31,7 +31,7 @@
     "partysocket": "^1.1.4"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
+    "@biomejs/biome": "^2.5.6",
     "compression-webpack-plugin": "^12.0.0",
     "cookies": "^0.9.1",
     "copy-webpack-plugin": "^14.0.0",
