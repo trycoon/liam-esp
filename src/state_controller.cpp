@@ -43,8 +43,6 @@ void StateController::setState(Definitions::MOWER_STATES newState)
         // save state in case we reboot
         Configuration::config.lastState = currentStateInstance->getStateName();
         Configuration::save();
-
-        // resources.wlan.publish_mqtt(currentStateInstance->getStateName(), "/state");
     }
 }
 

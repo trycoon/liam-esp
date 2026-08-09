@@ -11,6 +11,7 @@
 #include "definitions.h"
 #include "gnss.h"
 #include "io_accelerometer/io_accelerometer.h"
+#include "wlan.h"
 #include "io_analog.h"
 #include "io_digital.h"
 #include "log_store.h"
@@ -20,6 +21,7 @@
 #include "state_controller.h"
 #include "wheel.h"
 #include "wheel_controller.h"
+#include "api.h"
 
 /*
  * Software for controlling a LIAM robotmower using a ESP-32 microcontroller.
@@ -38,6 +40,7 @@ LogStore logstore;
 IO_Analog io_analog;
 IO_Digital io_digital(Wire);
 IO_Accelerometer io_accelerometer(Wire);
+Wlan wlan;
 Wheel leftWheel(1, Definitions::LEFT_WHEEL_MOTOR_PIN, Definitions::LEFT_WHEEL_MOTOR_DIRECTION_PIN, Definitions::LEFT_WHEEL_MOTOR_INVERTED, Definitions::LEFT_WHEEL_MOTOR_SPEED);
 Wheel
     rightWheel(2, Definitions::RIGHT_WHEEL_MOTOR_PIN, Definitions::RIGHT_WHEEL_MOTOR_DIRECTION_PIN, Definitions::RIGHT_WHEEL_MOTOR_INVERTED, Definitions::RIGHT_WHEEL_MOTOR_SPEED);
@@ -47,8 +50,9 @@ GNSS gnss(Wire);
 Sonar sonar;
 Battery battery(io_analog, Wire);
 MowingSchedule mowingSchedule;
-Resources resources(wheelController, cutter, battery, gnss, sonar, io_accelerometer, logstore, mowingSchedule);
+Resources resources(wlan, wheelController, cutter, battery, gnss, sonar, io_accelerometer, logstore, mowingSchedule);
 StateController stateController(resources);
+Api api(stateController, resources);
 
 uint64_t loopDelayWarningTime;
 
@@ -156,6 +160,14 @@ void setup()
     {
         stateController.setState(Definitions::MOWER_STATES::DOCKED);
     }
+
+    wlan.start();
+
+    if (Configuration::config.setupDone) {
+        api.setupApi();
+    } else {
+        Log.notice(F("Starting mower for first time. Please connect to WiFi accesspoint \"%s\" and run installation wizard!" CR), Definitions::APP_NAME);
+    }
 }
 
 // https://cpp4arduino.com/2018/11/06/what-is-heap-fragmentation.html
@@ -185,6 +197,8 @@ void loop()
         ESP.restart();
         return;
     }
+
+    wlan.process();
 
     if (Configuration::config.setupDone)
     {

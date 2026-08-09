@@ -1,6 +1,8 @@
 # Liam-ESP
 
-[![license](https://img.shields.io/github/license/trycoon/liam-esp.svg?maxAge=3600)](https://opensource.org/licenses/MIT)
+[![License](https://img.shields.io/github/license/trycoon/liam-esp.svg?maxAge=3600)](https://opensource.org/licenses/MIT)
+[![GitHub issues](https://img.shields.io/github/issues/trycoon/liam-esp)](https://github.com/trycoon/liam-esp/issues)
+[![Last commit](https://img.shields.io/github/last-commit/trycoon/liam-esp)](https://github.com/trycoon/liam-esp/commits/master)
 
 ## Introduction
 
@@ -14,7 +16,6 @@ Here are some of the features of this project:
 - GNSS-RTK navigation support, for accurate mowing and path planning.
 - WiFi connected docking station that relays communication to mower over a LoRa-connection.
 - Easy to use REST-based API with Swagger support, making it a breeze to integrate with Home automation softwares.
-- Monitor mower using [MQTT protocol](documentation/api.md) (works with most Home automation systems).
 - Realtime monitoring using Websocket.
 - Built in support for scheduled mowing (time of day, days of week).
 - Obstacle avoidance using ultrasound transducers.
